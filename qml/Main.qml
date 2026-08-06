@@ -17,6 +17,7 @@ Window {
     property string currentInputBuffer: ""
     property bool showThemeSelector: false
     property bool isMinimized: false
+    property int shiftState: 0 // 0 = lowercase, 1 = shift single, 2 = caps lock
 
     KeyboardController {
         id: controller
@@ -504,7 +505,7 @@ Window {
                                   (controller.layoutMode === "emoji" ? 4 :
                                   (controller.layoutMode === "klipper" ? 5 : 0)))))
 
-                    // View 0: ABC QWERTY Standard / Split Mode (Matching Screenshot)
+                    // View 0: ABC QWERTY Standard / Split Mode
                     ColumnLayout {
                         spacing: 6
 
@@ -518,7 +519,8 @@ Window {
                                     { k: "r", h: "" }, { k: "t", h: "" }
                                 ]
                                 delegate: KeyButton {
-                                    label: modelData.k
+                                    label: mainWindow.shiftState > 0 ? modelData.k.toUpperCase() : modelData.k
+                                    textToSend: mainWindow.shiftState > 0 ? modelData.k.toUpperCase() : modelData.k
                                     hintAccent: modelData.h
                                     accents: modelData.a ? modelData.a : []
                                     currentTheme: mainWindow.activeTheme
@@ -527,8 +529,12 @@ Window {
                                     Layout.fillWidth: true
                                     Layout.fillHeight: true
                                     onKeyTriggered: (key) => {
-                                        mainWindow.currentInputBuffer += key
+                                        var letter = mainWindow.shiftState > 0 ? key.toUpperCase() : key.toLowerCase()
+                                        mainWindow.currentInputBuffer += letter
                                         gestureEngine.updateCurrentPrefix(mainWindow.currentInputBuffer)
+                                        if (mainWindow.shiftState === 1) {
+                                            mainWindow.shiftState = 0
+                                        }
                                     }
                                 }
                             }
@@ -544,7 +550,8 @@ Window {
                                     { k: "i", h: "ì", a: ["ì", "í"] }, { k: "o", h: "ò", a: ["ò", "ó"] }, { k: "p", h: "" }
                                 ]
                                 delegate: KeyButton {
-                                    label: modelData.k
+                                    label: mainWindow.shiftState > 0 ? modelData.k.toUpperCase() : modelData.k
+                                    textToSend: mainWindow.shiftState > 0 ? modelData.k.toUpperCase() : modelData.k
                                     hintAccent: modelData.h
                                     accents: modelData.a ? modelData.a : []
                                     currentTheme: mainWindow.activeTheme
@@ -553,8 +560,12 @@ Window {
                                     Layout.fillWidth: true
                                     Layout.fillHeight: true
                                     onKeyTriggered: (key) => {
-                                        mainWindow.currentInputBuffer += key
+                                        var letter = mainWindow.shiftState > 0 ? key.toUpperCase() : key.toLowerCase()
+                                        mainWindow.currentInputBuffer += letter
                                         gestureEngine.updateCurrentPrefix(mainWindow.currentInputBuffer)
+                                        if (mainWindow.shiftState === 1) {
+                                            mainWindow.shiftState = 0
+                                        }
                                     }
                                 }
                             }
@@ -570,7 +581,8 @@ Window {
                                     { k: "f", h: "" }, { k: "g", h: "" }
                                 ]
                                 delegate: KeyButton {
-                                    label: modelData.k
+                                    label: mainWindow.shiftState > 0 ? modelData.k.toUpperCase() : modelData.k
+                                    textToSend: mainWindow.shiftState > 0 ? modelData.k.toUpperCase() : modelData.k
                                     hintAccent: modelData.h
                                     accents: modelData.a ? modelData.a : []
                                     currentTheme: mainWindow.activeTheme
@@ -579,8 +591,12 @@ Window {
                                     Layout.fillWidth: true
                                     Layout.fillHeight: true
                                     onKeyTriggered: (key) => {
-                                        mainWindow.currentInputBuffer += key
+                                        var letter = mainWindow.shiftState > 0 ? key.toUpperCase() : key.toLowerCase()
+                                        mainWindow.currentInputBuffer += letter
                                         gestureEngine.updateCurrentPrefix(mainWindow.currentInputBuffer)
+                                        if (mainWindow.shiftState === 1) {
+                                            mainWindow.shiftState = 0
+                                        }
                                     }
                                 }
                             }
@@ -595,7 +611,8 @@ Window {
                                     { k: "h", h: "" }, { k: "j", h: "" }, { k: "k", h: "" }, { k: "l", h: "" }
                                 ]
                                 delegate: KeyButton {
-                                    label: modelData.k
+                                    label: mainWindow.shiftState > 0 ? modelData.k.toUpperCase() : modelData.k
+                                    textToSend: mainWindow.shiftState > 0 ? modelData.k.toUpperCase() : modelData.k
                                     hintAccent: modelData.h
                                     accents: modelData.a ? modelData.a : []
                                     currentTheme: mainWindow.activeTheme
@@ -604,8 +621,12 @@ Window {
                                     Layout.fillWidth: true
                                     Layout.fillHeight: true
                                     onKeyTriggered: (key) => {
-                                        mainWindow.currentInputBuffer += key
+                                        var letter = mainWindow.shiftState > 0 ? key.toUpperCase() : key.toLowerCase()
+                                        mainWindow.currentInputBuffer += letter
                                         gestureEngine.updateCurrentPrefix(mainWindow.currentInputBuffer)
+                                        if (mainWindow.shiftState === 1) {
+                                            mainWindow.shiftState = 0
+                                        }
                                     }
                                 }
                             }
@@ -615,24 +636,36 @@ Window {
                         RowLayout {
                             spacing: 6
                             KeyButton {
-                                label: "⇧"
+                                label: mainWindow.shiftState === 2 ? "⇪" : "⇧"
                                 isSpecial: true
+                                isCustomAction: true
+                                isPrimaryAction: mainWindow.shiftState > 0
                                 implicitWidth: controller.isSplit ? 50 : 60
                                 currentTheme: mainWindow.activeTheme
                                 Layout.fillHeight: true
+                                onReleased: {
+                                    if (mainWindow.shiftState === 0) mainWindow.shiftState = 1
+                                    else if (mainWindow.shiftState === 1) mainWindow.shiftState = 2
+                                    else mainWindow.shiftState = 0
+                                }
                             }
                             Repeater {
                                 model: ["z", "x", "c", "v"]
                                 delegate: KeyButton {
-                                    label: modelData
+                                    label: mainWindow.shiftState > 0 ? modelData.toUpperCase() : modelData
+                                    textToSend: mainWindow.shiftState > 0 ? modelData.toUpperCase() : modelData
                                     currentTheme: mainWindow.activeTheme
                                     vk: virtualKeyEngine
                                     gestureEngine: gestureEngine
                                     Layout.fillWidth: true
                                     Layout.fillHeight: true
                                     onKeyTriggered: (key) => {
-                                        mainWindow.currentInputBuffer += key
+                                        var letter = mainWindow.shiftState > 0 ? key.toUpperCase() : key.toLowerCase()
+                                        mainWindow.currentInputBuffer += letter
                                         gestureEngine.updateCurrentPrefix(mainWindow.currentInputBuffer)
+                                        if (mainWindow.shiftState === 1) {
+                                            mainWindow.shiftState = 0
+                                        }
                                     }
                                 }
                             }
@@ -644,15 +677,20 @@ Window {
                             Repeater {
                                 model: ["b", "n", "m"]
                                 delegate: KeyButton {
-                                    label: modelData
+                                    label: mainWindow.shiftState > 0 ? modelData.toUpperCase() : modelData
+                                    textToSend: mainWindow.shiftState > 0 ? modelData.toUpperCase() : modelData
                                     currentTheme: mainWindow.activeTheme
                                     vk: virtualKeyEngine
                                     gestureEngine: gestureEngine
                                     Layout.fillWidth: true
                                     Layout.fillHeight: true
                                     onKeyTriggered: (key) => {
-                                        mainWindow.currentInputBuffer += key
+                                        var letter = mainWindow.shiftState > 0 ? key.toUpperCase() : key.toLowerCase()
+                                        mainWindow.currentInputBuffer += letter
                                         gestureEngine.updateCurrentPrefix(mainWindow.currentInputBuffer)
+                                        if (mainWindow.shiftState === 1) {
+                                            mainWindow.shiftState = 0
+                                        }
                                     }
                                 }
                             }
@@ -804,9 +842,11 @@ Window {
                         }
                     }
 
-                    // View 2: ?123 Symbols
+                    // View 2: ?123 Symbols (Gboard 4-Row Complete Layout)
                     ColumnLayout {
                         spacing: 6
+
+                        // Row 1: 1 2 3 4 5 6 7 8 9 0
                         RowLayout {
                             spacing: 6
                             Repeater {
@@ -820,10 +860,12 @@ Window {
                                 }
                             }
                         }
+
+                        // Row 2: @ # $ _ & - + ( ) /
                         RowLayout {
                             spacing: 6
                             Repeater {
-                                model: ["!", "@", "#", "$", "%", "^", "&", "*", "(", ")"]
+                                model: ["@", "#", "$", "_", "&", "-", "+", "(", ")", "/"]
                                 delegate: KeyButton {
                                     label: modelData
                                     currentTheme: mainWindow.activeTheme
@@ -833,16 +875,95 @@ Window {
                                 }
                             }
                         }
+
+                        // Row 3: = \ % * " ' : ; ! ⌫
                         RowLayout {
                             spacing: 6
                             Repeater {
-                                model: ["-", "_", "=", "+", "[", "]", "{", "}", ";", ":"]
+                                model: ["=", "\\", "%", "*", "\"", "'", ":", ";", "!"]
                                 delegate: KeyButton {
                                     label: modelData
                                     currentTheme: mainWindow.activeTheme
                                     vk: virtualKeyEngine
                                     Layout.fillWidth: true
                                     Layout.fillHeight: true
+                                }
+                            }
+                            KeyButton {
+                                label: "⌫"
+                                isSpecial: true
+                                isBackspace: true
+                                implicitWidth: 60
+                                currentTheme: mainWindow.activeTheme
+                                controller: controller
+                                vk: virtualKeyEngine
+                                Layout.fillHeight: true
+                            }
+                        }
+
+                        // Row 4: ABC 😊 , spazio . ↵ ✖
+                        RowLayout {
+                            spacing: 6
+                            KeyButton {
+                                label: "ABC"
+                                isSpecial: true
+                                isCustomAction: true
+                                implicitWidth: 55
+                                currentTheme: mainWindow.activeTheme
+                                onReleased: controller.layoutMode = "abc"
+                                Layout.fillHeight: true
+                            }
+                            KeyButton {
+                                label: "😊"
+                                isSpecial: true
+                                isCustomAction: true
+                                implicitWidth: 44
+                                currentTheme: mainWindow.activeTheme
+                                onReleased: controller.layoutMode = "emoji"
+                                Layout.fillHeight: true
+                            }
+                            KeyButton {
+                                label: ","
+                                implicitWidth: 44
+                                currentTheme: mainWindow.activeTheme
+                                vk: virtualKeyEngine
+                                Layout.fillHeight: true
+                            }
+                            KeyButton {
+                                label: "spazio"
+                                textToSend: " "
+                                currentTheme: mainWindow.activeTheme
+                                vk: virtualKeyEngine
+                                Layout.fillWidth: true
+                                Layout.fillHeight: true
+                            }
+                            KeyButton {
+                                label: "."
+                                implicitWidth: 44
+                                currentTheme: mainWindow.activeTheme
+                                vk: virtualKeyEngine
+                                Layout.fillHeight: true
+                            }
+                            KeyButton {
+                                label: "↵"
+                                textToSend: "\n"
+                                isSpecial: true
+                                isPrimaryAction: true
+                                implicitWidth: 65
+                                currentTheme: mainWindow.activeTheme
+                                vk: virtualKeyEngine
+                                Layout.fillHeight: true
+                            }
+                            KeyButton {
+                                label: "✖"
+                                isSpecial: true
+                                isCustomAction: true
+                                implicitWidth: 48
+                                currentTheme: mainWindow.activeTheme
+                                Layout.fillHeight: true
+                                onReleased: {
+                                    mainWindow.isMinimized = true
+                                    minimizedPill.syncMinimizedMask()
                                 }
                             }
                         }

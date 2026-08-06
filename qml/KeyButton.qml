@@ -18,6 +18,8 @@ Rectangle {
     property var controller
     property var gestureEngine
 
+    property int selectedAccentIndex: -1
+
     signal keyTriggered(string key)
     signal released()
 
@@ -65,7 +67,7 @@ Rectangle {
         visible: root.hintAccent !== "" && !root.isSpecial
     }
 
-    // Popup for Long-Press Accents (e.g. è, é, €)
+    // Popup for Long-Press Accents (e.g. è, é, €) with Slide & Tap selection
     Popup {
         id: accentPopup
         y: -height - 8
@@ -82,6 +84,7 @@ Rectangle {
         }
 
         contentItem: Row {
+            id: accentRow
             spacing: 4
             Repeater {
                 model: root.accents
@@ -89,7 +92,9 @@ Rectangle {
                     width: 36
                     height: 36
                     radius: 8
-                    color: accentMouse.pressed ? (currentTheme ? currentTheme.accentColor : "#0284c7") : (currentTheme ? currentTheme.keyBackgroundColor : "#1e293b")
+                    color: index === root.selectedAccentIndex || accentMouse.pressed ?
+                           (currentTheme ? currentTheme.accentColor : "#0284c7") :
+                           (currentTheme ? currentTheme.keyBackgroundColor : "#1e293b")
 
                     Text {
                         anchors.centerIn: parent
@@ -122,6 +127,7 @@ Rectangle {
         repeat: false
         onTriggered: {
             if (root.accents.length > 0) {
+                root.selectedAccentIndex = 0
                 accentPopup.open()
             } else if (root.isBackspace && controller) {
                 controller.startBackspaceTimer()
@@ -144,6 +150,15 @@ Rectangle {
             if (gestureEngine && pressed) {
                 gestureEngine.updateTouch(Qt.point(mouse.x, mouse.y))
             }
+
+            // Slide-to-select accent logic
+            if (accentPopup.opened && root.accents.length > 0) {
+                var popupPoint = mouseArea.mapToItem(accentPopup.contentItem, mouse.x, mouse.y)
+                var idx = Math.floor(popupPoint.x / 40)
+                if (idx >= 0 && idx < root.accents.length) {
+                    root.selectedAccentIndex = idx
+                }
+            }
         }
 
         onReleased: {
@@ -155,14 +170,25 @@ Rectangle {
 
             root.released()
 
-            if (root.isBackspace) {
+            if (accentPopup.opened) {
+                if (root.selectedAccentIndex >= 0 && root.selectedAccentIndex < root.accents.length) {
+                    var selChar = root.accents[root.selectedAccentIndex]
+                    if (root.vk) {
+                        root.vk.sendText(selChar)
+                    } else if (typeof virtualKeyEngine !== "undefined" && virtualKeyEngine) {
+                        virtualKeyEngine.sendText(selChar)
+                    }
+                }
+                accentPopup.close()
+                root.selectedAccentIndex = -1
+            } else if (root.isBackspace) {
                 if (controller) controller.stopBackspaceTimer()
                 if (root.vk) {
                     root.vk.sendBackspace()
                 } else if (typeof virtualKeyEngine !== "undefined" && virtualKeyEngine) {
                     virtualKeyEngine.sendBackspace()
                 }
-            } else if (!accentPopup.opened && !root.isCustomAction) {
+            } else if (!root.isCustomAction) {
                 var send = root.textToSend !== "" ? root.textToSend : root.label
                 if (send !== "") {
                     if (root.vk) {
