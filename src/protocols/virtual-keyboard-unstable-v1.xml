@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<protocol name="virtual_keyboard_unstable_v1">
+  <copyright>
+    Copyright © 2018 Purism SPC
+    Permission is hereby granted, free of charge, to any person obtaining a copy
+  </copyright>
+
+  <interface name="zwp_virtual_keyboard_v1" version="1">
+    <description summary="virtual keyboard">
+      The virtual keyboard interface allows an application to provide UI
+      input events as if they came from a physical keyboard.
+    </description>
+
+    <request name="keymap">
+      <description summary="keymap description">
+        Provide a keymap file descriptor to the compositor.
+      </description>
+      <arg name="format" type="uint" summary="keymap format"/>
+      <arg name="fd" type="fd" summary="keymap file descriptor"/>
+      <arg name="size" type="uint" summary="keymap size, in bytes"/>
+    </request>
+
+    <request name="key">
+      <description summary="key event">
+        Send a key press or release event.
+      </description>
+      <arg name="time" type="uint" summary="timestamp with millisecond granularity"/>
+      <arg name="key" type="uint" summary="key code"/>
+      <arg name="state" type="uint" summary="key state (0 = released, 1 = pressed)"/>
+    </request>
+
+    <request name="modifiers">
+      <description summary="modifier event">
+        Send modifier state changes.
+      </description>
+      <arg name="mods_depressed" type="uint" summary="depressed modifiers"/>
+      <arg name="mods_latched" type="uint" summary="latched modifiers"/>
+      <arg name="mods_locked" type="uint" summary="locked modifiers"/>
+      <arg name="group" type="uint" summary="keyboard layout group"/>
+    </request>
+
+    <request name="destroy" type="destructor">
+      <description summary="destroy the virtual keyboard object"/>
+    </request>
+  </interface>
+
+  <interface name="zwp_virtual_keyboard_manager_v1" version="1">
+    <description summary="virtual keyboard manager">
+      A global interface used for creating virtual keyboard objects.
+    </description>
+
+    <request name="create_virtual_keyboard">
+      <description summary="create a virtual keyboard object">
+        Create a new virtual keyboard for a seat.
+      </description>
+
+      <arg name="seat" type="object" interface="wl_seat"/>
+      <arg name="id" type="new_id" interface="zwp_virtual_keyboard_v1"/>
+    </request>
+  </interface>
+</protocol>

@@ -1,0 +1,11 @@
+[Desktop Entry]
+Name=Plasma Touch Keyboard
+Name[it]=Tastiera Touch Plasma
+Comment=Floating Touch Keyboard for KDE Plasma 6 Wayland
+Exec=/home/user/plasma-keyboard/build/plasma-keyboard
+Icon=input-keyboard
+Type=Application
+Terminal=false
+Categories=Qt;KDE;Utility;InputMethod;
+X-KDE-Wayland-VirtualKeyboard=true
+X-KDE-ParentApp=kwin
