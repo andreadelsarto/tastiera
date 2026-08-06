@@ -221,6 +221,27 @@ Rectangle {
                         }
                     }
 
+                    // Terminal Mode Pill (>_ Term)
+                    Rectangle {
+                        width: 64
+                        height: 26
+                        radius: 13
+                        color: controller && controller.isTerminalMode ? (currentTheme ? currentTheme.accentColor : "#00a2ed") : "transparent"
+
+                        Text {
+                            anchors.centerIn: parent
+                            text: ">_ Term"
+                            color: controller && controller.isTerminalMode ? "#ffffff" : "#d0d5dd"
+                            font.pixelSize: 11
+                            font.bold: true
+                        }
+
+                        MouseArea {
+                            anchors.fill: parent
+                            onClicked: if (controller) controller.isTerminalMode = !controller.isTerminalMode
+                        }
+                    }
+
                     // Theme Pill Switcher
                     Rectangle {
                         width: 68

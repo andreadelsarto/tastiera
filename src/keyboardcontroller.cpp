@@ -63,6 +63,14 @@ void KeyboardController::setKeyboardVisible(bool visible)
     }
 }
 
+void KeyboardController::setIsTerminalMode(bool termMode)
+{
+    if (m_isTerminalMode != termMode) {
+        m_isTerminalMode = termMode;
+        emit isTerminalModeChanged();
+    }
+}
+
 void KeyboardController::setSplit(bool split)
 {
     if (m_isSplit != split) {

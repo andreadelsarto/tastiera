@@ -228,16 +228,35 @@ void WaylandVirtualKeyboard::sendText(const QString &text)
         else if (c == '.') keycode = KEY_DOT;
         else if (c == ',') keycode = KEY_COMMA;
         else if (c == '-') keycode = KEY_MINUS;
+        else if (c == '_') { keycode = KEY_MINUS; shift = true; }
         else if (c == '=') keycode = KEY_EQUAL;
+        else if (c == '+') { keycode = KEY_EQUAL; shift = true; }
         else if (c == '/') keycode = KEY_SLASH;
-        else if (c == '*') keycode = KEY_KPASTERISK;
-        else if (c == '+') keycode = KEY_KPPLUS;
+        else if (c == '?') { keycode = KEY_SLASH; shift = true; }
+        else if (c == '*') { keycode = KEY_8; shift = true; }
+        else if (c == '!') { keycode = KEY_1; shift = true; }
+        else if (c == '@') { keycode = KEY_2; shift = true; }
+        else if (c == '#') { keycode = KEY_3; shift = true; }
         else if (c == '$') { keycode = KEY_4; shift = true; }
+        else if (c == '%') { keycode = KEY_5; shift = true; }
+        else if (c == '^') { keycode = KEY_6; shift = true; }
+        else if (c == '&') { keycode = KEY_7; shift = true; }
+        else if (c == '(') { keycode = KEY_9; shift = true; }
+        else if (c == ')') { keycode = KEY_0; shift = true; }
+        else if (c == '[') keycode = KEY_LEFTBRACE;
+        else if (c == ']') keycode = KEY_RIGHTBRACE;
+        else if (c == '{') { keycode = KEY_LEFTBRACE; shift = true; }
+        else if (c == '}') { keycode = KEY_RIGHTBRACE; shift = true; }
+        else if (c == ';') keycode = KEY_SEMICOLON;
+        else if (c == ':') { keycode = KEY_SEMICOLON; shift = true; }
+        else if (c == '\'') keycode = KEY_APOSTROPHE;
+        else if (c == '"') { keycode = KEY_APOSTROPHE; shift = true; }
+        else if (c == '<') { keycode = KEY_COMMA; shift = true; }
+        else if (c == '>') { keycode = KEY_DOT; shift = true; }
+        else if (c == '\\') keycode = KEY_BACKSLASH;
         else if (c == '|') { keycode = KEY_BACKSLASH; shift = true; }
         else if (c == '~') { keycode = KEY_GRAVE; shift = true; }
-        else if (c == '_') { keycode = KEY_MINUS; shift = true; }
-        else if (c == ':') { keycode = KEY_SEMICOLON; shift = true; }
-        else if (c == ';') keycode = KEY_SEMICOLON;
+        else if (c == '`') keycode = KEY_GRAVE;
 
         if (keycode != 0) {
             if (shift) sendUinputKey(KEY_LEFTSHIFT, true);

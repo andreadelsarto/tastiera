@@ -418,9 +418,9 @@ Window {
                         anchors.verticalCenter: parent.verticalCenter
                         spacing: 6
 
-                        // Terminal Quick Pills ($ | ~ / -)
+                        // Terminal Quick Pills ($ | ~ / -) - Visible ONLY when isTerminalMode is true
                         Repeater {
-                            model: ["$", "|", "~", "/", "-", "_", "sudo ", "grep ", "ls -la ", "cd ", "clear\n"]
+                            model: controller.isTerminalMode ? ["$", "|", "~", "/", "-", "_", "sudo ", "grep ", "ls -la ", "cd ", "clear\n"] : []
                             delegate: Rectangle {
                                 width: Math.max(28, termText.width + 16)
                                 height: 26
@@ -446,11 +446,12 @@ Window {
                             }
                         }
 
-                        // Separator
+                        // Separator (Only if terminal mode is active)
                         Rectangle {
                             width: 1
                             height: 20
                             color: "#555"
+                            visible: controller.isTerminalMode
                         }
 
                         // Dynamic Italian Dictionary Word Suggestion Pills
@@ -667,15 +668,21 @@ Window {
                             }
                         }
 
-                        // Row 4: ?123 😊 , spazio | . ↵ Close(✖)
+                        // Row 4: ?123/ABC 😊 , spazio | . ↵ Close(✖)
                         RowLayout {
                             spacing: 6
                             KeyButton {
-                                label: "?123"
+                                label: controller.layoutMode === "abc" ? "?123" : "ABC"
                                 isSpecial: true
                                 implicitWidth: 55
                                 currentTheme: mainWindow.activeTheme
-                                onReleased: controller.layoutMode = "symbols"
+                                onReleased: {
+                                    if (controller.layoutMode === "abc") {
+                                        controller.layoutMode = "symbols"
+                                    } else {
+                                        controller.layoutMode = "abc"
+                                    }
+                                }
                                 Layout.fillHeight: true
                             }
                             KeyButton {
