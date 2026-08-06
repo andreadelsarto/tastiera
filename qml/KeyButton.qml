@@ -28,7 +28,7 @@ Rectangle {
 
     // Dynamic background color based on key type & state
     color: isPrimaryAction ? (currentTheme ? currentTheme.accentColor : "#0284c7") :
-           (isSpecial ? (currentTheme ? currentTheme.specialKeyBackgroundColor : "#1e293b") :
+           (isSpecial ? (currentTheme && currentTheme.specialKeyBackgroundColor ? currentTheme.specialKeyBackgroundColor : (currentTheme ? currentTheme.keyBackgroundColor : "#1e293b")) :
            (mouseArea.pressed ? (currentTheme ? currentTheme.keyActiveColor : "#334155") :
            (currentTheme ? currentTheme.keyBackgroundColor : "#1e293b")))
 

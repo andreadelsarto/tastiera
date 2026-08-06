@@ -70,6 +70,7 @@ private:
     bool m_keyboardVisible = true;
     QTimer m_backspaceHoldTimer;
     QTimer m_backspaceRepeatTimer;
+    int m_backspaceRepeatInterval = 100;
 };
 
 #endif // KEYBOARDCONTROLLER_H

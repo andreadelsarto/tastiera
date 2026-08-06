@@ -10,20 +10,19 @@ KeyboardController::KeyboardController(QObject *parent)
       m_activeTheme("TeenageOP1")
 {
     m_backspaceHoldTimer.setSingleShot(true);
-    m_backspaceHoldTimer.setInterval(1800); // 1.8 seconds hold requirement
+    m_backspaceHoldTimer.setInterval(300); // 300ms initial hold delay
 
     connect(&m_backspaceHoldTimer, &QTimer::timeout, this, [this]() {
-        m_backspaceDeletingWord = true;
-        emit backspaceDeletingWordChanged();
-        emit triggerWordBackspace();
-
-        // Start repeat timer for continuous word deletion while held
-        m_backspaceRepeatTimer.start(300);
+        emit triggerBackspace();
+        m_backspaceRepeatInterval = 100;
+        m_backspaceRepeatTimer.start(m_backspaceRepeatInterval);
     });
 
     connect(&m_backspaceRepeatTimer, &QTimer::timeout, this, [this]() {
-        if (m_backspaceDeletingWord) {
-            emit triggerWordBackspace();
+        emit triggerBackspace();
+        if (m_backspaceRepeatInterval > 20) {
+            m_backspaceRepeatInterval = std::max(20, m_backspaceRepeatInterval - 10);
+            m_backspaceRepeatTimer.setInterval(m_backspaceRepeatInterval);
         }
     });
 
