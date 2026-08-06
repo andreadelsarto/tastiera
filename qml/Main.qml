@@ -16,6 +16,7 @@ Window {
 
     property string currentInputBuffer: ""
     property bool showThemeSelector: false
+    property bool isMinimized: false
 
     KeyboardController {
         id: controller
@@ -34,19 +35,18 @@ Window {
     }
 
     // Dynamic Theme Loader
-    property var activeTheme: teenageTheme
+    property var activeTheme
     Loader {
         id: themeLoader
         source: "themes/" + controller.activeTheme + ".qml"
         onLoaded: mainWindow.activeTheme = themeLoader.item
     }
 
-    Component.onCompleted: {
-        themeLoader.source = "themes/TeenageOP1.qml"
-    }
-
     Connections {
         target: controller
+        function onActiveThemeChanged() {
+            themeLoader.source = "themes/" + controller.activeTheme + ".qml"
+        }
         function onTriggerBackspace() {
             virtualKeyEngine.sendBackspace()
             if (mainWindow.currentInputBuffer.length > 0) {
@@ -61,9 +61,71 @@ Window {
         }
     }
 
+    // Minimized Floating Pill Handle (Appears when user taps Close ✖)
+    Rectangle {
+        id: minimizedPill
+        width: 140
+        height: 38
+        radius: 19
+        x: parent.width - width - 20
+        y: parent.height - height - 40
+        visible: mainWindow.isMinimized
+        color: mainWindow.activeTheme ? mainWindow.activeTheme.accentColor : "#00a2ed"
+        border.color: "#ffffff"
+        border.width: 1
+
+        function syncMinimizedMask() {
+            if (mainWindow.isMinimized) {
+                controller.updateInputMask(mainWindow, minimizedPill.x, minimizedPill.y, minimizedPill.width, minimizedPill.height)
+            }
+        }
+
+        onXChanged: minimizedPill.syncMinimizedMask()
+        onYChanged: minimizedPill.syncMinimizedMask()
+        onVisibleChanged: if (mainWindow.isMinimized) minimizedPill.syncMinimizedMask()
+
+        Row {
+            anchors.centerIn: parent
+            spacing: 6
+            Text {
+                text: "⌨️  Tastiera"
+                color: "#ffffff"
+                font.family: mainWindow.activeTheme ? mainWindow.activeTheme.fontFamily : "sans-serif"
+                font.pixelSize: 13
+                font.bold: true
+            }
+        }
+
+        MouseArea {
+            id: minPillMouse
+            anchors.fill: parent
+            cursorShape: Qt.PointingHandCursor
+            property point startPos: "0,0"
+
+            onPressed: (mouse) => {
+                startPos = Qt.point(mouse.x, mouse.y)
+            }
+
+            onPositionChanged: (mouse) => {
+                if (pressed) {
+                    var deltaX = mouse.x - startPos.x
+                    var deltaY = mouse.y - startPos.y
+                    minimizedPill.x += deltaX
+                    minimizedPill.y += deltaY
+                }
+            }
+
+            onClicked: {
+                mainWindow.isMinimized = false
+                cardBox.syncMask()
+            }
+        }
+    }
+
     // Floating Card Container (Matches Screenshots Floating Design)
     Rectangle {
         id: cardBox
+        visible: !mainWindow.isMinimized
         width: controller.sizeMode === "full" ? (parent.width - 24) :
                (controller.sizeMode === "onehand" ? 480 : 896)
         height: 356
@@ -72,13 +134,16 @@ Window {
         y: parent.height - height - 40
 
         function syncMask() {
-            controller.updateInputMask(mainWindow, cardBox.x, cardBox.y, cardBox.width, cardBox.height)
+            if (!mainWindow.isMinimized) {
+                controller.updateInputMask(mainWindow, cardBox.x, cardBox.y, cardBox.width, cardBox.height)
+            }
         }
 
         onXChanged: cardBox.syncMask()
         onYChanged: cardBox.syncMask()
         onWidthChanged: cardBox.syncMask()
         onHeightChanged: cardBox.syncMask()
+        onVisibleChanged: if (!mainWindow.isMinimized) cardBox.syncMask()
         Component.onCompleted: cardBox.syncMask()
 
         color: mainWindow.activeTheme ? mainWindow.activeTheme.backgroundColor : "#e3dfd8"
@@ -564,7 +629,10 @@ Window {
                                 implicitWidth: 48
                                 currentTheme: mainWindow.activeTheme
                                 Layout.fillHeight: true
-                                onReleased: mainWindow.visible = false
+                                onReleased: {
+                                    mainWindow.isMinimized = true
+                                    minimizedPill.syncMinimizedMask()
+                                }
                             }
                         }
                     }
