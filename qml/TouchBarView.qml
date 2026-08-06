@@ -17,64 +17,40 @@ Rectangle {
         anchors.fill: parent
         spacing: 8
 
-        // Left section: Title & Protocol Badge (Draggable handle)
-        Row {
-            spacing: 6
+        // Left section: Title Handle (Draggable)
+        Rectangle {
+            width: titleText.width + 12
+            height: 28
+            color: "transparent"
             Layout.alignment: Qt.AlignVCenter
 
-            Rectangle {
-                width: titleText.width + 16
-                height: 28
-                color: "transparent"
-
-                Text {
-                    id: titleText
-                    text: ":::  KDE Touch Key"
-                    color: currentTheme ? currentTheme.textColor : "#1e1e1e"
-                    font.family: currentTheme ? currentTheme.fontFamily : "sans-serif"
-                    font.pixelSize: 14
-                    font.bold: true
-                    anchors.centerIn: parent
-                }
-
-                MouseArea {
-                    id: dragMouseArea
-                    anchors.fill: parent
-                    cursorShape: Qt.SizeAllCursor
-                    property point startPos: "0,0"
-
-                    onPressed: (mouse) => {
-                        startPos = Qt.point(mouse.x, mouse.y)
-                    }
-
-                    onPositionChanged: (mouse) => {
-                        if (pressed && cardBox) {
-                            var deltaX = mouse.x - startPos.x
-                            var deltaY = mouse.y - startPos.y
-                            cardBox.x += deltaX
-                            cardBox.y += deltaY
-                        }
-                    }
-                }
+            Text {
+                id: titleText
+                text: ":::  KDE Touch Key"
+                color: currentTheme ? currentTheme.textColor : "#1e1e1e"
+                font.family: currentTheme ? currentTheme.fontFamily : "sans-serif"
+                font.pixelSize: 14
+                font.bold: true
+                anchors.centerIn: parent
             }
 
-            Rectangle {
-                width: badgeText.width + 16
-                height: 26
-                radius: 13
-                color: "transparent"
-                border.color: currentTheme ? currentTheme.accentColor : "#00a2ed"
-                border.width: 1
-                Layout.alignment: Qt.AlignVCenter
+            MouseArea {
+                id: dragMouseArea
+                anchors.fill: parent
+                cursorShape: Qt.SizeAllCursor
+                property point startPos: "0,0"
 
-                Text {
-                    id: badgeText
-                    anchors.centerIn: parent
-                    text: "Wayland Layer-Shell"
-                    color: currentTheme ? currentTheme.accentColor : "#00a2ed"
-                    font.family: currentTheme ? currentTheme.fontFamily : "sans-serif"
-                    font.pixelSize: 11
-                    font.bold: true
+                onPressed: (mouse) => {
+                    startPos = Qt.point(mouse.x, mouse.y)
+                }
+
+                onPositionChanged: (mouse) => {
+                    if (pressed && cardBox) {
+                        var deltaX = mouse.x - startPos.x
+                        var deltaY = mouse.y - startPos.y
+                        cardBox.x += deltaX
+                        cardBox.y += deltaY
+                    }
                 }
             }
         }
@@ -89,8 +65,8 @@ Rectangle {
 
             Flickable {
                 anchors.fill: parent
-                anchors.leftMargin: 4
-                anchors.rightMargin: 4
+                anchors.leftMargin: 6
+                anchors.rightMargin: 6
                 contentWidth: pillRow.width
                 clip: true
 

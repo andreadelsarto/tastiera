@@ -14,6 +14,8 @@ Window {
     width: Screen.width
     height: Screen.height
 
+    property string currentInputBuffer: ""
+
     KeyboardController {
         id: controller
     }
@@ -46,9 +48,15 @@ Window {
         target: controller
         function onTriggerBackspace() {
             virtualKeyEngine.sendBackspace()
+            if (mainWindow.currentInputBuffer.length > 0) {
+                mainWindow.currentInputBuffer = mainWindow.currentInputBuffer.substring(0, mainWindow.currentInputBuffer.length - 1)
+                gestureEngine.updateCurrentPrefix(mainWindow.currentInputBuffer)
+            }
         }
         function onTriggerWordBackspace() {
             virtualKeyEngine.sendCtrlBackspace()
+            mainWindow.currentInputBuffer = ""
+            gestureEngine.updateCurrentPrefix("")
         }
     }
 
@@ -97,7 +105,7 @@ Window {
                 cardBox: cardBox
             }
 
-            // Word Suggestion / Terminal Quick Bar
+            // Dynamic Word Suggestions / Terminal Quick Bar
             Rectangle {
                 Layout.fillWidth: true
                 height: 36
@@ -152,35 +160,35 @@ Window {
                             color: "#555"
                         }
 
-                        // Word Suggestion Pills
-                        Rectangle {
-                            width: Math.max(80, word1Text.width + 20)
-                            height: 26
-                            radius: 13
-                            color: mainWindow.activeTheme ? mainWindow.activeTheme.accentColor : "#00a2ed"
+                        // Dynamic Italian Dictionary Word Suggestion Pills
+                        Repeater {
+                            model: gestureEngine.currentSuggestions
+                            delegate: Rectangle {
+                                width: Math.max(60, suggText.width + 20)
+                                height: 26
+                                radius: 13
+                                color: index === 0 ? (mainWindow.activeTheme ? mainWindow.activeTheme.accentColor : "#00a2ed") : "#2d333e"
 
-                            Text {
-                                id: word1Text
-                                anchors.centerIn: parent
-                                text: "tastiera"
-                                color: "#ffffff"
-                                font.family: mainWindow.activeTheme ? mainWindow.activeTheme.fontFamily : "sans-serif"
-                                font.pixelSize: 12
-                                font.bold: true
-                            }
+                                Text {
+                                    id: suggText
+                                    anchors.centerIn: parent
+                                    text: modelData
+                                    color: "#ffffff"
+                                    font.family: mainWindow.activeTheme ? mainWindow.activeTheme.fontFamily : "sans-serif"
+                                    font.pixelSize: 12
+                                    font.bold: index === 0
+                                }
 
-                            MouseArea {
-                                anchors.fill: parent
-                                onClicked: virtualKeyEngine.sendText("tastiera ")
+                                MouseArea {
+                                    anchors.fill: parent
+                                    onClicked: {
+                                        virtualKeyEngine.sendText(modelData + " ")
+                                        mainWindow.currentInputBuffer = ""
+                                        gestureEngine.updateCurrentPrefix("")
+                                    }
+                                }
                             }
                         }
-                    }
-                }
-
-                Connections {
-                    target: gestureEngine
-                    function onWordPredicted(word) {
-                        word1Text.text = word
                     }
                 }
             }
@@ -224,6 +232,10 @@ Window {
                                     gestureEngine: gestureEngine
                                     Layout.fillWidth: true
                                     Layout.fillHeight: true
+                                    onKeyTriggered: (key) => {
+                                        mainWindow.currentInputBuffer += key
+                                        gestureEngine.updateCurrentPrefix(mainWindow.currentInputBuffer)
+                                    }
                                 }
                             }
                             // Split Gap
@@ -246,6 +258,10 @@ Window {
                                     gestureEngine: gestureEngine
                                     Layout.fillWidth: true
                                     Layout.fillHeight: true
+                                    onKeyTriggered: (key) => {
+                                        mainWindow.currentInputBuffer += key
+                                        gestureEngine.updateCurrentPrefix(mainWindow.currentInputBuffer)
+                                    }
                                 }
                             }
                         }
@@ -268,6 +284,10 @@ Window {
                                     gestureEngine: gestureEngine
                                     Layout.fillWidth: true
                                     Layout.fillHeight: true
+                                    onKeyTriggered: (key) => {
+                                        mainWindow.currentInputBuffer += key
+                                        gestureEngine.updateCurrentPrefix(mainWindow.currentInputBuffer)
+                                    }
                                 }
                             }
                             // Split Gap
@@ -289,6 +309,10 @@ Window {
                                     gestureEngine: gestureEngine
                                     Layout.fillWidth: true
                                     Layout.fillHeight: true
+                                    onKeyTriggered: (key) => {
+                                        mainWindow.currentInputBuffer += key
+                                        gestureEngine.updateCurrentPrefix(mainWindow.currentInputBuffer)
+                                    }
                                 }
                             }
                         }
@@ -312,6 +336,10 @@ Window {
                                     gestureEngine: gestureEngine
                                     Layout.fillWidth: true
                                     Layout.fillHeight: true
+                                    onKeyTriggered: (key) => {
+                                        mainWindow.currentInputBuffer += key
+                                        gestureEngine.updateCurrentPrefix(mainWindow.currentInputBuffer)
+                                    }
                                 }
                             }
                             // Split Gap
@@ -328,6 +356,10 @@ Window {
                                     gestureEngine: gestureEngine
                                     Layout.fillWidth: true
                                     Layout.fillHeight: true
+                                    onKeyTriggered: (key) => {
+                                        mainWindow.currentInputBuffer += key
+                                        gestureEngine.updateCurrentPrefix(mainWindow.currentInputBuffer)
+                                    }
                                 }
                             }
                             KeyButton {
@@ -375,6 +407,10 @@ Window {
                                 vk: virtualKeyEngine
                                 Layout.fillWidth: true
                                 Layout.fillHeight: true
+                                onKeyTriggered: {
+                                    mainWindow.currentInputBuffer = ""
+                                    gestureEngine.updateCurrentPrefix("")
+                                }
                             }
                             // Split Gap
                             Item {
@@ -387,6 +423,10 @@ Window {
                                 currentTheme: mainWindow.activeTheme
                                 vk: virtualKeyEngine
                                 Layout.fillHeight: true
+                                onKeyTriggered: {
+                                    mainWindow.currentInputBuffer = ""
+                                    gestureEngine.updateCurrentPrefix("")
+                                }
                             }
                             KeyButton {
                                 label: "↵"
@@ -397,6 +437,10 @@ Window {
                                 currentTheme: mainWindow.activeTheme
                                 vk: virtualKeyEngine
                                 Layout.fillHeight: true
+                                onKeyTriggered: {
+                                    mainWindow.currentInputBuffer = ""
+                                    gestureEngine.updateCurrentPrefix("")
+                                }
                             }
                         }
                     }
