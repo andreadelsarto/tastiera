@@ -35,12 +35,12 @@ int main(int argc, char *argv[])
 
         auto *window = qobject_cast<QQuickWindow *>(obj);
         if (window) {
-            window->setFlags(window->flags() | Qt::WindowDoesNotAcceptFocus);
 #ifdef HAVE_LAYERSHELLQT
             auto lWindow = LayerShellQt::Window::get(window);
             if (lWindow) {
                 lWindow->setLayer(LayerShellQt::Window::LayerOverlay);
                 lWindow->setKeyboardInteractivity(LayerShellQt::Window::KeyboardInteractivityNone);
+                lWindow->setAnchors(LayerShellQt::Window::AnchorBottom);
                 lWindow->setExclusiveZone(0);
             }
 #endif
