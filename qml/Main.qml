@@ -97,97 +97,82 @@ Window {
                 cardBox: cardBox
             }
 
-            // Word Suggestion Bar (Dark Container Matching Screenshot)
+            // Word Suggestion / Terminal Quick Bar
             Rectangle {
                 Layout.fillWidth: true
                 height: 36
                 radius: 18
                 color: mainWindow.activeTheme && mainWindow.activeTheme.headerPillBg ? mainWindow.activeTheme.headerPillBg : "#434a56"
-                visible: controller.layoutMode === "abc" || controller.layoutMode === "accenti"
+                visible: controller.layoutMode === "abc" || controller.layoutMode === "accenti" || controller.layoutMode === "numpad" || controller.layoutMode === "symbols"
 
-                RowLayout {
-                    anchors.centerIn: parent
-                    spacing: 8
+                Flickable {
+                    anchors.fill: parent
+                    anchors.leftMargin: 8
+                    anchors.rightMargin: 8
+                    contentWidth: suggRow.width
+                    clip: true
 
-                    // Mic button
-                    Rectangle {
-                        width: 28
-                        height: 28
-                        radius: 14
-                        color: "transparent"
+                    RowLayout {
+                        id: suggRow
+                        anchors.verticalCenter: parent.verticalCenter
+                        spacing: 6
 
-                        Text {
-                            anchors.centerIn: parent
-                            text: "🎙"
+                        // Terminal Quick Pills ($ | ~ / -)
+                        Repeater {
+                            model: ["$", "|", "~", "/", "-", "_", "sudo ", "grep ", "ls -la ", "cd ", "clear\n"]
+                            delegate: Rectangle {
+                                width: Math.max(28, termText.width + 16)
+                                height: 26
+                                radius: 13
+                                color: "#2d333e"
+                                border.color: mainWindow.activeTheme ? mainWindow.activeTheme.accentColor : "#00a2ed"
+                                border.width: 1
+
+                                Text {
+                                    id: termText
+                                    anchors.centerIn: parent
+                                    text: modelData.trim()
+                                    color: "#38bdf8"
+                                    font.family: "monospace"
+                                    font.pixelSize: 12
+                                    font.bold: true
+                                }
+
+                                MouseArea {
+                                    anchors.fill: parent
+                                    onClicked: virtualKeyEngine.sendText(modelData)
+                                }
+                            }
+                        }
+
+                        // Separator
+                        Rectangle {
+                            width: 1
+                            height: 20
+                            color: "#555"
+                        }
+
+                        // Word Suggestion Pills
+                        Rectangle {
+                            width: Math.max(80, word1Text.width + 20)
+                            height: 26
+                            radius: 13
                             color: mainWindow.activeTheme ? mainWindow.activeTheme.accentColor : "#00a2ed"
-                            font.pixelSize: 14
-                        }
-                    }
 
-                    // Primary Word Suggestion Pill (Cyan Highlight)
-                    Rectangle {
-                        width: Math.max(90, word1Text.width + 24)
-                        height: 28
-                        radius: 14
-                        color: mainWindow.activeTheme ? mainWindow.activeTheme.accentColor : "#00a2ed"
+                            Text {
+                                id: word1Text
+                                anchors.centerIn: parent
+                                text: "tastiera"
+                                color: "#ffffff"
+                                font.family: mainWindow.activeTheme ? mainWindow.activeTheme.fontFamily : "sans-serif"
+                                font.pixelSize: 12
+                                font.bold: true
+                            }
 
-                        Text {
-                            id: word1Text
-                            anchors.centerIn: parent
-                            text: "tastiera"
-                            color: "#ffffff"
-                            font.family: mainWindow.activeTheme ? mainWindow.activeTheme.fontFamily : "sans-serif"
-                            font.pixelSize: 13
-                            font.bold: true
-                        }
-
-                        MouseArea {
-                            anchors.fill: parent
-                            onClicked: virtualKeyEngine.sendText("tastiera ")
-                        }
-                    }
-
-                    // Secondary Suggestion Pill 2
-                    Rectangle {
-                        width: Math.max(70, word2Text.width + 20)
-                        height: 28
-                        radius: 14
-                        color: "#2d333e"
-
-                        Text {
-                            id: word2Text
-                            anchors.centerIn: parent
-                            text: "plasma"
-                            color: "#ffffff"
-                            font.family: mainWindow.activeTheme ? mainWindow.activeTheme.fontFamily : "sans-serif"
-                            font.pixelSize: 13
-                        }
-
-                        MouseArea {
-                            anchors.fill: parent
-                            onClicked: virtualKeyEngine.sendText("plasma ")
-                        }
-                    }
-
-                    // Secondary Suggestion Pill 3
-                    Rectangle {
-                        width: Math.max(65, word3Text.width + 20)
-                        height: 28
-                        radius: 14
-                        color: "#2d333e"
-
-                        Text {
-                            id: word3Text
-                            anchors.centerIn: parent
-                            text: "linux"
-                            color: "#ffffff"
-                            font.family: mainWindow.activeTheme ? mainWindow.activeTheme.fontFamily : "sans-serif"
-                            font.pixelSize: 13
-                        }
-
-                        MouseArea {
-                            anchors.fill: parent
-                            onClicked: virtualKeyEngine.sendText("linux ")
+                            MouseArea {
+                                anchors.fill: parent
+                                onClicked: virtualKeyEngine.sendText("tastiera ")
+                            }
                         }
                     }
                 }

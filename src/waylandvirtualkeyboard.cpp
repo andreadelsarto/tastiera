@@ -223,21 +223,21 @@ void WaylandVirtualKeyboard::sendText(const QString &text)
                 KEY_0, KEY_1, KEY_2, KEY_3, KEY_4, KEY_5, KEY_6, KEY_7, KEY_8, KEY_9
             };
             keycode = numCodes[c - '0'];
-        } else if (c == ' ') {
-            keycode = KEY_SPACE;
-        } else if (c == '\n') {
-            keycode = KEY_ENTER;
-        } else if (c == '.') {
-            keycode = KEY_DOT;
-        } else if (c == ',') {
-            keycode = KEY_COMMA;
-        } else if (c == '-') {
-            keycode = KEY_MINUS;
-        } else if (c == '=') {
-            keycode = KEY_EQUAL;
-        } else if (c == '/') {
-            keycode = KEY_SLASH;
-        }
+        } else if (c == ' ') keycode = KEY_SPACE;
+        else if (c == '\n') keycode = KEY_ENTER;
+        else if (c == '.') keycode = KEY_DOT;
+        else if (c == ',') keycode = KEY_COMMA;
+        else if (c == '-') keycode = KEY_MINUS;
+        else if (c == '=') keycode = KEY_EQUAL;
+        else if (c == '/') keycode = KEY_SLASH;
+        else if (c == '*') keycode = KEY_KPASTERISK;
+        else if (c == '+') keycode = KEY_KPPLUS;
+        else if (c == '$') { keycode = KEY_4; shift = true; }
+        else if (c == '|') { keycode = KEY_BACKSLASH; shift = true; }
+        else if (c == '~') { keycode = KEY_GRAVE; shift = true; }
+        else if (c == '_') { keycode = KEY_MINUS; shift = true; }
+        else if (c == ':') { keycode = KEY_SEMICOLON; shift = true; }
+        else if (c == ';') keycode = KEY_SEMICOLON;
 
         if (keycode != 0) {
             if (shift) sendUinputKey(KEY_LEFTSHIFT, true);

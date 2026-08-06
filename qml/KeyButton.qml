@@ -12,6 +12,7 @@ Rectangle {
     property bool isSpecial: false
     property bool isPrimaryAction: false
     property bool isBackspace: false
+    property bool isCustomAction: false
     property var currentTheme
     property var vk
     property var controller
@@ -152,9 +153,11 @@ Rectangle {
                 gestureEngine.endTouch()
             }
 
+            root.released()
+
             if (root.isBackspace && controller) {
                 controller.stopBackspaceTimer()
-            } else if (!accentPopup.opened) {
+            } else if (!accentPopup.opened && !root.isCustomAction) {
                 var send = root.textToSend !== "" ? root.textToSend : root.label
                 if (send !== "") {
                     if (root.vk) {

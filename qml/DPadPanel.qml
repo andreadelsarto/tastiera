@@ -46,6 +46,7 @@ Rectangle {
             KeyButton {
                 label: "Home"
                 isSpecial: true
+                isCustomAction: true
                 currentTheme: dpad.currentTheme
                 vk: dpad.vk
                 Layout.fillWidth: true
@@ -55,6 +56,7 @@ Rectangle {
             KeyButton {
                 label: "▲"
                 isSpecial: true
+                isCustomAction: true
                 currentTheme: dpad.currentTheme
                 vk: dpad.vk
                 Layout.fillWidth: true
@@ -64,6 +66,7 @@ Rectangle {
             KeyButton {
                 label: "End"
                 isSpecial: true
+                isCustomAction: true
                 currentTheme: dpad.currentTheme
                 vk: dpad.vk
                 Layout.fillWidth: true
@@ -75,6 +78,7 @@ Rectangle {
             KeyButton {
                 label: "◄"
                 isSpecial: true
+                isCustomAction: true
                 currentTheme: dpad.currentTheme
                 vk: dpad.vk
                 Layout.fillWidth: true
@@ -84,6 +88,7 @@ Rectangle {
             KeyButton {
                 label: "▼"
                 isSpecial: true
+                isCustomAction: true
                 currentTheme: dpad.currentTheme
                 vk: dpad.vk
                 Layout.fillWidth: true
@@ -93,6 +98,7 @@ Rectangle {
             KeyButton {
                 label: "►"
                 isSpecial: true
+                isCustomAction: true
                 currentTheme: dpad.currentTheme
                 vk: dpad.vk
                 Layout.fillWidth: true
@@ -104,6 +110,7 @@ Rectangle {
             KeyButton {
                 label: "Tutto"
                 isSpecial: true
+                isCustomAction: true
                 currentTheme: dpad.currentTheme
                 vk: dpad.vk
                 Layout.fillWidth: true
@@ -113,6 +120,7 @@ Rectangle {
             KeyButton {
                 label: "Canc"
                 isSpecial: true
+                isCustomAction: true
                 currentTheme: dpad.currentTheme
                 vk: dpad.vk
                 Layout.fillWidth: true
