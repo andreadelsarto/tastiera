@@ -3,9 +3,10 @@ import QtQuick.Layouts 1.15
 
 Rectangle {
     id: dpad
-    width: 220
+    width: 210
     height: parent.height
-    color: "transparent"
+    radius: 16
+    color: currentTheme && currentTheme.dpadBg ? currentTheme.dpadBg : "#252a34"
 
     property var currentTheme
     property var vk
@@ -22,14 +23,14 @@ Rectangle {
 
     ColumnLayout {
         anchors.fill: parent
-        anchors.margins: 6
+        anchors.margins: 10
         spacing: 6
 
         Text {
-            text: "NAV D-PAD"
-            color: currentTheme ? currentTheme.accentColor : "#3daee9"
+            text: "▷ D-Pad (Modalità Estesa)"
+            color: currentTheme && currentTheme.dpadHeaderColor ? currentTheme.dpadHeaderColor : "#00a2ed"
             font.family: currentTheme ? currentTheme.fontFamily : "sans-serif"
-            font.pixelSize: 12
+            font.pixelSize: 11
             font.bold: true
             Layout.alignment: Qt.AlignHCenter
         }
@@ -38,14 +39,15 @@ Rectangle {
             columns: 3
             Layout.fillWidth: true
             Layout.fillHeight: true
-            rowSpacing: 4
-            columnSpacing: 4
+            rowSpacing: 6
+            columnSpacing: 6
 
             // Row 1: Home, Up, End
             KeyButton {
                 label: "Home"
                 isSpecial: true
                 currentTheme: dpad.currentTheme
+                vk: dpad.vk
                 Layout.fillWidth: true
                 Layout.fillHeight: true
                 onReleased: if (vk) vk.sendKey(keyHome)
@@ -54,6 +56,7 @@ Rectangle {
                 label: "▲"
                 isSpecial: true
                 currentTheme: dpad.currentTheme
+                vk: dpad.vk
                 Layout.fillWidth: true
                 Layout.fillHeight: true
                 onReleased: if (vk) vk.sendKey(keyUp)
@@ -62,6 +65,7 @@ Rectangle {
                 label: "End"
                 isSpecial: true
                 currentTheme: dpad.currentTheme
+                vk: dpad.vk
                 Layout.fillWidth: true
                 Layout.fillHeight: true
                 onReleased: if (vk) vk.sendKey(keyEnd)
@@ -72,6 +76,7 @@ Rectangle {
                 label: "◄"
                 isSpecial: true
                 currentTheme: dpad.currentTheme
+                vk: dpad.vk
                 Layout.fillWidth: true
                 Layout.fillHeight: true
                 onReleased: if (vk) vk.sendKey(keyLeft)
@@ -80,6 +85,7 @@ Rectangle {
                 label: "▼"
                 isSpecial: true
                 currentTheme: dpad.currentTheme
+                vk: dpad.vk
                 Layout.fillWidth: true
                 Layout.fillHeight: true
                 onReleased: if (vk) vk.sendKey(keyDown)
@@ -88,28 +94,31 @@ Rectangle {
                 label: "►"
                 isSpecial: true
                 currentTheme: dpad.currentTheme
+                vk: dpad.vk
                 Layout.fillWidth: true
                 Layout.fillHeight: true
                 onReleased: if (vk) vk.sendKey(keyRight)
             }
 
-            // Row 3: Canc, Select All (Span 2)
+            // Row 3: Tutto, Canc
+            KeyButton {
+                label: "Tutto"
+                isSpecial: true
+                currentTheme: dpad.currentTheme
+                vk: dpad.vk
+                Layout.fillWidth: true
+                Layout.fillHeight: true
+                onReleased: if (vk) vk.sendCombo(4 /* Ctrl */, keyA)
+            }
             KeyButton {
                 label: "Canc"
                 isSpecial: true
                 currentTheme: dpad.currentTheme
-                Layout.fillWidth: true
-                Layout.fillHeight: true
-                onReleased: if (vk) vk.sendKey(keyDelete)
-            }
-            KeyButton {
-                label: "Sel. Tutto"
-                isSpecial: true
-                currentTheme: dpad.currentTheme
+                vk: dpad.vk
                 Layout.fillWidth: true
                 Layout.fillHeight: true
                 Layout.columnSpan: 2
-                onReleased: if (vk) vk.sendCombo(4 /* Ctrl */, keyA)
+                onReleased: if (vk) vk.sendKey(keyDelete)
             }
         }
     }

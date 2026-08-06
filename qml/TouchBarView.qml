@@ -26,12 +26,11 @@ Rectangle {
                 width: titleText.width + 16
                 height: 28
                 color: "transparent"
-                radius: 14
 
                 Text {
                     id: titleText
-                    text: "⠿  KDE Touch Key"
-                    color: currentTheme ? currentTheme.textColor : "#fff"
+                    text: ":::  KDE Touch Key"
+                    color: currentTheme ? currentTheme.textColor : "#1e1e1e"
                     font.family: currentTheme ? currentTheme.fontFamily : "sans-serif"
                     font.pixelSize: 14
                     font.bold: true
@@ -44,11 +43,11 @@ Rectangle {
                     cursorShape: Qt.SizeAllCursor
                     property point startPos: "0,0"
 
-                    onPressed: {
+                    onPressed: (mouse) => {
                         startPos = Qt.point(mouse.x, mouse.y)
                     }
 
-                    onPositionChanged: {
+                    onPositionChanged: (mouse) => {
                         if (pressed && cardBox) {
                             var deltaX = mouse.x - startPos.x
                             var deltaY = mouse.y - startPos.y
@@ -60,11 +59,11 @@ Rectangle {
             }
 
             Rectangle {
-                width: badgeText.width + 12
-                height: 24
-                radius: 12
-                color: currentTheme ? currentTheme.keyBackgroundColor : "#162032"
-                border.color: currentTheme ? currentTheme.accentColor : "#0284c7"
+                width: badgeText.width + 16
+                height: 26
+                radius: 13
+                color: "transparent"
+                border.color: currentTheme ? currentTheme.accentColor : "#00a2ed"
                 border.width: 1
                 Layout.alignment: Qt.AlignVCenter
 
@@ -72,7 +71,7 @@ Rectangle {
                     id: badgeText
                     anchors.centerIn: parent
                     text: "Wayland Layer-Shell"
-                    color: currentTheme ? currentTheme.accentTextColor : "#38bdf8"
+                    color: currentTheme ? currentTheme.accentColor : "#00a2ed"
                     font.family: currentTheme ? currentTheme.fontFamily : "sans-serif"
                     font.pixelSize: 11
                     font.bold: true
@@ -80,195 +79,195 @@ Rectangle {
             }
         }
 
-        // Center section: Mode Pills
-        Flickable {
+        // Center section: Mode Pills in Dark Container
+        Rectangle {
             Layout.fillWidth: true
-            height: 36
-            contentWidth: pillRow.width
-            clip: true
+            height: 34
+            radius: 17
+            color: currentTheme && currentTheme.headerPillBg ? currentTheme.headerPillBg : "#434a56"
             Layout.alignment: Qt.AlignVCenter
 
-            Row {
-                id: pillRow
-                spacing: 6
-                anchors.verticalCenter: parent.verticalCenter
+            Flickable {
+                anchors.fill: parent
+                anchors.leftMargin: 4
+                anchors.rightMargin: 4
+                contentWidth: pillRow.width
+                clip: true
 
-                // ABC Pill
-                Rectangle {
-                    width: 50
-                    height: 28
-                    radius: 14
-                    color: controller && controller.layoutMode === "abc" ? (currentTheme ? currentTheme.accentColor : "#0284c7") : (currentTheme ? currentTheme.keyBackgroundColor : "#162032")
-                    border.color: currentTheme ? currentTheme.keyBorderColor : "#334155"
+                Row {
+                    id: pillRow
+                    spacing: 4
+                    anchors.verticalCenter: parent.verticalCenter
 
-                    Text {
-                        anchors.centerIn: parent
-                        text: "ABC"
-                        color: controller && controller.layoutMode === "abc" ? "#ffffff" : (currentTheme ? currentTheme.textColor : "#fff")
-                        font.pixelSize: 12
-                        font.bold: true
+                    // ABC Pill
+                    Rectangle {
+                        width: 48
+                        height: 26
+                        radius: 13
+                        color: controller && controller.layoutMode === "abc" ? (currentTheme ? currentTheme.accentColor : "#00a2ed") : "transparent"
+
+                        Text {
+                            anchors.centerIn: parent
+                            text: "ABC"
+                            color: controller && controller.layoutMode === "abc" ? "#ffffff" : "#d0d5dd"
+                            font.pixelSize: 12
+                            font.bold: true
+                        }
+
+                        MouseArea {
+                            anchors.fill: parent
+                            onClicked: if (controller) controller.layoutMode = "abc"
+                        }
                     }
 
-                    MouseArea {
-                        anchors.fill: parent
-                        onClicked: if (controller) controller.layoutMode = "abc"
-                    }
-                }
+                    // IT Pill
+                    Rectangle {
+                        width: 50
+                        height: 26
+                        radius: 13
+                        color: controller && controller.layoutMode === "accenti" ? (currentTheme ? currentTheme.accentColor : "#00a2ed") : "transparent"
 
-                // IT Pill
-                Rectangle {
-                    width: 50
-                    height: 28
-                    radius: 14
-                    color: controller && controller.layoutMode === "accenti" ? (currentTheme ? currentTheme.accentColor : "#0284c7") : (currentTheme ? currentTheme.keyBackgroundColor : "#162032")
-                    border.color: currentTheme ? currentTheme.keyBorderColor : "#334155"
+                        Text {
+                            anchors.centerIn: parent
+                            text: "🇮🇹 IT"
+                            color: controller && controller.layoutMode === "accenti" ? "#ffffff" : "#d0d5dd"
+                            font.pixelSize: 12
+                            font.bold: true
+                        }
 
-                    Text {
-                        anchors.centerIn: parent
-                        text: "🇮🇹 IT"
-                        color: controller && controller.layoutMode === "accenti" ? "#ffffff" : (currentTheme ? currentTheme.textColor : "#fff")
-                        font.pixelSize: 12
-                        font.bold: true
-                    }
-
-                    MouseArea {
-                        anchors.fill: parent
-                        onClicked: if (controller) controller.layoutMode = "accenti"
-                    }
-                }
-
-                // ?123 Pill
-                Rectangle {
-                    width: 54
-                    height: 28
-                    radius: 14
-                    color: controller && controller.layoutMode === "symbols" ? (currentTheme ? currentTheme.accentColor : "#0284c7") : (currentTheme ? currentTheme.keyBackgroundColor : "#162032")
-                    border.color: currentTheme ? currentTheme.keyBorderColor : "#334155"
-
-                    Text {
-                        anchors.centerIn: parent
-                        text: "?123"
-                        color: controller && controller.layoutMode === "symbols" ? "#ffffff" : (currentTheme ? currentTheme.textColor : "#fff")
-                        font.pixelSize: 12
-                        font.bold: true
+                        MouseArea {
+                            anchors.fill: parent
+                            onClicked: if (controller) controller.layoutMode = "accenti"
+                        }
                     }
 
-                    MouseArea {
-                        anchors.fill: parent
-                        onClicked: if (controller) controller.layoutMode = "symbols"
-                    }
-                }
+                    // ?123 Pill
+                    Rectangle {
+                        width: 50
+                        height: 26
+                        radius: 13
+                        color: controller && controller.layoutMode === "symbols" ? (currentTheme ? currentTheme.accentColor : "#00a2ed") : "transparent"
 
-                // 1234 Numpad Pill
-                Rectangle {
-                    width: 58
-                    height: 28
-                    radius: 14
-                    color: controller && controller.layoutMode === "numpad" ? (currentTheme ? currentTheme.accentColor : "#0284c7") : (currentTheme ? currentTheme.keyBackgroundColor : "#162032")
-                    border.color: currentTheme ? currentTheme.keyBorderColor : "#334155"
+                        Text {
+                            anchors.centerIn: parent
+                            text: "?123"
+                            color: controller && controller.layoutMode === "symbols" ? "#ffffff" : "#d0d5dd"
+                            font.pixelSize: 12
+                            font.bold: true
+                        }
 
-                    Text {
-                        anchors.centerIn: parent
-                        text: "🔢 1234"
-                        color: controller && controller.layoutMode === "numpad" ? "#ffffff" : (currentTheme ? currentTheme.textColor : "#fff")
-                        font.pixelSize: 12
-                        font.bold: true
-                    }
-
-                    MouseArea {
-                        anchors.fill: parent
-                        onClicked: if (controller) controller.layoutMode = "numpad"
-                    }
-                }
-
-                // Emoji Pill
-                Rectangle {
-                    width: 40
-                    height: 28
-                    radius: 14
-                    color: controller && controller.layoutMode === "emoji" ? (currentTheme ? currentTheme.accentColor : "#0284c7") : (currentTheme ? currentTheme.keyBackgroundColor : "#162032")
-                    border.color: currentTheme ? currentTheme.keyBorderColor : "#334155"
-
-                    Text {
-                        anchors.centerIn: parent
-                        text: "😊"
-                        font.pixelSize: 14
+                        MouseArea {
+                            anchors.fill: parent
+                            onClicked: if (controller) controller.layoutMode = "symbols"
+                        }
                     }
 
-                    MouseArea {
-                        anchors.fill: parent
-                        onClicked: if (controller) controller.layoutMode = "emoji"
-                    }
-                }
+                    // 1234 Numpad Pill
+                    Rectangle {
+                        width: 56
+                        height: 26
+                        radius: 13
+                        color: controller && controller.layoutMode === "numpad" ? (currentTheme ? currentTheme.accentColor : "#00a2ed") : "transparent"
 
-                // Split Pill
-                Rectangle {
-                    width: 58
-                    height: 28
-                    radius: 14
-                    color: controller && controller.isSplit ? (currentTheme ? currentTheme.accentColor : "#0284c7") : (currentTheme ? currentTheme.keyBackgroundColor : "#162032")
-                    border.color: currentTheme ? currentTheme.keyBorderColor : "#334155"
+                        Text {
+                            anchors.centerIn: parent
+                            text: "🔢 1234"
+                            color: controller && controller.layoutMode === "numpad" ? "#ffffff" : "#d0d5dd"
+                            font.pixelSize: 12
+                            font.bold: true
+                        }
 
-                    Text {
-                        anchors.centerIn: parent
-                        text: "✂️ Split"
-                        color: controller && controller.isSplit ? "#ffffff" : (currentTheme ? currentTheme.textColor : "#fff")
-                        font.pixelSize: 11
-                        font.bold: true
-                    }
-
-                    MouseArea {
-                        anchors.fill: parent
-                        onClicked: if (controller) controller.isSplit = !controller.isSplit
-                    }
-                }
-
-                // Klipper Pill
-                Rectangle {
-                    width: 68
-                    height: 28
-                    radius: 14
-                    color: controller && controller.layoutMode === "klipper" ? (currentTheme ? currentTheme.accentColor : "#0284c7") : (currentTheme ? currentTheme.keyBackgroundColor : "#162032")
-                    border.color: currentTheme ? currentTheme.keyBorderColor : "#334155"
-
-                    Text {
-                        anchors.centerIn: parent
-                        text: "📋 Klipper"
-                        color: controller && controller.layoutMode === "klipper" ? "#ffffff" : (currentTheme ? currentTheme.textColor : "#fff")
-                        font.pixelSize: 11
-                        font.bold: true
+                        MouseArea {
+                            anchors.fill: parent
+                            onClicked: if (controller) controller.layoutMode = "numpad"
+                        }
                     }
 
-                    MouseArea {
-                        anchors.fill: parent
-                        onClicked: if (controller) controller.layoutMode = "klipper"
-                    }
-                }
+                    // Emoji Pill
+                    Rectangle {
+                        width: 36
+                        height: 26
+                        radius: 13
+                        color: controller && controller.layoutMode === "emoji" ? (currentTheme ? currentTheme.accentColor : "#00a2ed") : "transparent"
 
-                // Theme Pill Switcher
-                Rectangle {
-                    width: 68
-                    height: 28
-                    radius: 14
-                    color: currentTheme ? currentTheme.keyBackgroundColor : "#162032"
-                    border.color: currentTheme ? currentTheme.keyBorderColor : "#334155"
+                        Text {
+                            anchors.centerIn: parent
+                            text: "😊"
+                            font.pixelSize: 13
+                        }
 
-                    Text {
-                        anchors.centerIn: parent
-                        text: "🎨 Theme"
-                        color: currentTheme ? currentTheme.textColor : "#fff"
-                        font.pixelSize: 11
-                        font.bold: true
+                        MouseArea {
+                            anchors.fill: parent
+                            onClicked: if (controller) controller.layoutMode = "emoji"
+                        }
                     }
 
-                    MouseArea {
-                        anchors.fill: parent
-                        onClicked: {
-                            if (controller) {
-                                if (controller.activeTheme === "TeenageOP1") controller.activeTheme = "BreezeDark"
-                                else if (controller.activeTheme === "BreezeDark") controller.activeTheme = "NothingDark"
-                                else if (controller.activeTheme === "NothingDark") controller.activeTheme = "NothingLight"
-                                else controller.activeTheme = "TeenageOP1"
+                    // Split Pill
+                    Rectangle {
+                        width: 62
+                        height: 26
+                        radius: 13
+                        color: controller && controller.isSplit ? (currentTheme ? currentTheme.accentColor : "#00a2ed") : "transparent"
+
+                        Text {
+                            anchors.centerIn: parent
+                            text: "▯▯ Split"
+                            color: controller && controller.isSplit ? "#ffffff" : "#d0d5dd"
+                            font.pixelSize: 11
+                            font.bold: true
+                        }
+
+                        MouseArea {
+                            anchors.fill: parent
+                            onClicked: if (controller) controller.isSplit = !controller.isSplit
+                        }
+                    }
+
+                    // Klipper Pill
+                    Rectangle {
+                        width: 64
+                        height: 26
+                        radius: 13
+                        color: controller && controller.layoutMode === "klipper" ? (currentTheme ? currentTheme.accentColor : "#00a2ed") : "transparent"
+
+                        Text {
+                            anchors.centerIn: parent
+                            text: "📋 Klipper"
+                            color: controller && controller.layoutMode === "klipper" ? "#ffffff" : "#d0d5dd"
+                            font.pixelSize: 11
+                            font.bold: true
+                        }
+
+                        MouseArea {
+                            anchors.fill: parent
+                            onClicked: if (controller) controller.layoutMode = "klipper"
+                        }
+                    }
+
+                    // Theme Pill Switcher
+                    Rectangle {
+                        width: 68
+                        height: 26
+                        radius: 13
+                        color: "transparent"
+
+                        Text {
+                            anchors.centerIn: parent
+                            text: "🎨 Theme"
+                            color: "#d0d5dd"
+                            font.pixelSize: 11
+                            font.bold: true
+                        }
+
+                        MouseArea {
+                            anchors.fill: parent
+                            onClicked: {
+                                if (controller) {
+                                    if (controller.activeTheme === "TeenageOP1") controller.activeTheme = "BreezeDark"
+                                    else if (controller.activeTheme === "BreezeDark") controller.activeTheme = "NothingDark"
+                                    else if (controller.activeTheme === "NothingDark") controller.activeTheme = "NothingLight"
+                                    else controller.activeTheme = "TeenageOP1"
+                                }
                             }
                         }
                     }
@@ -276,31 +275,30 @@ Rectangle {
             }
         }
 
-        // Right section: Size Mode Segmented Switcher [ Normale | Estesa | 1-Mano ]
+        // Right section: Size Mode Segmented Switcher in Dark Container
         Rectangle {
             width: 210
-            height: 32
-            radius: 16
-            color: currentTheme ? currentTheme.keyBackgroundColor : "#162032"
-            border.color: currentTheme ? currentTheme.keyBorderColor : "#334155"
+            height: 34
+            radius: 17
+            color: currentTheme && currentTheme.sizeModePillBg ? currentTheme.sizeModePillBg : "#21252d"
             Layout.alignment: Qt.AlignVCenter
 
             Row {
                 anchors.fill: parent
-                anchors.margins: 2
+                anchors.margins: 3
                 spacing: 2
 
                 // Normale
                 Rectangle {
-                    width: (parent.width - 4) / 3
+                    width: (parent.width - 6) / 3
                     height: parent.height
                     radius: 14
-                    color: controller && controller.sizeMode === "normal" ? (currentTheme ? currentTheme.accentColor : "#0284c7") : "transparent"
+                    color: controller && controller.sizeMode === "normal" ? (currentTheme ? currentTheme.accentColor : "#00a2ed") : "transparent"
 
                     Text {
                         anchors.centerIn: parent
                         text: "Normale"
-                        color: controller && controller.sizeMode === "normal" ? "#ffffff" : (currentTheme ? currentTheme.textColor : "#fff")
+                        color: controller && controller.sizeMode === "normal" ? "#ffffff" : "#d0d5dd"
                         font.pixelSize: 11
                         font.bold: controller && controller.sizeMode === "normal"
                     }
@@ -313,15 +311,15 @@ Rectangle {
 
                 // Estesa (Full)
                 Rectangle {
-                    width: (parent.width - 4) / 3
+                    width: (parent.width - 6) / 3
                     height: parent.height
                     radius: 14
-                    color: controller && controller.sizeMode === "full" ? (currentTheme ? currentTheme.accentColor : "#0284c7") : "transparent"
+                    color: controller && controller.sizeMode === "full" ? (currentTheme ? currentTheme.accentColor : "#00a2ed") : "transparent"
 
                     Text {
                         anchors.centerIn: parent
                         text: "Estesa"
-                        color: controller && controller.sizeMode === "full" ? "#ffffff" : (currentTheme ? currentTheme.textColor : "#fff")
+                        color: controller && controller.sizeMode === "full" ? "#ffffff" : "#d0d5dd"
                         font.pixelSize: 11
                         font.bold: controller && controller.sizeMode === "full"
                     }
@@ -334,15 +332,15 @@ Rectangle {
 
                 // 1-Mano
                 Rectangle {
-                    width: (parent.width - 4) / 3
+                    width: (parent.width - 6) / 3
                     height: parent.height
                     radius: 14
-                    color: controller && controller.sizeMode === "onehand" ? (currentTheme ? currentTheme.accentColor : "#0284c7") : "transparent"
+                    color: controller && controller.sizeMode === "onehand" ? (currentTheme ? currentTheme.accentColor : "#00a2ed") : "transparent"
 
                     Text {
                         anchors.centerIn: parent
                         text: "📱 1-Mano"
-                        color: controller && controller.sizeMode === "onehand" ? "#ffffff" : (currentTheme ? currentTheme.textColor : "#fff")
+                        color: controller && controller.sizeMode === "onehand" ? "#ffffff" : "#d0d5dd"
                         font.pixelSize: 11
                         font.bold: controller && controller.sizeMode === "onehand"
                     }

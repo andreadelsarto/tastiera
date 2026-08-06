@@ -72,9 +72,9 @@ Window {
         onHeightChanged: cardBox.syncMask()
         Component.onCompleted: cardBox.syncMask()
 
-        color: mainWindow.activeTheme ? mainWindow.activeTheme.backgroundColor : "#0b1329"
+        color: mainWindow.activeTheme ? mainWindow.activeTheme.backgroundColor : "#e3dfd8"
         radius: mainWindow.activeTheme ? mainWindow.activeTheme.cardRadius : 24
-        border.color: mainWindow.activeTheme ? mainWindow.activeTheme.cardBorderColor : "#1e293b"
+        border.color: mainWindow.activeTheme ? mainWindow.activeTheme.cardBorderColor : "#c8c3b9"
         border.width: 1
 
         SwipeCanvas {
@@ -85,7 +85,7 @@ Window {
         ColumnLayout {
             anchors.fill: parent
             anchors.margins: 12
-            spacing: 6
+            spacing: 8
 
             // Pill Header Bar (Draggable handle)
             TouchBarView {
@@ -97,11 +97,12 @@ Window {
                 cardBox: cardBox
             }
 
-            // Word Suggestion Bar (Microphone + Predictive Pills)
+            // Word Suggestion Bar (Dark Container Matching Screenshot)
             Rectangle {
                 Layout.fillWidth: true
                 height: 36
-                color: "transparent"
+                radius: 18
+                color: mainWindow.activeTheme && mainWindow.activeTheme.headerPillBg ? mainWindow.activeTheme.headerPillBg : "#434a56"
                 visible: controller.layoutMode === "abc" || controller.layoutMode === "accenti"
 
                 RowLayout {
@@ -110,15 +111,15 @@ Window {
 
                     // Mic button
                     Rectangle {
-                        width: 32
-                        height: 32
-                        radius: 16
-                        color: mainWindow.activeTheme ? mainWindow.activeTheme.keyBackgroundColor : "#162032"
-                        border.color: mainWindow.activeTheme ? mainWindow.activeTheme.accentColor : "#0284c7"
+                        width: 28
+                        height: 28
+                        radius: 14
+                        color: "transparent"
 
                         Text {
                             anchors.centerIn: parent
-                            text: "🎙️"
+                            text: "🎙"
+                            color: mainWindow.activeTheme ? mainWindow.activeTheme.accentColor : "#00a2ed"
                             font.pixelSize: 14
                         }
                     }
@@ -126,9 +127,9 @@ Window {
                     // Primary Word Suggestion Pill (Cyan Highlight)
                     Rectangle {
                         width: Math.max(90, word1Text.width + 24)
-                        height: 32
-                        radius: 16
-                        color: mainWindow.activeTheme ? mainWindow.activeTheme.accentColor : "#0284c7"
+                        height: 28
+                        radius: 14
+                        color: mainWindow.activeTheme ? mainWindow.activeTheme.accentColor : "#00a2ed"
 
                         Text {
                             id: word1Text
@@ -149,16 +150,15 @@ Window {
                     // Secondary Suggestion Pill 2
                     Rectangle {
                         width: Math.max(70, word2Text.width + 20)
-                        height: 32
-                        radius: 16
-                        color: mainWindow.activeTheme ? mainWindow.activeTheme.keyBackgroundColor : "#162032"
-                        border.color: mainWindow.activeTheme ? mainWindow.activeTheme.keyBorderColor : "#334155"
+                        height: 28
+                        radius: 14
+                        color: "#2d333e"
 
                         Text {
                             id: word2Text
                             anchors.centerIn: parent
                             text: "plasma"
-                            color: mainWindow.activeTheme ? mainWindow.activeTheme.textColor : "#fff"
+                            color: "#ffffff"
                             font.family: mainWindow.activeTheme ? mainWindow.activeTheme.fontFamily : "sans-serif"
                             font.pixelSize: 13
                         }
@@ -172,16 +172,15 @@ Window {
                     // Secondary Suggestion Pill 3
                     Rectangle {
                         width: Math.max(65, word3Text.width + 20)
-                        height: 32
-                        radius: 16
-                        color: mainWindow.activeTheme ? mainWindow.activeTheme.keyBackgroundColor : "#162032"
-                        border.color: mainWindow.activeTheme ? mainWindow.activeTheme.keyBorderColor : "#334155"
+                        height: 28
+                        radius: 14
+                        color: "#2d333e"
 
                         Text {
                             id: word3Text
                             anchors.centerIn: parent
                             text: "linux"
-                            color: mainWindow.activeTheme ? mainWindow.activeTheme.textColor : "#fff"
+                            color: "#ffffff"
                             font.family: mainWindow.activeTheme ? mainWindow.activeTheme.fontFamily : "sans-serif"
                             font.pixelSize: 13
                         }
@@ -218,19 +217,40 @@ Window {
                                   (controller.layoutMode === "emoji" ? 4 :
                                   (controller.layoutMode === "klipper" ? 5 : 0)))))
 
-                    // View 0: ABC QWERTY Standard (Matching Screenshot)
+                    // View 0: ABC QWERTY Standard / Split Mode (Matching Screenshot)
                     ColumnLayout {
                         spacing: 6
 
-                        // Row 1: q w e^è r t y u^ù i^ì o^ò p
+                        // Row 1: q w e^è r t | y u^ù i^ì o^ò p
                         RowLayout {
-                            spacing: controller.isSplit ? 36 : 6
+                            spacing: 6
+                            // Left Bank
                             Repeater {
                                 model: [
                                     { k: "q", h: "" }, { k: "w", h: "" }, { k: "e", h: "è", a: ["è", "é", "€"] },
-                                    { k: "r", h: "" }, { k: "t", h: "" }, { k: "y", h: "" },
-                                    { k: "u", h: "ù", a: ["ù", "ú"] }, { k: "i", h: "ì", a: ["ì", "í"] },
-                                    { k: "o", h: "ò", a: ["ò", "ó"] }, { k: "p", h: "" }
+                                    { k: "r", h: "" }, { k: "t", h: "" }
+                                ]
+                                delegate: KeyButton {
+                                    label: modelData.k
+                                    hintAccent: modelData.h
+                                    accents: modelData.a ? modelData.a : []
+                                    currentTheme: mainWindow.activeTheme
+                                    vk: virtualKeyEngine
+                                    gestureEngine: gestureEngine
+                                    Layout.fillWidth: true
+                                    Layout.fillHeight: true
+                                }
+                            }
+                            // Split Gap
+                            Item {
+                                visible: controller.isSplit
+                                Layout.fillWidth: true
+                            }
+                            // Right Bank
+                            Repeater {
+                                model: [
+                                    { k: "y", h: "" }, { k: "u", h: "ù", a: ["ù", "ú"] },
+                                    { k: "i", h: "ì", a: ["ì", "í"] }, { k: "o", h: "ò", a: ["ò", "ó"] }, { k: "p", h: "" }
                                 ]
                                 delegate: KeyButton {
                                     label: modelData.k
@@ -245,14 +265,35 @@ Window {
                             }
                         }
 
-                        // Row 2: a^à s d f g h j k l
+                        // Row 2: a^à s d f g | h j k l
                         RowLayout {
-                            spacing: controller.isSplit ? 36 : 6
+                            spacing: 6
+                            // Left Bank
                             Repeater {
                                 model: [
                                     { k: "a", h: "à", a: ["à", "á"] }, { k: "s", h: "" }, { k: "d", h: "" },
-                                    { k: "f", h: "" }, { k: "g", h: "" }, { k: "h", h: "" },
-                                    { k: "j", h: "" }, { k: "k", h: "" }, { k: "l", h: "" }
+                                    { k: "f", h: "" }, { k: "g", h: "" }
+                                ]
+                                delegate: KeyButton {
+                                    label: modelData.k
+                                    hintAccent: modelData.h
+                                    accents: modelData.a ? modelData.a : []
+                                    currentTheme: mainWindow.activeTheme
+                                    vk: virtualKeyEngine
+                                    gestureEngine: gestureEngine
+                                    Layout.fillWidth: true
+                                    Layout.fillHeight: true
+                                }
+                            }
+                            // Split Gap
+                            Item {
+                                visible: controller.isSplit
+                                Layout.fillWidth: true
+                            }
+                            // Right Bank
+                            Repeater {
+                                model: [
+                                    { k: "h", h: "" }, { k: "j", h: "" }, { k: "k", h: "" }, { k: "l", h: "" }
                                 ]
                                 delegate: KeyButton {
                                     label: modelData.k
@@ -267,36 +308,48 @@ Window {
                             }
                         }
 
-                        // Row 3: Shift z x c v b n m Backspace
+                        // Row 3: ⇧ z x c v | b n m ⌫
                         RowLayout {
                             spacing: 6
                             KeyButton {
                                 label: "⇧"
                                 isSpecial: true
-                                implicitWidth: 65
+                                implicitWidth: controller.isSplit ? 50 : 60
                                 currentTheme: mainWindow.activeTheme
                                 Layout.fillHeight: true
                             }
-                            RowLayout {
+                            Repeater {
+                                model: ["z", "x", "c", "v"]
+                                delegate: KeyButton {
+                                    label: modelData
+                                    currentTheme: mainWindow.activeTheme
+                                    vk: virtualKeyEngine
+                                    gestureEngine: gestureEngine
+                                    Layout.fillWidth: true
+                                    Layout.fillHeight: true
+                                }
+                            }
+                            // Split Gap
+                            Item {
+                                visible: controller.isSplit
                                 Layout.fillWidth: true
-                                spacing: controller.isSplit ? 36 : 6
-                                Repeater {
-                                    model: ["z", "x", "c", "v", "b", "n", "m"]
-                                    delegate: KeyButton {
-                                        label: modelData
-                                        currentTheme: mainWindow.activeTheme
-                                        vk: virtualKeyEngine
-                                        gestureEngine: gestureEngine
-                                        Layout.fillWidth: true
-                                        Layout.fillHeight: true
-                                    }
+                            }
+                            Repeater {
+                                model: ["b", "n", "m"]
+                                delegate: KeyButton {
+                                    label: modelData
+                                    currentTheme: mainWindow.activeTheme
+                                    vk: virtualKeyEngine
+                                    gestureEngine: gestureEngine
+                                    Layout.fillWidth: true
+                                    Layout.fillHeight: true
                                 }
                             }
                             KeyButton {
                                 label: "⌫"
                                 isSpecial: true
                                 isBackspace: true
-                                implicitWidth: 75
+                                implicitWidth: controller.isSplit ? 50 : 70
                                 currentTheme: mainWindow.activeTheme
                                 controller: controller
                                 vk: virtualKeyEngine
@@ -304,13 +357,13 @@ Window {
                             }
                         }
 
-                        // Row 4: ?123, Emoji, comma, spazio, dot, Cyan Primary Enter
+                        // Row 4: ?123 😊 , spazio | . ↵
                         RowLayout {
                             spacing: 6
                             KeyButton {
                                 label: "?123"
                                 isSpecial: true
-                                implicitWidth: 65
+                                implicitWidth: 55
                                 currentTheme: mainWindow.activeTheme
                                 onReleased: controller.layoutMode = "symbols"
                                 Layout.fillHeight: true
@@ -318,14 +371,14 @@ Window {
                             KeyButton {
                                 label: "😊"
                                 isSpecial: true
-                                implicitWidth: 50
+                                implicitWidth: 44
                                 currentTheme: mainWindow.activeTheme
                                 onReleased: controller.layoutMode = "emoji"
                                 Layout.fillHeight: true
                             }
                             KeyButton {
                                 label: ","
-                                implicitWidth: 50
+                                implicitWidth: 44
                                 currentTheme: mainWindow.activeTheme
                                 vk: virtualKeyEngine
                                 Layout.fillHeight: true
@@ -338,9 +391,14 @@ Window {
                                 Layout.fillWidth: true
                                 Layout.fillHeight: true
                             }
+                            // Split Gap
+                            Item {
+                                visible: controller.isSplit
+                                Layout.fillWidth: true
+                            }
                             KeyButton {
                                 label: "."
-                                implicitWidth: 50
+                                implicitWidth: 44
                                 currentTheme: mainWindow.activeTheme
                                 vk: virtualKeyEngine
                                 Layout.fillHeight: true
@@ -350,7 +408,7 @@ Window {
                                 textToSend: "\n"
                                 isSpecial: true
                                 isPrimaryAction: true
-                                implicitWidth: 75
+                                implicitWidth: controller.isSplit ? 50 : 70
                                 currentTheme: mainWindow.activeTheme
                                 vk: virtualKeyEngine
                                 Layout.fillHeight: true
@@ -483,10 +541,8 @@ Window {
                             Repeater {
                                 model: ["😀", "😃", "😄", "😁", "😆", "😅", "😂", "🤣",
                                         "😊", "😇", "🙂", "🙃", "😉", "😌", "😍", "🥰",
-                                        "😘", "😗", "😙", "😚", "😋", "😛", "😝", "😜",
-                                        "🤪", "🤨", "🧐", "🤓", "😎", "🤩", "🥳", "😏",
-                                        "😒", "😞", "😔", "😟", "😕", "🙁", "☹️", "😣",
-                                        "😖", "😫", "😩", "🥺", "😢", "😭", "😤", "😠",
+                                        "😘", "😗", "😙", "😚", "😋", "😛", "😜", "🤪",
+                                        "🤨", "🧐", "🤓", "😎", "🤩", "🥳", "😏", "😒",
                                         "👍", "👎", "👏", "🙌", "👐", "🤲", "🤝", "🙏"]
                                 delegate: KeyButton {
                                     label: modelData
