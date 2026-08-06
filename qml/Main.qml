@@ -6,7 +6,7 @@ import org.kde.plasma.keyboard 1.0
 
 Window {
     id: mainWindow
-    visible: true
+    visible: false
     title: "Plasma Keyboard"
     color: "transparent"
     flags: Qt.Window | Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint | Qt.WindowDoesNotAcceptFocus
