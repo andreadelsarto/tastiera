@@ -458,6 +458,7 @@ Window {
                                     onClicked: {
                                         virtualKeyEngine.sendCombo(modelData.mod, modelData.k)
                                         mainWindow.ctrlActive = false
+                                        mainWindow.altActive = false
                                     }
                                 }
                             }
@@ -495,6 +496,7 @@ Window {
                                     anchors.fill: parent
                                     onClicked: {
                                         virtualKeyEngine.sendCombo(modelData.mod, modelData.k)
+                                        mainWindow.ctrlActive = false
                                         mainWindow.altActive = false
                                     }
                                 }

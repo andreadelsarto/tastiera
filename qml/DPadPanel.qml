@@ -70,15 +70,15 @@ Rectangle {
                 label: "Ctrl"
                 isSpecial: true
                 isCustomAction: true
-                isPrimaryAction: mainWindow ? mainWindow.ctrlActive : false
+                isPrimaryAction: dpad.mainWindow && dpad.mainWindow.ctrlActive
                 currentTheme: dpad.currentTheme
                 vk: dpad.vk
                 Layout.fillWidth: true
                 Layout.fillHeight: true
                 onReleased: {
-                    if (mainWindow) {
-                        mainWindow.ctrlActive = !mainWindow.ctrlActive
-                        if (mainWindow.ctrlActive) mainWindow.altActive = false
+                    if (dpad.mainWindow) {
+                        dpad.mainWindow.ctrlActive = !dpad.mainWindow.ctrlActive
+                        if (dpad.mainWindow.ctrlActive) dpad.mainWindow.altActive = false
                     }
                 }
             }
@@ -86,15 +86,15 @@ Rectangle {
                 label: "Alt"
                 isSpecial: true
                 isCustomAction: true
-                isPrimaryAction: mainWindow ? mainWindow.altActive : false
+                isPrimaryAction: dpad.mainWindow && dpad.mainWindow.altActive
                 currentTheme: dpad.currentTheme
                 vk: dpad.vk
                 Layout.fillWidth: true
                 Layout.fillHeight: true
                 onReleased: {
-                    if (mainWindow) {
-                        mainWindow.altActive = !mainWindow.altActive
-                        if (mainWindow.altActive) mainWindow.ctrlActive = false
+                    if (dpad.mainWindow) {
+                        dpad.mainWindow.altActive = !dpad.mainWindow.altActive
+                        if (dpad.mainWindow.altActive) dpad.mainWindow.ctrlActive = false
                     }
                 }
             }
