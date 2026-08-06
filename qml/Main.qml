@@ -15,6 +15,7 @@ Window {
     height: Screen.height
 
     property string currentInputBuffer: ""
+    property bool showThemeSelector: false
 
     KeyboardController {
         id: controller
@@ -103,22 +104,135 @@ Window {
                 vk: virtualKeyEngine
                 klipper: klipper
                 cardBox: cardBox
+                mainWindow: mainWindow
             }
 
-            // Dynamic Word Suggestions / Terminal Quick Bar
+            // Suggestion Bar OR Theme Selector Bar
             Rectangle {
                 Layout.fillWidth: true
                 height: 36
                 radius: 18
                 color: mainWindow.activeTheme && mainWindow.activeTheme.headerPillBg ? mainWindow.activeTheme.headerPillBg : "#434a56"
-                visible: controller.layoutMode === "abc" || controller.layoutMode === "accenti" || controller.layoutMode === "numpad" || controller.layoutMode === "symbols"
 
+                // State 1: Theme Selector Pills Mode
+                RowLayout {
+                    anchors.centerIn: parent
+                    spacing: 8
+                    visible: mainWindow.showThemeSelector
+
+                    // Theme 1: Teenage OP-1
+                    Rectangle {
+                        width: 110
+                        height: 28
+                        radius: 14
+                        color: controller.activeTheme === "TeenageOP1" ? "#00a2ed" : "#e3dfd8"
+                        border.color: "#00a2ed"
+                        border.width: 1
+
+                        Text {
+                            anchors.centerIn: parent
+                            text: "🎨 Teenage OP-1"
+                            color: controller.activeTheme === "TeenageOP1" ? "#ffffff" : "#1e1e1e"
+                            font.pixelSize: 11
+                            font.bold: true
+                        }
+
+                        MouseArea {
+                            anchors.fill: parent
+                            onClicked: {
+                                controller.activeTheme = "TeenageOP1"
+                                mainWindow.showThemeSelector = false
+                            }
+                        }
+                    }
+
+                    // Theme 2: Breeze Dark
+                    Rectangle {
+                        width: 110
+                        height: 28
+                        radius: 14
+                        color: controller.activeTheme === "BreezeDark" ? "#3daee9" : "#232629"
+                        border.color: "#3daee9"
+                        border.width: 1
+
+                        Text {
+                            anchors.centerIn: parent
+                            text: "🌙 Breeze Dark"
+                            color: "#ffffff"
+                            font.pixelSize: 11
+                            font.bold: true
+                        }
+
+                        MouseArea {
+                            anchors.fill: parent
+                            onClicked: {
+                                controller.activeTheme = "BreezeDark"
+                                mainWindow.showThemeSelector = false
+                            }
+                        }
+                    }
+
+                    // Theme 3: Nothing Dark
+                    Rectangle {
+                        width: 110
+                        height: 28
+                        radius: 14
+                        color: controller.activeTheme === "NothingDark" ? "#d00000" : "#000000"
+                        border.color: "#d00000"
+                        border.width: 1
+
+                        Text {
+                            anchors.centerIn: parent
+                            text: "⚫ Nothing Dark"
+                            color: "#ffffff"
+                            font.pixelSize: 11
+                            font.bold: true
+                        }
+
+                        MouseArea {
+                            anchors.fill: parent
+                            onClicked: {
+                                controller.activeTheme = "NothingDark"
+                                mainWindow.showThemeSelector = false
+                            }
+                        }
+                    }
+
+                    // Theme 4: Nothing Light
+                    Rectangle {
+                        width: 110
+                        height: 28
+                        radius: 14
+                        color: controller.activeTheme === "NothingLight" ? "#1e1e1e" : "#ffffff"
+                        border.color: "#1e1e1e"
+                        border.width: 1
+
+                        Text {
+                            anchors.centerIn: parent
+                            text: "⚪ Nothing Light"
+                            color: controller.activeTheme === "NothingLight" ? "#ffffff" : "#1e1e1e"
+                            font.pixelSize: 11
+                            font.bold: true
+                        }
+
+                        MouseArea {
+                            anchors.fill: parent
+                            onClicked: {
+                                controller.activeTheme = "NothingLight"
+                                mainWindow.showThemeSelector = false
+                            }
+                        }
+                    }
+                }
+
+                // State 2: Dynamic Suggestions & Terminal Quick Bar
                 Flickable {
                     anchors.fill: parent
                     anchors.leftMargin: 8
                     anchors.rightMargin: 8
                     contentWidth: suggRow.width
                     clip: true
+                    visible: !mainWindow.showThemeSelector
 
                     RowLayout {
                         id: suggRow
@@ -374,7 +488,7 @@ Window {
                             }
                         }
 
-                        // Row 4: ?123 😊 , spazio | . ↵
+                        // Row 4: ?123 😊 , spazio | . ↵ Close(✖)
                         RowLayout {
                             spacing: 6
                             KeyButton {
@@ -433,7 +547,7 @@ Window {
                                 textToSend: "\n"
                                 isSpecial: true
                                 isPrimaryAction: true
-                                implicitWidth: controller.isSplit ? 50 : 70
+                                implicitWidth: controller.isSplit ? 50 : 65
                                 currentTheme: mainWindow.activeTheme
                                 vk: virtualKeyEngine
                                 Layout.fillHeight: true
@@ -441,6 +555,16 @@ Window {
                                     mainWindow.currentInputBuffer = ""
                                     gestureEngine.updateCurrentPrefix("")
                                 }
+                            }
+                            // Close Keyboard Button ✖
+                            KeyButton {
+                                label: "✖"
+                                isSpecial: true
+                                isCustomAction: true
+                                implicitWidth: 48
+                                currentTheme: mainWindow.activeTheme
+                                Layout.fillHeight: true
+                                onReleased: mainWindow.visible = false
                             }
                         }
                     }

@@ -155,8 +155,13 @@ Rectangle {
 
             root.released()
 
-            if (root.isBackspace && controller) {
-                controller.stopBackspaceTimer()
+            if (root.isBackspace) {
+                if (controller) controller.stopBackspaceTimer()
+                if (root.vk) {
+                    root.vk.sendBackspace()
+                } else if (typeof virtualKeyEngine !== "undefined" && virtualKeyEngine) {
+                    virtualKeyEngine.sendBackspace()
+                }
             } else if (!accentPopup.opened && !root.isCustomAction) {
                 var send = root.textToSend !== "" ? root.textToSend : root.label
                 if (send !== "") {

@@ -12,6 +12,7 @@ Rectangle {
     property var vk
     property var klipper
     property var cardBox
+    property var mainWindow
 
     RowLayout {
         anchors.fill: parent
@@ -225,12 +226,12 @@ Rectangle {
                         width: 68
                         height: 26
                         radius: 13
-                        color: "transparent"
+                        color: mainWindow && mainWindow.showThemeSelector ? (currentTheme ? currentTheme.accentColor : "#00a2ed") : "transparent"
 
                         Text {
                             anchors.centerIn: parent
                             text: "🎨 Theme"
-                            color: "#d0d5dd"
+                            color: mainWindow && mainWindow.showThemeSelector ? "#ffffff" : "#d0d5dd"
                             font.pixelSize: 11
                             font.bold: true
                         }
@@ -238,11 +239,8 @@ Rectangle {
                         MouseArea {
                             anchors.fill: parent
                             onClicked: {
-                                if (controller) {
-                                    if (controller.activeTheme === "TeenageOP1") controller.activeTheme = "BreezeDark"
-                                    else if (controller.activeTheme === "BreezeDark") controller.activeTheme = "NothingDark"
-                                    else if (controller.activeTheme === "NothingDark") controller.activeTheme = "NothingLight"
-                                    else controller.activeTheme = "TeenageOP1"
+                                if (mainWindow) {
+                                    mainWindow.showThemeSelector = !mainWindow.showThemeSelector
                                 }
                             }
                         }
