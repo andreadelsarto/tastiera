@@ -1,5 +1,4 @@
 import QtQuick 2.15
-import QtQuick.Controls 2.15
 import QtQuick.Layouts 1.15
 
 Rectangle {
@@ -19,6 +18,7 @@ Rectangle {
     property var gestureEngine
 
     property int selectedAccentIndex: -1
+    property bool isAccentOverlayOpen: false
 
     signal keyTriggered(string key)
     signal released()
@@ -68,24 +68,23 @@ Rectangle {
         visible: root.hintAccent !== "" && !root.isSpecial
     }
 
-    // Popup for Long-Press Accents (e.g. è, é, €) with Slide & Tap selection
-    Popup {
-        id: accentPopup
+    // Custom Lightweight Accent Overlay (Does NOT steal touch grab)
+    Rectangle {
+        id: accentOverlay
+        visible: root.isAccentOverlayOpen
+        z: 9999
         y: -height - 8
         x: (parent.width - width) / 2
-        padding: 4
-        modal: false
-        focus: false
-        closePolicy: Popup.CloseOnPressOutside
+        width: accentRow.width + 8
+        height: 44
+        radius: 12
+        color: currentTheme ? currentTheme.backgroundColor : "#0f172a"
+        border.color: currentTheme ? currentTheme.accentColor : "#0284c7"
+        border.width: 1
 
-        background: Rectangle {
-            color: currentTheme ? currentTheme.backgroundColor : "#0f172a"
-            border.color: currentTheme ? currentTheme.accentColor : "#0284c7"
-            radius: 12
-        }
-
-        contentItem: Row {
+        Row {
             id: accentRow
+            anchors.centerIn: parent
             spacing: 4
             Repeater {
                 model: root.accents
@@ -93,7 +92,7 @@ Rectangle {
                     width: 36
                     height: 36
                     radius: 8
-                    color: index === root.selectedAccentIndex || accentMouse.pressed ?
+                    color: index === root.selectedAccentIndex ?
                            (currentTheme ? currentTheme.accentColor : "#0284c7") :
                            (currentTheme ? currentTheme.keyBackgroundColor : "#1e293b")
 
@@ -104,19 +103,6 @@ Rectangle {
                         font.pixelSize: 16
                         font.bold: true
                     }
-
-                    MouseArea {
-                        id: accentMouse
-                        anchors.fill: parent
-                        onClicked: {
-                            if (root.vk) {
-                                root.vk.sendText(modelData)
-                            } else if (typeof virtualKeyEngine !== "undefined" && virtualKeyEngine) {
-                                virtualKeyEngine.sendText(modelData)
-                            }
-                            accentPopup.close()
-                        }
-                    }
                 }
             }
         }
@@ -124,13 +110,13 @@ Rectangle {
 
     Timer {
         id: longPressTimer
-        interval: 350
+        interval: 300
         repeat: false
         onTriggered: {
             root.longPressed()
-            if (root.accents.length > 0) {
+            if (root.accents && root.accents.length > 0) {
                 root.selectedAccentIndex = 0
-                accentPopup.open()
+                root.isAccentOverlayOpen = true
             } else if (root.isBackspace && controller) {
                 controller.startBackspaceTimer()
             }
@@ -148,14 +134,14 @@ Rectangle {
             }
         }
 
-        onPositionChanged: {
+        onPositionChanged: (mouse) => {
             if (gestureEngine && pressed) {
                 gestureEngine.updateTouch(Qt.point(mouse.x, mouse.y))
             }
 
             // Slide-to-select accent logic
-            if (accentPopup.opened && root.accents.length > 0) {
-                var popupPoint = mouseArea.mapToItem(accentPopup.contentItem, mouse.x, mouse.y)
+            if (root.isAccentOverlayOpen && root.accents && root.accents.length > 0) {
+                var popupPoint = mouseArea.mapToItem(accentRow, mouse.x, mouse.y)
                 var idx = Math.floor(popupPoint.x / 40)
                 if (idx >= 0 && idx < root.accents.length) {
                     root.selectedAccentIndex = idx
@@ -172,16 +158,15 @@ Rectangle {
 
             root.released()
 
-            if (accentPopup.opened) {
-                if (root.selectedAccentIndex >= 0 && root.selectedAccentIndex < root.accents.length) {
-                    var selChar = root.accents[root.selectedAccentIndex]
-                    if (root.vk) {
-                        root.vk.sendText(selChar)
-                    } else if (typeof virtualKeyEngine !== "undefined" && virtualKeyEngine) {
-                        virtualKeyEngine.sendText(selChar)
-                    }
+            if (root.isAccentOverlayOpen) {
+                var selIdx = (root.selectedAccentIndex >= 0 && root.selectedAccentIndex < root.accents.length) ? root.selectedAccentIndex : 0
+                var selChar = root.accents[selIdx]
+                if (root.vk) {
+                    root.vk.sendText(selChar)
+                } else if (typeof virtualKeyEngine !== "undefined" && virtualKeyEngine) {
+                    virtualKeyEngine.sendText(selChar)
                 }
-                accentPopup.close()
+                root.isAccentOverlayOpen = false
                 root.selectedAccentIndex = -1
             } else if (root.isBackspace) {
                 if (controller) controller.stopBackspaceTimer()
@@ -200,6 +185,21 @@ Rectangle {
                     }
                 }
                 root.keyTriggered(send)
+            }
+        }
+
+        onCanceled: {
+            longPressTimer.stop()
+            if (root.isAccentOverlayOpen) {
+                var selIdx = (root.selectedAccentIndex >= 0 && root.selectedAccentIndex < root.accents.length) ? root.selectedAccentIndex : 0
+                var selChar = root.accents[selIdx]
+                if (root.vk) {
+                    root.vk.sendText(selChar)
+                } else if (typeof virtualKeyEngine !== "undefined" && virtualKeyEngine) {
+                    virtualKeyEngine.sendText(selChar)
+                }
+                root.isAccentOverlayOpen = false
+                root.selectedAccentIndex = -1
             }
         }
     }
