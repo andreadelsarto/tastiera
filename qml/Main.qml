@@ -50,6 +50,12 @@ Window {
         function onActiveThemeChanged() {
             themeLoader.source = "themes/" + controller.activeTheme + ".qml"
         }
+        function onKeyboardVisibleChanged() {
+            if (controller.keyboardVisible) {
+                mainWindow.isMinimized = false
+                cardBox.syncMask()
+            }
+        }
         function onTriggerBackspace() {
             virtualKeyEngine.sendBackspace()
             if (mainWindow.currentInputBuffer.length > 0) {
