@@ -55,6 +55,14 @@ void KeyboardController::setActiveTheme(const QString &theme)
     }
 }
 
+void KeyboardController::setKeyboardVisible(bool visible)
+{
+    if (m_keyboardVisible != visible) {
+        m_keyboardVisible = visible;
+        emit keyboardVisibleChanged();
+    }
+}
+
 void KeyboardController::setSplit(bool split)
 {
     if (m_isSplit != split) {

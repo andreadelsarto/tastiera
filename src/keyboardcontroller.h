@@ -11,6 +11,7 @@ class KeyboardController : public QObject
     Q_PROPERTY(QString sizeMode READ sizeMode WRITE setSizeMode NOTIFY sizeModeChanged)
     Q_PROPERTY(QString layoutMode READ layoutMode WRITE setLayoutMode NOTIFY layoutModeChanged)
     Q_PROPERTY(QString activeTheme READ activeTheme WRITE setActiveTheme NOTIFY activeThemeChanged)
+    Q_PROPERTY(bool keyboardVisible READ keyboardVisible WRITE setKeyboardVisible NOTIFY keyboardVisibleChanged)
     Q_PROPERTY(bool isSplit READ isSplit WRITE setSplit NOTIFY isSplitChanged)
     Q_PROPERTY(bool isHardwareKeyboardConnected READ isHardwareKeyboardConnected NOTIFY hardwareKeyboardStatusChanged)
     Q_PROPERTY(bool backspaceDeletingWord READ backspaceDeletingWord NOTIFY backspaceDeletingWordChanged)
@@ -33,6 +34,9 @@ public:
     bool isHardwareKeyboardConnected() const { return m_isHardwareKeyboardConnected; }
     bool backspaceDeletingWord() const { return m_backspaceDeletingWord; }
 
+    bool keyboardVisible() const { return m_keyboardVisible; }
+    void setKeyboardVisible(bool visible);
+
     Q_INVOKABLE void startBackspaceTimer();
     Q_INVOKABLE void stopBackspaceTimer();
     Q_INVOKABLE void updateInputMask(QObject *windowObj, int x, int y, int width, int height);
@@ -40,8 +44,9 @@ public:
 signals:
     void sizeModeChanged();
     void layoutModeChanged();
-    void activeThemeChanged();
     void isSplitChanged();
+    void activeThemeChanged();
+    void keyboardVisibleChanged();
     void hardwareKeyboardStatusChanged();
     void backspaceDeletingWordChanged();
     void triggerBackspace();
@@ -53,10 +58,10 @@ private:
     QString m_sizeMode{"normal"}; // "normal", "full", "onehand"
     QString m_layoutMode{"abc"};  // "abc", "accenti", "symbols", "numpad", "emoji", "klipper"
     QString m_activeTheme{"TeenageOP1"}; // "TeenageOP1", "BreezeDark", "NothingDark", "NothingLight"
-    bool m_isSplit{false};
-    bool m_isHardwareKeyboardConnected{false};
-    bool m_backspaceDeletingWord{false};
-
+    bool m_isSplit = false;
+    bool m_isHardwareKeyboardConnected = false;
+    bool m_backspaceDeletingWord = false;
+    bool m_keyboardVisible = true;
     QTimer m_backspaceHoldTimer;
     QTimer m_backspaceRepeatTimer;
 };

@@ -6,7 +6,7 @@ import org.kde.plasma.keyboard 1.0
 
 Window {
     id: mainWindow
-    visible: false
+    visible: true
     title: "Plasma Keyboard"
     color: "transparent"
     flags: Qt.Window | Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint | Qt.WindowDoesNotAcceptFocus
@@ -16,7 +16,6 @@ Window {
 
     property string currentInputBuffer: ""
     property bool showThemeSelector: false
-    property bool isMinimized: false
 
     KeyboardController {
         id: controller
@@ -61,63 +60,23 @@ Window {
         }
     }
 
-    // Minimized Floating Pill Handle (Appears when user taps Close ✖)
+    // Bottom Edge Swipe-Up Handle (Subtle 4px line at bottom edge to manually restore if closed)
     Rectangle {
-        id: minimizedPill
-        width: 140
-        height: 38
-        radius: 19
-        x: parent.width - width - 20
-        y: parent.height - height - 40
-        visible: mainWindow.isMinimized
+        id: bottomEdgeHandle
+        width: 120
+        height: 6
+        radius: 3
+        anchors.bottom: parent.bottom
+        anchors.bottomMargin: 4
+        anchors.horizontalCenter: parent.horizontalCenter
+        visible: !controller.keyboardVisible
         color: mainWindow.activeTheme ? mainWindow.activeTheme.accentColor : "#00a2ed"
-        border.color: "#ffffff"
-        border.width: 1
-
-        function syncMinimizedMask() {
-            if (mainWindow.isMinimized) {
-                controller.updateInputMask(mainWindow, minimizedPill.x, minimizedPill.y, minimizedPill.width, minimizedPill.height)
-            }
-        }
-
-        onXChanged: minimizedPill.syncMinimizedMask()
-        onYChanged: minimizedPill.syncMinimizedMask()
-        onVisibleChanged: if (mainWindow.isMinimized) minimizedPill.syncMinimizedMask()
-
-        Row {
-            anchors.centerIn: parent
-            spacing: 6
-            Text {
-                text: "⌨️  Tastiera"
-                color: "#ffffff"
-                font.family: mainWindow.activeTheme ? mainWindow.activeTheme.fontFamily : "sans-serif"
-                font.pixelSize: 13
-                font.bold: true
-            }
-        }
+        opacity: 0.6
 
         MouseArea {
-            id: minPillMouse
             anchors.fill: parent
-            cursorShape: Qt.PointingHandCursor
-            property point startPos: "0,0"
-
-            onPressed: (mouse) => {
-                startPos = Qt.point(mouse.x, mouse.y)
-            }
-
-            onPositionChanged: (mouse) => {
-                if (pressed) {
-                    var deltaX = mouse.x - startPos.x
-                    var deltaY = mouse.y - startPos.y
-                    minimizedPill.x += deltaX
-                    minimizedPill.y += deltaY
-                }
-            }
-
             onClicked: {
-                mainWindow.isMinimized = false
-                cardBox.syncMask()
+                controller.keyboardVisible = true
             }
         }
     }
@@ -125,7 +84,7 @@ Window {
     // Floating Card Container (Matches Screenshots Floating Design)
     Rectangle {
         id: cardBox
-        visible: !mainWindow.isMinimized
+        visible: controller.keyboardVisible
         width: controller.sizeMode === "full" ? (parent.width - 24) :
                (controller.sizeMode === "onehand" ? 480 : 896)
         height: 356
@@ -134,8 +93,10 @@ Window {
         y: parent.height - height - 40
 
         function syncMask() {
-            if (!mainWindow.isMinimized) {
+            if (controller.keyboardVisible) {
                 controller.updateInputMask(mainWindow, cardBox.x, cardBox.y, cardBox.width, cardBox.height)
+            } else {
+                controller.updateInputMask(mainWindow, 0, 0, 0, 0)
             }
         }
 
@@ -143,7 +104,7 @@ Window {
         onYChanged: cardBox.syncMask()
         onWidthChanged: cardBox.syncMask()
         onHeightChanged: cardBox.syncMask()
-        onVisibleChanged: if (!mainWindow.isMinimized) cardBox.syncMask()
+        onVisibleChanged: cardBox.syncMask()
         Component.onCompleted: cardBox.syncMask()
 
         color: mainWindow.activeTheme ? mainWindow.activeTheme.backgroundColor : "#e3dfd8"
@@ -630,8 +591,7 @@ Window {
                                 currentTheme: mainWindow.activeTheme
                                 Layout.fillHeight: true
                                 onReleased: {
-                                    mainWindow.isMinimized = true
-                                    minimizedPill.syncMinimizedMask()
+                                    controller.keyboardVisible = false
                                 }
                             }
                         }
