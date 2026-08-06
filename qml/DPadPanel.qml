@@ -3,13 +3,14 @@ import QtQuick.Layouts 1.15
 
 Rectangle {
     id: dpad
-    width: 210
+    width: 250
     height: parent.height
     radius: 16
     color: currentTheme && currentTheme.dpadBg ? currentTheme.dpadBg : "#252a34"
 
     property var currentTheme
     property var vk
+    property var mainWindow
 
     // Linux evdev input keycodes
     readonly property int keyLeft: 105
@@ -20,14 +21,16 @@ Rectangle {
     readonly property int keyEnd: 107
     readonly property int keyDelete: 111
     readonly property int keyA: 30
+    readonly property int keyEsc: 1
+    readonly property int keyTab: 15
 
     ColumnLayout {
         anchors.fill: parent
-        anchors.margins: 10
+        anchors.margins: 8
         spacing: 6
 
         Text {
-            text: "▷ D-Pad (Modalità Estesa)"
+            text: "▷ Extended & Modifiers"
             color: currentTheme && currentTheme.dpadHeaderColor ? currentTheme.dpadHeaderColor : "#00a2ed"
             font.family: currentTheme ? currentTheme.fontFamily : "sans-serif"
             font.pixelSize: 11
@@ -36,13 +39,67 @@ Rectangle {
         }
 
         GridLayout {
-            columns: 3
+            columns: 4
             Layout.fillWidth: true
             Layout.fillHeight: true
-            rowSpacing: 6
-            columnSpacing: 6
+            rowSpacing: 5
+            columnSpacing: 5
 
-            // Row 1: Home, Up, End
+            // Row 1: Esc, Tab, Ctrl, Alt
+            KeyButton {
+                label: "Esc"
+                isSpecial: true
+                isCustomAction: true
+                currentTheme: dpad.currentTheme
+                vk: dpad.vk
+                Layout.fillWidth: true
+                Layout.fillHeight: true
+                onReleased: if (vk) vk.sendKey(keyEsc)
+            }
+            KeyButton {
+                label: "Tab"
+                isSpecial: true
+                isCustomAction: true
+                currentTheme: dpad.currentTheme
+                vk: dpad.vk
+                Layout.fillWidth: true
+                Layout.fillHeight: true
+                onReleased: if (vk) vk.sendKey(keyTab)
+            }
+            KeyButton {
+                label: "Ctrl"
+                isSpecial: true
+                isCustomAction: true
+                isPrimaryAction: mainWindow ? mainWindow.ctrlActive : false
+                currentTheme: dpad.currentTheme
+                vk: dpad.vk
+                Layout.fillWidth: true
+                Layout.fillHeight: true
+                onReleased: {
+                    if (mainWindow) {
+                        mainWindow.ctrlActive = !mainWindow.ctrlActive
+                        if (mainWindow.ctrlActive) mainWindow.altActive = false
+                    }
+                }
+            }
+            KeyButton {
+                label: "Alt"
+                isSpecial: true
+                isCustomAction: true
+                isPrimaryAction: mainWindow ? mainWindow.altActive : false
+                currentTheme: dpad.currentTheme
+                vk: dpad.vk
+                Layout.fillWidth: true
+                Layout.fillHeight: true
+                onReleased: {
+                    if (mainWindow) {
+                        mainWindow.altActive = !mainWindow.altActive
+                        if (mainWindow.altActive) mainWindow.ctrlActive = false
+                    }
+                }
+            }
+
+            // Row 2: Home, Up, End, Canc
             KeyButton {
                 label: "Home"
                 isSpecial: true
@@ -73,8 +130,18 @@ Rectangle {
                 Layout.fillHeight: true
                 onReleased: if (vk) vk.sendKey(keyEnd)
             }
+            KeyButton {
+                label: "Canc"
+                isSpecial: true
+                isCustomAction: true
+                currentTheme: dpad.currentTheme
+                vk: dpad.vk
+                Layout.fillWidth: true
+                Layout.fillHeight: true
+                onReleased: if (vk) vk.sendKey(keyDelete)
+            }
 
-            // Row 2: Left, Down, Right
+            // Row 3: Left, Down, Right, Tutto (Ctrl+A)
             KeyButton {
                 label: "◄"
                 isSpecial: true
@@ -105,8 +172,6 @@ Rectangle {
                 Layout.fillHeight: true
                 onReleased: if (vk) vk.sendKey(keyRight)
             }
-
-            // Row 3: Tutto, Canc
             KeyButton {
                 label: "Tutto"
                 isSpecial: true
@@ -116,17 +181,6 @@ Rectangle {
                 Layout.fillWidth: true
                 Layout.fillHeight: true
                 onReleased: if (vk) vk.sendCombo(4 /* Ctrl */, keyA)
-            }
-            KeyButton {
-                label: "Canc"
-                isSpecial: true
-                isCustomAction: true
-                currentTheme: dpad.currentTheme
-                vk: dpad.vk
-                Layout.fillWidth: true
-                Layout.fillHeight: true
-                Layout.columnSpan: 2
-                onReleased: if (vk) vk.sendKey(keyDelete)
             }
         }
     }

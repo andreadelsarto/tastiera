@@ -18,6 +18,8 @@ Window {
     property bool showThemeSelector: false
     property bool isMinimized: false
     property int shiftState: 0 // 0 = lowercase, 1 = shift single, 2 = caps lock
+    property bool ctrlActive: false
+    property bool altActive: false
 
     KeyboardController {
         id: controller
@@ -405,7 +407,7 @@ Window {
                     }
                 }
 
-                // State 2: Dynamic Suggestions & Terminal Quick Bar
+                // State 2: Dynamic Suggestions, Terminal Bar, or Ctrl/Alt Shortcuts
                 Flickable {
                     anchors.fill: parent
                     anchors.leftMargin: 8
@@ -419,9 +421,89 @@ Window {
                         anchors.verticalCenter: parent.verticalCenter
                         spacing: 6
 
-                        // Terminal Quick Pills ($ | ~ / -) - Visible ONLY when isTerminalMode is true
+                        // Dynamic Ctrl Shortcuts Bar (Visible when ctrlActive is true)
                         Repeater {
-                            model: controller.isTerminalMode ? ["$", "|", "~", "/", "-", "_", "sudo ", "grep ", "ls -la ", "cd ", "clear\n"] : []
+                            model: mainWindow.ctrlActive ? [
+                                { label: "Ctrl+C", mod: 4, k: 46 },
+                                { label: "Ctrl+V", mod: 4, k: 47 },
+                                { label: "Ctrl+X", mod: 4, k: 45 },
+                                { label: "Ctrl+Z", mod: 4, k: 44 },
+                                { label: "Ctrl+A", mod: 4, k: 30 },
+                                { label: "Ctrl+F", mod: 4, k: 33 },
+                                { label: "Ctrl+S", mod: 4, k: 31 },
+                                { label: "Ctrl+W", mod: 4, k: 17 },
+                                { label: "Ctrl+T", mod: 4, k: 20 },
+                                { label: "Ctrl+L", mod: 4, k: 38 }
+                            ] : []
+                            delegate: Rectangle {
+                                width: Math.max(56, ctrlText.width + 16)
+                                height: 26
+                                radius: 13
+                                color: "#0284c7"
+                                border.color: "#38bdf8"
+                                border.width: 1
+
+                                Text {
+                                    id: ctrlText
+                                    anchors.centerIn: parent
+                                    text: modelData.label
+                                    color: "#ffffff"
+                                    font.family: "monospace"
+                                    font.pixelSize: 12
+                                    font.bold: true
+                                }
+
+                                MouseArea {
+                                    anchors.fill: parent
+                                    onClicked: {
+                                        virtualKeyEngine.sendCombo(modelData.mod, modelData.k)
+                                        mainWindow.ctrlActive = false
+                                    }
+                                }
+                            }
+                        }
+
+                        // Dynamic Alt Shortcuts Bar (Visible when altActive is true)
+                        Repeater {
+                            model: mainWindow.altActive ? [
+                                { label: "Alt+Tab", mod: 8, k: 15 },
+                                { label: "Alt+F4", mod: 8, k: 62 },
+                                { label: "Alt+Space", mod: 8, k: 57 },
+                                { label: "Alt+F2", mod: 8, k: 60 },
+                                { label: "Alt+◄", mod: 8, k: 105 },
+                                { label: "Alt+►", mod: 8, k: 106 }
+                            ] : []
+                            delegate: Rectangle {
+                                width: Math.max(56, altText.width + 16)
+                                height: 26
+                                radius: 13
+                                color: "#d97706"
+                                border.color: "#fbbf24"
+                                border.width: 1
+
+                                Text {
+                                    id: altText
+                                    anchors.centerIn: parent
+                                    text: modelData.label
+                                    color: "#ffffff"
+                                    font.family: "monospace"
+                                    font.pixelSize: 12
+                                    font.bold: true
+                                }
+
+                                MouseArea {
+                                    anchors.fill: parent
+                                    onClicked: {
+                                        virtualKeyEngine.sendCombo(modelData.mod, modelData.k)
+                                        mainWindow.altActive = false
+                                    }
+                                }
+                            }
+                        }
+
+                        // Terminal Quick Pills ($ | ~ / -) - Visible ONLY when isTerminalMode is true AND not in Ctrl/Alt mode
+                        Repeater {
+                            model: (!mainWindow.ctrlActive && !mainWindow.altActive && controller.isTerminalMode) ? ["$", "|", "~", "/", "-", "_", "sudo ", "grep ", "ls -la ", "cd ", "clear\n"] : []
                             delegate: Rectangle {
                                 width: Math.max(28, termText.width + 16)
                                 height: 26
@@ -447,17 +529,17 @@ Window {
                             }
                         }
 
-                        // Separator (Only if terminal mode is active)
+                        // Separator (Only if terminal mode is active and not in Ctrl/Alt mode)
                         Rectangle {
                             width: 1
                             height: 20
                             color: "#555"
-                            visible: controller.isTerminalMode
+                            visible: !mainWindow.ctrlActive && !mainWindow.altActive && controller.isTerminalMode
                         }
 
-                        // Dynamic Italian Dictionary Word Suggestion Pills
+                        // Dynamic Italian Dictionary Word Suggestion Pills (Visible when not in Ctrl/Alt mode)
                         Repeater {
-                            model: gestureEngine.currentSuggestions
+                            model: (!mainWindow.ctrlActive && !mainWindow.altActive) ? gestureEngine.currentSuggestions : []
                             delegate: Rectangle {
                                 width: Math.max(60, suggText.width + 20)
                                 height: 26
@@ -1142,6 +1224,7 @@ Window {
                     visible: controller.sizeMode === "full"
                     currentTheme: mainWindow.activeTheme
                     vk: virtualKeyEngine
+                    mainWindow: mainWindow
                     Layout.alignment: Qt.AlignRight
                 }
             }
