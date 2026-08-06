@@ -16,6 +16,7 @@ Window {
 
     property string currentInputBuffer: ""
     property bool showThemeSelector: false
+    property bool isMinimized: false
 
     KeyboardController {
         id: controller
@@ -60,23 +61,63 @@ Window {
         }
     }
 
-    // Bottom Edge Swipe-Up Handle (Subtle 4px line at bottom edge to manually restore if closed)
+    // Floating Bubble / Mini-Bar Handle (Appears at margin when user taps Close ✖)
     Rectangle {
-        id: bottomEdgeHandle
-        width: 120
-        height: 6
-        radius: 3
-        anchors.bottom: parent.bottom
-        anchors.bottomMargin: 4
-        anchors.horizontalCenter: parent.horizontalCenter
-        visible: !controller.keyboardVisible
+        id: minimizedPill
+        width: 140
+        height: 38
+        radius: 19
+        x: parent.width - width - 20
+        y: parent.height - height - 40
+        visible: mainWindow.isMinimized
         color: mainWindow.activeTheme ? mainWindow.activeTheme.accentColor : "#00a2ed"
-        opacity: 0.6
+        border.color: "#ffffff"
+        border.width: 1
+
+        function syncMinimizedMask() {
+            if (mainWindow.isMinimized) {
+                controller.updateInputMask(mainWindow, minimizedPill.x, minimizedPill.y, minimizedPill.width, minimizedPill.height)
+            }
+        }
+
+        onXChanged: minimizedPill.syncMinimizedMask()
+        onYChanged: minimizedPill.syncMinimizedMask()
+        onVisibleChanged: if (mainWindow.isMinimized) minimizedPill.syncMinimizedMask()
+
+        Row {
+            anchors.centerIn: parent
+            spacing: 6
+            Text {
+                text: "⌨️  Touch Key"
+                color: mainWindow.activeTheme ? mainWindow.activeTheme.accentTextColor : "#ffffff"
+                font.family: mainWindow.activeTheme ? mainWindow.activeTheme.fontFamily : "sans-serif"
+                font.pixelSize: 13
+                font.bold: true
+            }
+        }
 
         MouseArea {
+            id: minPillMouse
             anchors.fill: parent
+            cursorShape: Qt.PointingHandCursor
+            property point startPos: "0,0"
+
+            onPressed: (mouse) => {
+                startPos = Qt.point(mouse.x, mouse.y)
+            }
+
+            onPositionChanged: (mouse) => {
+                if (pressed) {
+                    var deltaX = mouse.x - startPos.x
+                    var deltaY = mouse.y - startPos.y
+                    minimizedPill.x += deltaX
+                    minimizedPill.y += deltaY
+                }
+            }
+
             onClicked: {
-                controller.keyboardVisible = true
+                mainWindow.isMinimized = false
+                cardBox.syncMask()
             }
         }
     }
@@ -84,7 +125,7 @@ Window {
     // Floating Card Container (Matches Screenshots Floating Design)
     Rectangle {
         id: cardBox
-        visible: controller.keyboardVisible
+        visible: !mainWindow.isMinimized
         width: controller.sizeMode === "full" ? (parent.width - 24) :
                (controller.sizeMode === "onehand" ? 480 : 896)
         height: 356
@@ -93,10 +134,8 @@ Window {
         y: parent.height - height - 40
 
         function syncMask() {
-            if (controller.keyboardVisible) {
+            if (!mainWindow.isMinimized) {
                 controller.updateInputMask(mainWindow, cardBox.x, cardBox.y, cardBox.width, cardBox.height)
-            } else {
-                controller.updateInputMask(mainWindow, 0, 0, 0, 0)
             }
         }
 
@@ -104,7 +143,7 @@ Window {
         onYChanged: cardBox.syncMask()
         onWidthChanged: cardBox.syncMask()
         onHeightChanged: cardBox.syncMask()
-        onVisibleChanged: cardBox.syncMask()
+        onVisibleChanged: if (!mainWindow.isMinimized) cardBox.syncMask()
         Component.onCompleted: cardBox.syncMask()
 
         color: mainWindow.activeTheme ? mainWindow.activeTheme.backgroundColor : "#e3dfd8"
@@ -140,112 +179,226 @@ Window {
                 radius: 18
                 color: mainWindow.activeTheme && mainWindow.activeTheme.headerPillBg ? mainWindow.activeTheme.headerPillBg : "#434a56"
 
-                // State 1: Theme Selector Pills Mode
-                RowLayout {
-                    anchors.centerIn: parent
-                    spacing: 8
+                // State 1: Theme Selector Pills Mode (8 Pluggable Themes)
+                Flickable {
+                    anchors.fill: parent
+                    anchors.leftMargin: 6
+                    anchors.rightMargin: 6
+                    contentWidth: themeRow.width
+                    clip: true
                     visible: mainWindow.showThemeSelector
 
-                    // Theme 1: Teenage OP-1
-                    Rectangle {
-                        width: 110
-                        height: 28
-                        radius: 14
-                        color: controller.activeTheme === "TeenageOP1" ? "#00a2ed" : "#e3dfd8"
-                        border.color: "#00a2ed"
-                        border.width: 1
+                    RowLayout {
+                        id: themeRow
+                        anchors.verticalCenter: parent.verticalCenter
+                        spacing: 6
 
-                        Text {
-                            anchors.centerIn: parent
-                            text: "🎨 Teenage OP-1"
-                            color: controller.activeTheme === "TeenageOP1" ? "#ffffff" : "#1e1e1e"
-                            font.pixelSize: 11
-                            font.bold: true
-                        }
+                        // 1. Teenage OP-1
+                        Rectangle {
+                            width: 100
+                            height: 28
+                            radius: 14
+                            color: controller.activeTheme === "TeenageOP1" ? "#ff4800" : "#e3dfd8"
+                            border.color: "#ff4800"
+                            border.width: 1
 
-                        MouseArea {
-                            anchors.fill: parent
-                            onClicked: {
-                                controller.activeTheme = "TeenageOP1"
-                                mainWindow.showThemeSelector = false
+                            Text {
+                                anchors.centerIn: parent
+                                text: "🎨 OP-1"
+                                color: controller.activeTheme === "TeenageOP1" ? "#ffffff" : "#1e1e1e"
+                                font.pixelSize: 11
+                                font.bold: true
+                            }
+
+                            MouseArea {
+                                anchors.fill: parent
+                                onClicked: {
+                                    controller.activeTheme = "TeenageOP1"
+                                    mainWindow.showThemeSelector = false
+                                }
                             }
                         }
-                    }
 
-                    // Theme 2: Breeze Dark
-                    Rectangle {
-                        width: 110
-                        height: 28
-                        radius: 14
-                        color: controller.activeTheme === "BreezeDark" ? "#3daee9" : "#232629"
-                        border.color: "#3daee9"
-                        border.width: 1
+                        // 2. Breeze Dark
+                        Rectangle {
+                            width: 100
+                            height: 28
+                            radius: 14
+                            color: controller.activeTheme === "BreezeDark" ? "#3daee9" : "#232629"
+                            border.color: "#3daee9"
+                            border.width: 1
 
-                        Text {
-                            anchors.centerIn: parent
-                            text: "🌙 Breeze Dark"
-                            color: "#ffffff"
-                            font.pixelSize: 11
-                            font.bold: true
-                        }
+                            Text {
+                                anchors.centerIn: parent
+                                text: "🌙 Breeze"
+                                color: "#ffffff"
+                                font.pixelSize: 11
+                                font.bold: true
+                            }
 
-                        MouseArea {
-                            anchors.fill: parent
-                            onClicked: {
-                                controller.activeTheme = "BreezeDark"
-                                mainWindow.showThemeSelector = false
+                            MouseArea {
+                                anchors.fill: parent
+                                onClicked: {
+                                    controller.activeTheme = "BreezeDark"
+                                    mainWindow.showThemeSelector = false
+                                }
                             }
                         }
-                    }
 
-                    // Theme 3: Nothing Dark
-                    Rectangle {
-                        width: 110
-                        height: 28
-                        radius: 14
-                        color: controller.activeTheme === "NothingDark" ? "#d00000" : "#000000"
-                        border.color: "#d00000"
-                        border.width: 1
+                        // 3. Nothing Dark
+                        Rectangle {
+                            width: 110
+                            height: 28
+                            radius: 14
+                            color: controller.activeTheme === "NothingDark" ? "#ff2e2e" : "#0a0a0a"
+                            border.color: "#ff2e2e"
+                            border.width: 1
 
-                        Text {
-                            anchors.centerIn: parent
-                            text: "⚫ Nothing Dark"
-                            color: "#ffffff"
-                            font.pixelSize: 11
-                            font.bold: true
-                        }
+                            Text {
+                                anchors.centerIn: parent
+                                text: "⚫ Nothing Dark"
+                                color: "#ffffff"
+                                font.pixelSize: 11
+                                font.bold: true
+                            }
 
-                        MouseArea {
-                            anchors.fill: parent
-                            onClicked: {
-                                controller.activeTheme = "NothingDark"
-                                mainWindow.showThemeSelector = false
+                            MouseArea {
+                                anchors.fill: parent
+                                onClicked: {
+                                    controller.activeTheme = "NothingDark"
+                                    mainWindow.showThemeSelector = false
+                                }
                             }
                         }
-                    }
 
-                    // Theme 4: Nothing Light
-                    Rectangle {
-                        width: 110
-                        height: 28
-                        radius: 14
-                        color: controller.activeTheme === "NothingLight" ? "#1e1e1e" : "#ffffff"
-                        border.color: "#1e1e1e"
-                        border.width: 1
+                        // 4. Nothing Light
+                        Rectangle {
+                            width: 110
+                            height: 28
+                            radius: 14
+                            color: controller.activeTheme === "NothingLight" ? "#0a0a0a" : "#ffffff"
+                            border.color: "#0a0a0a"
+                            border.width: 1
 
-                        Text {
-                            anchors.centerIn: parent
-                            text: "⚪ Nothing Light"
-                            color: controller.activeTheme === "NothingLight" ? "#ffffff" : "#1e1e1e"
-                            font.pixelSize: 11
-                            font.bold: true
+                            Text {
+                                anchors.centerIn: parent
+                                text: "⚪ Nothing Light"
+                                color: controller.activeTheme === "NothingLight" ? "#ffffff" : "#0a0a0a"
+                                font.pixelSize: 11
+                                font.bold: true
+                            }
+
+                            MouseArea {
+                                anchors.fill: parent
+                                onClicked: {
+                                    controller.activeTheme = "NothingLight"
+                                    mainWindow.showThemeSelector = false
+                                }
+                            }
                         }
 
-                        MouseArea {
-                            anchors.fill: parent
-                            onClicked: {
-                                controller.activeTheme = "NothingLight"
-                                mainWindow.showThemeSelector = false
+                        // 5. Hacker / Matrix
+                        Rectangle {
+                            width: 100
+                            height: 28
+                            radius: 14
+                            color: controller.activeTheme === "HackerMatrix" ? "#00ff41" : "#050a05"
+                            border.color: "#00ff41"
+                            border.width: 1
+
+                            Text {
+                                anchors.centerIn: parent
+                                text: "💻 Matrix"
+                                color: controller.activeTheme === "HackerMatrix" ? "#050a05" : "#00ff41"
+                                font.family: "monospace"
+                                font.pixelSize: 11
+                                font.bold: true
+                            }
+
+                            MouseArea {
+                                anchors.fill: parent
+                                onClicked: {
+                                    controller.activeTheme = "HackerMatrix"
+                                    mainWindow.showThemeSelector = false
+                                }
+                            }
+                        }
+
+                        // 6. Cyberpunk 2077
+                        Rectangle {
+                            width: 110
+                            height: 28
+                            radius: 14
+                            color: controller.activeTheme === "Cyberpunk2077" ? "#ff0055" : "#0d0221"
+                            border.color: "#00f0ff"
+                            border.width: 1
+
+                            Text {
+                                anchors.centerIn: parent
+                                text: "🌆 Cyberpunk"
+                                color: "#00f0ff"
+                                font.pixelSize: 11
+                                font.bold: true
+                            }
+
+                            MouseArea {
+                                anchors.fill: parent
+                                onClicked: {
+                                    controller.activeTheme = "Cyberpunk2077"
+                                    mainWindow.showThemeSelector = false
+                                }
+                            }
+                        }
+
+                        // 7. Dracula Dark
+                        Rectangle {
+                            width: 100
+                            height: 28
+                            radius: 14
+                            color: controller.activeTheme === "DraculaDark" ? "#ff79c6" : "#282a36"
+                            border.color: "#bd93f9"
+                            border.width: 1
+
+                            Text {
+                                anchors.centerIn: parent
+                                text: "🧛 Dracula"
+                                color: controller.activeTheme === "DraculaDark" ? "#ffffff" : "#f8f8f2"
+                                font.pixelSize: 11
+                                font.bold: true
+                            }
+
+                            MouseArea {
+                                anchors.fill: parent
+                                onClicked: {
+                                    controller.activeTheme = "DraculaDark"
+                                    mainWindow.showThemeSelector = false
+                                }
+                            }
+                        }
+
+                        // 8. Nord Frost
+                        Rectangle {
+                            width: 100
+                            height: 28
+                            radius: 14
+                            color: controller.activeTheme === "NordFrost" ? "#88c0d0" : "#2e3440"
+                            border.color: "#88c0d0"
+                            border.width: 1
+
+                            Text {
+                                anchors.centerIn: parent
+                                text: "❄️ Nord"
+                                color: controller.activeTheme === "NordFrost" ? "#2e3440" : "#eceff4"
+                                font.pixelSize: 11
+                                font.bold: true
+                            }
+
+                            MouseArea {
+                                anchors.fill: parent
+                                onClicked: {
+                                    controller.activeTheme = "NordFrost"
+                                    mainWindow.showThemeSelector = false
+                                }
                             }
                         }
                     }
@@ -582,7 +735,7 @@ Window {
                                     gestureEngine.updateCurrentPrefix("")
                                 }
                             }
-                            // Close Keyboard Button ✖
+                            // Close Keyboard Button ✖ (Contracts to Floating Bubble)
                             KeyButton {
                                 label: "✖"
                                 isSpecial: true
@@ -591,7 +744,8 @@ Window {
                                 currentTheme: mainWindow.activeTheme
                                 Layout.fillHeight: true
                                 onReleased: {
-                                    controller.keyboardVisible = false
+                                    mainWindow.isMinimized = true
+                                    minimizedPill.syncMinimizedMask()
                                 }
                             }
                         }

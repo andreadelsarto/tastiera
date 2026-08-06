@@ -89,6 +89,10 @@ qt_add_qml_module(plasma-keyboard
         qml/themes/TeenageOP1.qml
         qml/themes/NothingDark.qml
         qml/themes/NothingLight.qml
+        qml/themes/HackerMatrix.qml
+        qml/themes/Cyberpunk2077.qml
+        qml/themes/DraculaDark.qml
+        qml/themes/NordFrost.qml
 )
 
 install(TARGETS plasma-keyboard DESTINATION bin)
