@@ -674,6 +674,7 @@ Window {
                             KeyButton {
                                 label: controller.layoutMode === "abc" ? "?123" : "ABC"
                                 isSpecial: true
+                                isCustomAction: true
                                 implicitWidth: 55
                                 currentTheme: mainWindow.activeTheme
                                 onReleased: {
@@ -688,6 +689,7 @@ Window {
                             KeyButton {
                                 label: "😊"
                                 isSpecial: true
+                                isCustomAction: true
                                 implicitWidth: 44
                                 currentTheme: mainWindow.activeTheme
                                 onReleased: controller.layoutMode = "emoji"
