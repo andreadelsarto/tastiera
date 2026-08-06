@@ -644,9 +644,14 @@ Window {
                                 currentTheme: mainWindow.activeTheme
                                 Layout.fillHeight: true
                                 onReleased: {
-                                    if (mainWindow.shiftState === 0) mainWindow.shiftState = 1
-                                    else if (mainWindow.shiftState === 1) mainWindow.shiftState = 2
-                                    else mainWindow.shiftState = 0
+                                    if (mainWindow.shiftState > 0) {
+                                        mainWindow.shiftState = 0
+                                    } else {
+                                        mainWindow.shiftState = 1
+                                    }
+                                }
+                                onLongPressed: {
+                                    mainWindow.shiftState = 2
                                 }
                             }
                             Repeater {
@@ -876,11 +881,11 @@ Window {
                             }
                         }
 
-                        // Row 3: = \ % * " ' : ; ! ⌫
+                        // Row 3: = \ % * " ' : ; ! ? ⌫
                         RowLayout {
                             spacing: 6
                             Repeater {
-                                model: ["=", "\\", "%", "*", "\"", "'", ":", ";", "!"]
+                                model: ["=", "\\", "%", "*", "\"", "'", ":", ";", "!", "?"]
                                 delegate: KeyButton {
                                     label: modelData
                                     currentTheme: mainWindow.activeTheme

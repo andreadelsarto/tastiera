@@ -22,6 +22,7 @@ Rectangle {
 
     signal keyTriggered(string key)
     signal released()
+    signal longPressed()
 
     radius: currentTheme ? currentTheme.keyRadius : 12
 
@@ -126,6 +127,7 @@ Rectangle {
         interval: 350
         repeat: false
         onTriggered: {
+            root.longPressed()
             if (root.accents.length > 0) {
                 root.selectedAccentIndex = 0
                 accentPopup.open()
