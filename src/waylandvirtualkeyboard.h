@@ -22,6 +22,7 @@ public:
     Q_INVOKABLE void sendKey(uint32_t keycode, bool pressed = true);
     Q_INVOKABLE void sendKeySym(uint32_t keysym);
     Q_INVOKABLE void sendText(const QString &text);
+    Q_INVOKABLE void sendEmoji(const QString &emoji);
     Q_INVOKABLE void sendCombo(uint32_t modifier, uint32_t keycode);
     Q_INVOKABLE void sendBackspace();
     Q_INVOKABLE void sendCtrlBackspace();

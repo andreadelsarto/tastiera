@@ -1008,43 +1008,124 @@ Window {
                                         "😊", "😇", "🙂", "🙃", "😉", "😌", "😍", "🥰",
                                         "😘", "😗", "😙", "😚", "😋", "😛", "😜", "🤪",
                                         "🤨", "🧐", "🤓", "😎", "🤩", "🥳", "😏", "😒",
-                                        "👍", "👎", "👏", "🙌", "👐", "🤲", "🤝", "🙏"]
+                                        "👍", "👎", "👏", "🙌", "👐", "🤲", "🤝", "🙏",
+                                        "🔥", "✨", "🎉", "❤️", "💯", "🚀", "💡", "⚠️"]
                                 delegate: KeyButton {
                                     label: modelData
                                     currentTheme: mainWindow.activeTheme
                                     vk: virtualKeyEngine
                                     Layout.fillWidth: true
                                     implicitHeight: 48
+                                    onReleased: {
+                                        virtualKeyEngine.sendEmoji(modelData)
+                                    }
                                 }
                             }
                         }
                     }
 
-                    // View 5: Klipper Clipboard View
-                    ListView {
-                        clip: true
-                        model: klipper.history
-                        delegate: Rectangle {
-                            width: ListView.view.width
-                            height: 44
-                            color: klipperMouse.pressed ? (mainWindow.activeTheme ? mainWindow.activeTheme.keyActiveColor : "#24344d") : (mainWindow.activeTheme ? mainWindow.activeTheme.keyBackgroundColor : "#162032")
-                            border.color: mainWindow.activeTheme ? mainWindow.activeTheme.keyBorderColor : "#22334d"
-                            radius: 8
+                    // View 5: Klipper Clipboard View (Clean Modern Layout)
+                    ColumnLayout {
+                        spacing: 6
 
+                        // Klipper Header Bar
+                        RowLayout {
+                            Layout.fillWidth: true
                             Text {
-                                anchors.centerIn: parent
-                                anchors.margins: 8
-                                text: modelData
-                                elide: Text.ElideRight
-                                color: mainWindow.activeTheme ? mainWindow.activeTheme.textColor : "#fff"
-                                font.pixelSize: 14
+                                text: "📋  Cronologia Appunti (Klipper)"
+                                color: mainWindow.activeTheme ? mainWindow.activeTheme.textColor : "#ffffff"
+                                font.family: mainWindow.activeTheme ? mainWindow.activeTheme.fontFamily : "sans-serif"
+                                font.pixelSize: 13
+                                font.bold: true
                             }
+                            Item { Layout.fillWidth: true }
+                            Rectangle {
+                                width: 84
+                                height: 26
+                                radius: 13
+                                color: mainWindow.activeTheme ? mainWindow.activeTheme.accentColor : "#00a2ed"
+                                Text {
+                                    anchors.centerIn: parent
+                                    text: "🔄 Aggiorna"
+                                    color: "#ffffff"
+                                    font.pixelSize: 11
+                                    font.bold: true
+                                }
+                                MouseArea {
+                                    anchors.fill: parent
+                                    onClicked: klipper.refreshHistory()
+                                }
+                            }
+                        }
 
-                            MouseArea {
-                                id: klipperMouse
-                                anchors.fill: parent
-                                onClicked: {
-                                    virtualKeyEngine.sendText(modelData)
+                        // Klipper History Item Cards
+                        ListView {
+                            Layout.fillWidth: true
+                            Layout.fillHeight: true
+                            clip: true
+                            spacing: 6
+                            model: klipper.history
+                            delegate: Rectangle {
+                                width: ListView.view.width
+                                height: 42
+                                color: klipperMouse.pressed ? (mainWindow.activeTheme ? mainWindow.activeTheme.keyActiveColor : "#24344d") : (mainWindow.activeTheme ? mainWindow.activeTheme.keyBackgroundColor : "#162032")
+                                border.color: mainWindow.activeTheme ? mainWindow.activeTheme.keyBorderColor : "#22334d"
+                                radius: 10
+
+                                RowLayout {
+                                    anchors.fill: parent
+                                    anchors.leftMargin: 10
+                                    anchors.rightMargin: 10
+                                    spacing: 8
+
+                                    // Index Badge
+                                    Rectangle {
+                                        width: 22
+                                        height: 22
+                                        radius: 11
+                                        color: mainWindow.activeTheme ? mainWindow.activeTheme.accentColor : "#00a2ed"
+                                        Text {
+                                            anchors.centerIn: parent
+                                            text: (index + 1).toString()
+                                            color: "#ffffff"
+                                            font.pixelSize: 11
+                                            font.bold: true
+                                        }
+                                    }
+
+                                    // Content Text Preview
+                                    Text {
+                                        Layout.fillWidth: true
+                                        text: modelData
+                                        elide: Text.ElideRight
+                                        color: mainWindow.activeTheme ? mainWindow.activeTheme.textColor : "#fff"
+                                        font.family: mainWindow.activeTheme ? mainWindow.activeTheme.fontFamily : "sans-serif"
+                                        font.pixelSize: 13
+                                    }
+
+                                    // Paste Action Badge
+                                    Rectangle {
+                                        width: 60
+                                        height: 22
+                                        radius: 6
+                                        color: "#2a3447"
+                                        Text {
+                                            anchors.centerIn: parent
+                                            text: "Incolla 📋"
+                                            color: "#38bdf8"
+                                            font.pixelSize: 10
+                                            font.bold: true
+                                        }
+                                    }
+                                }
+
+                                MouseArea {
+                                    id: klipperMouse
+                                    anchors.fill: parent
+                                    onClicked: {
+                                        klipper.setClipboardContents(modelData)
+                                        virtualKeyEngine.sendCombo(4, 47) // Ctrl+V
+                                    }
                                 }
                             }
                         }

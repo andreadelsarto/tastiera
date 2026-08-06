@@ -269,6 +269,19 @@ void WaylandVirtualKeyboard::sendText(const QString &text)
     }
 }
 
+#include <QClipboard>
+
+void WaylandVirtualKeyboard::sendEmoji(const QString &emoji)
+{
+    if (emoji.isEmpty()) return;
+
+    QClipboard *clipboard = QGuiApplication::clipboard();
+    if (clipboard) {
+        clipboard->setText(emoji);
+    }
+    sendCombo(4, KEY_V);
+}
+
 void WaylandVirtualKeyboard::sendCombo(uint32_t modifier, uint32_t keycode)
 {
     uint32_t modKey = 0;
