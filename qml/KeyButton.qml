@@ -103,6 +103,19 @@ Rectangle {
                         font.pixelSize: 16
                         font.bold: true
                     }
+
+                    MouseArea {
+                        anchors.fill: parent
+                        onClicked: {
+                            if (root.vk) {
+                                root.vk.sendText(modelData)
+                            } else if (typeof virtualKeyEngine !== "undefined" && virtualKeyEngine) {
+                                virtualKeyEngine.sendText(modelData)
+                            }
+                            root.isAccentOverlayOpen = false
+                            root.selectedAccentIndex = -1
+                        }
+                    }
                 }
             }
         }

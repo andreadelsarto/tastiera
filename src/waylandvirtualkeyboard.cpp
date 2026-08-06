@@ -198,6 +198,20 @@ void WaylandVirtualKeyboard::sendText(const QString &text)
 {
     if (text.isEmpty()) return;
 
+    // Check if string contains non-ASCII characters (accents, symbols like €, etc.)
+    bool hasNonAscii = false;
+    for (const QChar &ch : text) {
+        if (ch.unicode() > 127) {
+            hasNonAscii = true;
+            break;
+        }
+    }
+
+    if (hasNonAscii) {
+        sendEmoji(text);
+        return;
+    }
+
     for (const QChar &ch : text) {
         char c = ch.toLatin1();
         uint32_t keycode = 0;
