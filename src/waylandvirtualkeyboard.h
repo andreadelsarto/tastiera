@@ -28,6 +28,7 @@ public:
     Q_INVOKABLE void sendCtrlBackspace();
     Q_INVOKABLE void sendMouseMove(int dx, int dy);
     Q_INVOKABLE void sendMouseClick(int button = 1, bool pressed = true);
+    Q_INVOKABLE void sendMouseScroll(int deltaX, int deltaY);
 
 signals:
     void connectionChanged();

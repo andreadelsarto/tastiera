@@ -250,54 +250,150 @@ Rectangle {
             }
         }
 
-        // VIEW B: Touchpad Surface Area View
+        // VIEW B: KDE Connect Style Multi-Touch Touchpad Canvas View
         ColumnLayout {
             Layout.fillWidth: true
             Layout.fillHeight: true
             visible: dpad.subMode === "touchpad"
             spacing: 6
 
-            // Interactive Trackpad Canvas Surface
+            // Main Trackpad Surface
             Rectangle {
-                id: trackpadSurface
+                id: padSurface
                 Layout.fillWidth: true
                 Layout.fillHeight: true
                 radius: 12
-                color: currentTheme && currentTheme.keyBg ? currentTheme.keyBg : "#1e222b"
-                border.color: currentTheme && currentTheme.accentColor ? currentTheme.accentColor : "#00a2ed"
+                color: currentTheme && currentTheme.keyBg ? currentTheme.keyBg : "#181b22"
+                border.color: multiTouchArea.pressed ? (currentTheme ? currentTheme.accentColor : "#00a2ed") : (currentTheme ? currentTheme.keyBorderColor : "#333b4d")
                 border.width: 1
 
+                // Subtle visual grid texture & instructions
                 Text {
                     anchors.centerIn: parent
-                    text: "✨ Drag finger to move cursor"
-                    color: currentTheme && currentTheme.subTextColor ? currentTheme.subTextColor : "#6b7280"
+                    text: "1-finger: Move & Tap\n2-fingers: Scroll & Right-Click\nRight bar: Scroll Strip"
+                    horizontalAlignment: Text.AlignHCenter
+                    color: currentTheme && currentTheme.subTextColor ? currentTheme.subTextColor : "#5a6478"
                     font.pixelSize: 10
-                    opacity: padMouseArea.pressed ? 0.3 : 0.8
+                    opacity: multiTouchArea.pressed ? 0.3 : 0.7
                 }
 
-                MouseArea {
-                    id: padMouseArea
-                    anchors.fill: parent
-                    cursorShape: Qt.PointingHandCursor
-                    property point lastPos: "0,0"
+                // Dedicated Scroll Bar Strip (Right Edge)
+                Rectangle {
+                    id: scrollStrip
+                    width: 24
+                    anchors.top: parent.top
+                    anchors.bottom: parent.bottom
+                    anchors.right: parent.right
+                    anchors.margins: 4
+                    radius: 8
+                    color: scrollMouseArea.pressed ? (currentTheme ? currentTheme.accentColor : "#00a2ed") : "#222733"
+                    border.color: "#384152"
+                    border.width: 1
 
-                    onPressed: (mouse) => {
-                        lastPos = Qt.point(mouse.x, mouse.y)
+                    Text {
+                        anchors.centerIn: parent
+                        text: "▲\n│\n▼"
+                        horizontalAlignment: Text.AlignHCenter
+                        color: "#9aa4b8"
+                        font.pixelSize: 9
+                        font.bold: true
                     }
 
-                    onPositionChanged: (mouse) => {
-                        if (pressed && vk) {
-                            var dx = (mouse.x - lastPos.x) * 2.2
-                            var dy = (mouse.y - lastPos.y) * 2.2
-                            vk.sendMouseMove(Math.round(dx), Math.round(dy))
-                            lastPos = Qt.point(mouse.x, mouse.y)
+                    MouseArea {
+                        id: scrollMouseArea
+                        anchors.fill: parent
+                        cursorShape: Qt.SizeVerCursor
+                        property real lastY: 0
+
+                        onPressed: (mouse) => {
+                            lastY = mouse.y
+                        }
+
+                        onPositionChanged: (mouse) => {
+                            if (pressed && vk) {
+                                var dy = mouse.y - lastY
+                                if (Math.abs(dy) >= 4) {
+                                    var ticks = dy > 0 ? -1 : 1
+                                    vk.sendMouseScroll(0, ticks)
+                                    lastY = mouse.y
+                                }
+                            }
+                        }
+                    }
+                }
+
+                // MultiTouch Area (KDE Connect Gesture Protocol Engine)
+                MultiPointTouchArea {
+                    id: multiTouchArea
+                    anchors.top: parent.top
+                    anchors.bottom: parent.bottom
+                    anchors.left: parent.left
+                    anchors.right: scrollStrip.left
+                    anchors.margins: 4
+                    touchPoints: [
+                        TouchPoint { id: p1 },
+                        TouchPoint { id: p2 }
+                    ]
+
+                    property real startTime: 0
+                    property real startP1X: 0
+                    property real startP1Y: 0
+                    property bool isMultiTouchActive: false
+
+                    onPressed: {
+                        startTime = Date.now()
+                        startP1X = p1.x
+                        startP1Y = p1.y
+                        isMultiTouchActive = p1.pressed && p2.pressed
+                    }
+
+                    onUpdated: {
+                        if (!vk) return
+
+                        if (p1.pressed && p2.pressed) {
+                            // 2-Finger Drag -> Scroll (KDE Connect Scroll Protocol)
+                            isMultiTouchActive = true
+                            var scrollDy = p1.y - p1.previousY
+                            var scrollDx = p1.x - p1.previousX
+
+                            if (Math.abs(scrollDy) >= 6) {
+                                var ticksY = scrollDy > 0 ? -1 : 1
+                                vk.sendMouseScroll(0, ticksY)
+                            }
+                            if (Math.abs(scrollDx) >= 6) {
+                                var ticksX = scrollDx > 0 ? 1 : -1
+                                vk.sendMouseScroll(ticksX, 0)
+                            }
+                        } else if (p1.pressed && !p2.pressed && !isMultiTouchActive) {
+                            // 1-Finger Drag -> Cursor Relative Movement with Velocity Acceleration
+                            var dx = p1.x - p1.previousX
+                            var dy = p1.y - p1.previousY
+                            var speed = Math.sqrt(dx * dx + dy * dy)
+                            var accel = 1.0 + Math.min(speed * 0.12, 2.5)
+
+                            vk.sendMouseMove(Math.round(dx * accel), Math.round(dy * accel))
                         }
                     }
 
-                    onClicked: {
-                        if (vk) {
-                            vk.sendMouseClick(1, true)
-                            vk.sendMouseClick(1, false)
+                    onReleased: {
+                        var duration = Date.now() - startTime
+
+                        if (isMultiTouchActive) {
+                            // 2-Finger Tap -> Right Click
+                            if (duration < 250 && vk) {
+                                vk.sendMouseClick(2, true)
+                                vk.sendMouseClick(2, false)
+                            }
+                        } else if (p1.pressed === false && p2.pressed === false) {
+                            // 1-Finger Tap -> Left Click
+                            var dist = Math.sqrt(Math.pow(p1.x - startP1X, 2) + Math.pow(p1.y - startP1Y, 2))
+                            if (duration < 200 && dist < 6 && vk) {
+                                vk.sendMouseClick(1, true)
+                                vk.sendMouseClick(1, false)
+                            }
+                        }
+                        if (!p1.pressed && !p2.pressed) {
+                            isMultiTouchActive = false
                         }
                     }
                 }
@@ -306,11 +402,11 @@ Rectangle {
             // Mouse Buttons Row (Left Click & Right Click)
             RowLayout {
                 Layout.fillWidth: true
-                height: 38
+                height: 36
                 spacing: 6
 
                 KeyButton {
-                    label: "🖱️ Left Click"
+                    label: "🖱️ L-Click"
                     isSpecial: true
                     isCustomAction: true
                     currentTheme: dpad.currentTheme
@@ -321,7 +417,7 @@ Rectangle {
                 }
 
                 KeyButton {
-                    label: "🖱️ Right Click"
+                    label: "🖱️ R-Click"
                     isSpecial: true
                     isCustomAction: true
                     currentTheme: dpad.currentTheme
