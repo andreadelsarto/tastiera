@@ -68,9 +68,6 @@ Window {
             mainWindow.currentInputBuffer = ""
             gestureEngine.updateCurrentPrefix("")
         }
-        function onTriggerKeyRepeat(keycode) {
-            virtualKeyEngine.sendKey(keycode, true)
-        }
     }
 
     // Floating Bubble / Mini-Bar Handle (Appears at margin when user taps Close ✖)
@@ -138,7 +135,7 @@ Window {
     Rectangle {
         id: cardBox
         visible: !mainWindow.isMinimized
-        width: (controller.sizeMode === "full" || controller.isSplit) ? (parent.width - 24) :
+        width: controller.sizeMode === "full" ? (parent.width - 24) :
                (controller.sizeMode === "onehand" ? 480 : 896)
         height: 356
 
@@ -423,7 +420,7 @@ Window {
                     anchors.rightMargin: 8
                     contentWidth: suggRow.width
                     clip: true
-                    visible: !mainWindow.showThemeSelector && !controller.isPasswordMode
+                    visible: !mainWindow.showThemeSelector
 
                     RowLayout {
                         id: suggRow
@@ -622,14 +619,9 @@ Window {
                                     Layout.fillWidth: true
                                     Layout.fillHeight: true
                                     onKeyTriggered: (key) => {
-                                        if (!controller.isPasswordMode) {
-                                            var letter = mainWindow.shiftState > 0 ? key.toUpperCase() : key.toLowerCase()
-                                            mainWindow.currentInputBuffer += letter
-                                            gestureEngine.updateCurrentPrefix(mainWindow.currentInputBuffer)
-                                        } else {
-                                            mainWindow.currentInputBuffer = ""
-                                            gestureEngine.updateCurrentPrefix("")
-                                        }
+                                        var letter = mainWindow.shiftState > 0 ? key.toUpperCase() : key.toLowerCase()
+                                        mainWindow.currentInputBuffer += letter
+                                        gestureEngine.updateCurrentPrefix(mainWindow.currentInputBuffer)
                                         if (mainWindow.shiftState === 1) {
                                             mainWindow.shiftState = 0
                                         }
@@ -658,14 +650,9 @@ Window {
                                     Layout.fillWidth: true
                                     Layout.fillHeight: true
                                     onKeyTriggered: (key) => {
-                                        if (!controller.isPasswordMode) {
-                                            var letter = mainWindow.shiftState > 0 ? key.toUpperCase() : key.toLowerCase()
-                                            mainWindow.currentInputBuffer += letter
-                                            gestureEngine.updateCurrentPrefix(mainWindow.currentInputBuffer)
-                                        } else {
-                                            mainWindow.currentInputBuffer = ""
-                                            gestureEngine.updateCurrentPrefix("")
-                                        }
+                                        var letter = mainWindow.shiftState > 0 ? key.toUpperCase() : key.toLowerCase()
+                                        mainWindow.currentInputBuffer += letter
+                                        gestureEngine.updateCurrentPrefix(mainWindow.currentInputBuffer)
                                         if (mainWindow.shiftState === 1) {
                                             mainWindow.shiftState = 0
                                         }
@@ -694,14 +681,9 @@ Window {
                                     Layout.fillWidth: true
                                     Layout.fillHeight: true
                                     onKeyTriggered: (key) => {
-                                        if (!controller.isPasswordMode) {
-                                            var letter = mainWindow.shiftState > 0 ? key.toUpperCase() : key.toLowerCase()
-                                            mainWindow.currentInputBuffer += letter
-                                            gestureEngine.updateCurrentPrefix(mainWindow.currentInputBuffer)
-                                        } else {
-                                            mainWindow.currentInputBuffer = ""
-                                            gestureEngine.updateCurrentPrefix("")
-                                        }
+                                        var letter = mainWindow.shiftState > 0 ? key.toUpperCase() : key.toLowerCase()
+                                        mainWindow.currentInputBuffer += letter
+                                        gestureEngine.updateCurrentPrefix(mainWindow.currentInputBuffer)
                                         if (mainWindow.shiftState === 1) {
                                             mainWindow.shiftState = 0
                                         }
@@ -729,14 +711,9 @@ Window {
                                     Layout.fillWidth: true
                                     Layout.fillHeight: true
                                     onKeyTriggered: (key) => {
-                                        if (!controller.isPasswordMode) {
-                                            var letter = mainWindow.shiftState > 0 ? key.toUpperCase() : key.toLowerCase()
-                                            mainWindow.currentInputBuffer += letter
-                                            gestureEngine.updateCurrentPrefix(mainWindow.currentInputBuffer)
-                                        } else {
-                                            mainWindow.currentInputBuffer = ""
-                                            gestureEngine.updateCurrentPrefix("")
-                                        }
+                                        var letter = mainWindow.shiftState > 0 ? key.toUpperCase() : key.toLowerCase()
+                                        mainWindow.currentInputBuffer += letter
+                                        gestureEngine.updateCurrentPrefix(mainWindow.currentInputBuffer)
                                         if (mainWindow.shiftState === 1) {
                                             mainWindow.shiftState = 0
                                         }
@@ -778,14 +755,9 @@ Window {
                                     Layout.fillWidth: true
                                     Layout.fillHeight: true
                                     onKeyTriggered: (key) => {
-                                        if (!controller.isPasswordMode) {
-                                            var letter = mainWindow.shiftState > 0 ? key.toUpperCase() : key.toLowerCase()
-                                            mainWindow.currentInputBuffer += letter
-                                            gestureEngine.updateCurrentPrefix(mainWindow.currentInputBuffer)
-                                        } else {
-                                            mainWindow.currentInputBuffer = ""
-                                            gestureEngine.updateCurrentPrefix("")
-                                        }
+                                        var letter = mainWindow.shiftState > 0 ? key.toUpperCase() : key.toLowerCase()
+                                        mainWindow.currentInputBuffer += letter
+                                        gestureEngine.updateCurrentPrefix(mainWindow.currentInputBuffer)
                                         if (mainWindow.shiftState === 1) {
                                             mainWindow.shiftState = 0
                                         }
@@ -864,7 +836,7 @@ Window {
                                 Layout.fillHeight: true
                             }
                             KeyButton {
-                                label: "space"
+                                label: "spazio"
                                 textToSend: " "
                                 currentTheme: mainWindow.activeTheme
                                 vk: virtualKeyEngine
@@ -1053,7 +1025,7 @@ Window {
                                 Layout.fillHeight: true
                             }
                             KeyButton {
-                                label: "space"
+                                label: "spazio"
                                 textToSend: " "
                                 currentTheme: mainWindow.activeTheme
                                 vk: virtualKeyEngine
