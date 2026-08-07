@@ -58,7 +58,15 @@ void WaylandVirtualKeyboard::initUinput()
     }
 
     ioctl(m_uinputFd, UI_SET_EVBIT, EV_KEY);
+    ioctl(m_uinputFd, UI_SET_EVBIT, EV_REL);
     ioctl(m_uinputFd, UI_SET_EVBIT, EV_SYN);
+
+    ioctl(m_uinputFd, UI_SET_RELBIT, REL_X);
+    ioctl(m_uinputFd, UI_SET_RELBIT, REL_Y);
+
+    ioctl(m_uinputFd, UI_SET_KEYBIT, BTN_LEFT);
+    ioctl(m_uinputFd, UI_SET_KEYBIT, BTN_RIGHT);
+    ioctl(m_uinputFd, UI_SET_KEYBIT, BTN_MIDDLE);
 
     for (int i = 1; i < 240; ++i) {
         ioctl(m_uinputFd, UI_SET_KEYBIT, i);
@@ -333,4 +341,53 @@ void WaylandVirtualKeyboard::sendBackspace()
 void WaylandVirtualKeyboard::sendCtrlBackspace()
 {
     sendCombo(4, KEY_BACKSPACE);
+}
+
+void WaylandVirtualKeyboard::sendMouseMove(int dx, int dy)
+{
+    if (m_uinputFd < 0 || (dx == 0 && dy == 0)) return;
+
+    struct input_event ev[3];
+    memset(ev, 0, sizeof(ev));
+    gettimeofday(&ev[0].time, nullptr);
+    ev[0].type = EV_REL;
+    ev[0].code = REL_X;
+    ev[0].value = dx;
+
+    gettimeofday(&ev[1].time, nullptr);
+    ev[1].type = EV_REL;
+    ev[1].code = REL_Y;
+    ev[1].value = dy;
+
+    gettimeofday(&ev[2].time, nullptr);
+    ev[2].type = EV_SYN;
+    ev[2].code = SYN_REPORT;
+    ev[2].value = 0;
+
+    ssize_t r = write(m_uinputFd, ev, sizeof(ev));
+    Q_UNUSED(r);
+}
+
+void WaylandVirtualKeyboard::sendMouseClick(int button, bool pressed)
+{
+    if (m_uinputFd < 0) return;
+
+    uint32_t btn = BTN_LEFT;
+    if (button == 2) btn = BTN_RIGHT;
+    else if (button == 3) btn = BTN_MIDDLE;
+
+    struct input_event ev[2];
+    memset(ev, 0, sizeof(ev));
+    gettimeofday(&ev[0].time, nullptr);
+    ev[0].type = EV_KEY;
+    ev[0].code = btn;
+    ev[0].value = pressed ? 1 : 0;
+
+    gettimeofday(&ev[1].time, nullptr);
+    ev[1].type = EV_SYN;
+    ev[1].code = SYN_REPORT;
+    ev[1].value = 0;
+
+    ssize_t r = write(m_uinputFd, ev, sizeof(ev));
+    Q_UNUSED(r);
 }

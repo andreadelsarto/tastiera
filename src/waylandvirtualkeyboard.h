@@ -26,6 +26,8 @@ public:
     Q_INVOKABLE void sendCombo(uint32_t modifier, uint32_t keycode);
     Q_INVOKABLE void sendBackspace();
     Q_INVOKABLE void sendCtrlBackspace();
+    Q_INVOKABLE void sendMouseMove(int dx, int dy);
+    Q_INVOKABLE void sendMouseClick(int button = 1, bool pressed = true);
 
 signals:
     void connectionChanged();

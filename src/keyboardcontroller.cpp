@@ -26,6 +26,23 @@ KeyboardController::KeyboardController(QObject *parent)
         }
     });
 
+    m_keyRepeatHoldTimer.setSingleShot(true);
+    m_keyRepeatHoldTimer.setInterval(300); // 300ms initial hold delay before repeating
+
+    connect(&m_keyRepeatHoldTimer, &QTimer::timeout, this, [this]() {
+        emit triggerKeyRepeat(m_currentRepeatKeycode);
+        m_keyRepeatInterval = 100;
+        m_keyRepeatTimer.start(m_keyRepeatInterval);
+    });
+
+    connect(&m_keyRepeatTimer, &QTimer::timeout, this, [this]() {
+        emit triggerKeyRepeat(m_currentRepeatKeycode);
+        if (m_keyRepeatInterval > 20) {
+            m_keyRepeatInterval = std::max(20, m_keyRepeatInterval - 10);
+            m_keyRepeatTimer.setInterval(m_keyRepeatInterval);
+        }
+    });
+
     // Hardware keyboard detection (touchbar auto-switch disabled per user request)
     checkHardwareKeyboard();
 }
@@ -113,6 +130,19 @@ void KeyboardController::stopBackspaceTimer()
         m_backspaceDeletingWord = false;
         emit backspaceDeletingWordChanged();
     }
+}
+
+void KeyboardController::startKeyRepeat(uint32_t keycode)
+{
+    m_currentRepeatKeycode = keycode;
+    emit triggerKeyRepeat(m_currentRepeatKeycode);
+    m_keyRepeatHoldTimer.start();
+}
+
+void KeyboardController::stopKeyRepeat()
+{
+    m_keyRepeatHoldTimer.stop();
+    m_keyRepeatTimer.stop();
 }
 
 void KeyboardController::updateInputMask(QObject *windowObj, int x, int y, int width, int height)
