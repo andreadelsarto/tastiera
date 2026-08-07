@@ -191,15 +191,16 @@ void WaylandVirtualKeyboard::sendKey(uint32_t keycode, bool pressed)
     Q_UNUSED(pressed);
     if (m_virtualKeyboard) {
         uint32_t time = QDateTime::currentMSecsSinceEpoch() & 0xFFFFFFFF;
-        zwp_virtual_keyboard_v1_key(m_virtualKeyboard, time, keycode, 1);
+        uint32_t xkbKeycode = keycode + 8; // XKB keycode offset is evdev + 8
+        zwp_virtual_keyboard_v1_key(m_virtualKeyboard, time, xkbKeycode, 1);
         wl_display_flush(m_display);
-        usleep(12000);
-        zwp_virtual_keyboard_v1_key(m_virtualKeyboard, time + 12, keycode, 0);
+        usleep(15000);
+        zwp_virtual_keyboard_v1_key(m_virtualKeyboard, time + 15, xkbKeycode, 0);
         wl_display_flush(m_display);
     }
     if (m_uinputFd >= 0) {
         sendUinputKey(keycode, true);
-        usleep(12000);
+        usleep(15000);
         sendUinputKey(keycode, false);
     }
 }
