@@ -1,5 +1,6 @@
 #include "waylandvirtualkeyboard.h"
 #include "virtual-keyboard-unstable-v1-client-protocol.h"
+#include "securebuffer.h"
 
 #include <QDebug>
 #include <QDateTime>
@@ -198,10 +199,18 @@ void WaylandVirtualKeyboard::sendText(const QString &text)
 {
     if (text.isEmpty()) return;
 
+    QByteArray utf8 = text.toUtf8();
+    size_t len = static_cast<size_t>(utf8.size());
+    if (len == 0) return;
+
+    // Use SecureKeyBuffer (locked in RAM via mlock, erased via explicit_bzero)
+    SecureKeyBuffer secBuffer(len + 1);
+    memcpy(secBuffer.data(), utf8.constData(), std::min(len, secBuffer.size() - 1));
+
     // Check if string contains non-ASCII characters (accents, symbols like €, etc.)
     bool hasNonAscii = false;
-    for (const QChar &ch : text) {
-        if (ch.unicode() > 127) {
+    for (size_t i = 0; i < len; ++i) {
+        if (static_cast<unsigned char>(secBuffer.data()[i]) > 127) {
             hasNonAscii = true;
             break;
         }
@@ -209,11 +218,13 @@ void WaylandVirtualKeyboard::sendText(const QString &text)
 
     if (hasNonAscii) {
         sendEmoji(text);
+        secBuffer.clear();
+        explicit_bzero(utf8.data(), utf8.size());
         return;
     }
 
-    for (const QChar &ch : text) {
-        char c = ch.toLatin1();
+    for (size_t i = 0; i < len; ++i) {
+        char c = secBuffer.data()[i];
         uint32_t keycode = 0;
         bool shift = false;
 
@@ -281,6 +292,10 @@ void WaylandVirtualKeyboard::sendText(const QString &text)
             usleep(10000);
         }
     }
+
+    // Immediately erase RAM buffer
+    secBuffer.clear();
+    explicit_bzero(utf8.data(), utf8.size());
 }
 
 #include <QClipboard>

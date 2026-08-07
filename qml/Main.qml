@@ -420,7 +420,7 @@ Window {
                     anchors.rightMargin: 8
                     contentWidth: suggRow.width
                     clip: true
-                    visible: !mainWindow.showThemeSelector
+                    visible: !mainWindow.showThemeSelector && !controller.isPasswordMode
 
                     RowLayout {
                         id: suggRow
@@ -619,9 +619,14 @@ Window {
                                     Layout.fillWidth: true
                                     Layout.fillHeight: true
                                     onKeyTriggered: (key) => {
-                                        var letter = mainWindow.shiftState > 0 ? key.toUpperCase() : key.toLowerCase()
-                                        mainWindow.currentInputBuffer += letter
-                                        gestureEngine.updateCurrentPrefix(mainWindow.currentInputBuffer)
+                                        if (!controller.isPasswordMode) {
+                                            var letter = mainWindow.shiftState > 0 ? key.toUpperCase() : key.toLowerCase()
+                                            mainWindow.currentInputBuffer += letter
+                                            gestureEngine.updateCurrentPrefix(mainWindow.currentInputBuffer)
+                                        } else {
+                                            mainWindow.currentInputBuffer = ""
+                                            gestureEngine.updateCurrentPrefix("")
+                                        }
                                         if (mainWindow.shiftState === 1) {
                                             mainWindow.shiftState = 0
                                         }
@@ -651,9 +656,14 @@ Window {
                                     Layout.fillWidth: true
                                     Layout.fillHeight: true
                                     onKeyTriggered: (key) => {
-                                        var letter = mainWindow.shiftState > 0 ? key.toUpperCase() : key.toLowerCase()
-                                        mainWindow.currentInputBuffer += letter
-                                        gestureEngine.updateCurrentPrefix(mainWindow.currentInputBuffer)
+                                        if (!controller.isPasswordMode) {
+                                            var letter = mainWindow.shiftState > 0 ? key.toUpperCase() : key.toLowerCase()
+                                            mainWindow.currentInputBuffer += letter
+                                            gestureEngine.updateCurrentPrefix(mainWindow.currentInputBuffer)
+                                        } else {
+                                            mainWindow.currentInputBuffer = ""
+                                            gestureEngine.updateCurrentPrefix("")
+                                        }
                                         if (mainWindow.shiftState === 1) {
                                             mainWindow.shiftState = 0
                                         }
@@ -682,9 +692,14 @@ Window {
                                     Layout.fillWidth: true
                                     Layout.fillHeight: true
                                     onKeyTriggered: (key) => {
-                                        var letter = mainWindow.shiftState > 0 ? key.toUpperCase() : key.toLowerCase()
-                                        mainWindow.currentInputBuffer += letter
-                                        gestureEngine.updateCurrentPrefix(mainWindow.currentInputBuffer)
+                                        if (!controller.isPasswordMode) {
+                                            var letter = mainWindow.shiftState > 0 ? key.toUpperCase() : key.toLowerCase()
+                                            mainWindow.currentInputBuffer += letter
+                                            gestureEngine.updateCurrentPrefix(mainWindow.currentInputBuffer)
+                                        } else {
+                                            mainWindow.currentInputBuffer = ""
+                                            gestureEngine.updateCurrentPrefix("")
+                                        }
                                         if (mainWindow.shiftState === 1) {
                                             mainWindow.shiftState = 0
                                         }
@@ -713,9 +728,14 @@ Window {
                                     Layout.fillWidth: true
                                     Layout.fillHeight: true
                                     onKeyTriggered: (key) => {
-                                        var letter = mainWindow.shiftState > 0 ? key.toUpperCase() : key.toLowerCase()
-                                        mainWindow.currentInputBuffer += letter
-                                        gestureEngine.updateCurrentPrefix(mainWindow.currentInputBuffer)
+                                        if (!controller.isPasswordMode) {
+                                            var letter = mainWindow.shiftState > 0 ? key.toUpperCase() : key.toLowerCase()
+                                            mainWindow.currentInputBuffer += letter
+                                            gestureEngine.updateCurrentPrefix(mainWindow.currentInputBuffer)
+                                        } else {
+                                            mainWindow.currentInputBuffer = ""
+                                            gestureEngine.updateCurrentPrefix("")
+                                        }
                                         if (mainWindow.shiftState === 1) {
                                             mainWindow.shiftState = 0
                                         }
@@ -757,9 +777,14 @@ Window {
                                     Layout.fillWidth: true
                                     Layout.fillHeight: true
                                     onKeyTriggered: (key) => {
-                                        var letter = mainWindow.shiftState > 0 ? key.toUpperCase() : key.toLowerCase()
-                                        mainWindow.currentInputBuffer += letter
-                                        gestureEngine.updateCurrentPrefix(mainWindow.currentInputBuffer)
+                                        if (!controller.isPasswordMode) {
+                                            var letter = mainWindow.shiftState > 0 ? key.toUpperCase() : key.toLowerCase()
+                                            mainWindow.currentInputBuffer += letter
+                                            gestureEngine.updateCurrentPrefix(mainWindow.currentInputBuffer)
+                                        } else {
+                                            mainWindow.currentInputBuffer = ""
+                                            gestureEngine.updateCurrentPrefix("")
+                                        }
                                         if (mainWindow.shiftState === 1) {
                                             mainWindow.shiftState = 0
                                         }

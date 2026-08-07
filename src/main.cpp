@@ -13,8 +13,22 @@
 #include <LayerShellQt/Window>
 #endif
 
+#include <sys/prctl.h>
+#include <sys/resource.h>
+
+static void setupProcessSecurity() {
+    // Impedisce la creazione di crash dump contenenti la RAM del processo
+    prctl(PR_SET_DUMPABLE, 0);
+
+    // Imposta la dimensione massima dei coredump a 0
+    rlimit rl = {0, 0};
+    setrlimit(RLIMIT_CORE, &rl);
+}
+
 int main(int argc, char *argv[])
 {
+    setupProcessSecurity();
+
     QGuiApplication app(argc, argv);
     app.setOrganizationName("KDE");
     app.setApplicationName("plasma-keyboard");

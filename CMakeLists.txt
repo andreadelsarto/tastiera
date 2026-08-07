@@ -42,6 +42,7 @@ find_package(LayerShellQt)
 
 qt_add_executable(plasma-keyboard
     src/main.cpp
+    src/securebuffer.h
     src/keyboardcontroller.cpp
     src/keyboardcontroller.h
     src/waylandvirtualkeyboard.cpp

@@ -14,11 +14,16 @@ class KeyboardController : public QObject
     Q_PROPERTY(bool keyboardVisible READ keyboardVisible WRITE setKeyboardVisible NOTIFY keyboardVisibleChanged)
     Q_PROPERTY(bool isSplit READ isSplit WRITE setSplit NOTIFY isSplitChanged)
     Q_PROPERTY(bool isTerminalMode READ isTerminalMode WRITE setIsTerminalMode NOTIFY isTerminalModeChanged)
+    Q_PROPERTY(bool isPasswordMode READ isPasswordMode WRITE setIsPasswordMode NOTIFY isPasswordModeChanged)
     Q_PROPERTY(bool isHardwareKeyboardConnected READ isHardwareKeyboardConnected NOTIFY hardwareKeyboardStatusChanged)
     Q_PROPERTY(bool backspaceDeletingWord READ backspaceDeletingWord NOTIFY backspaceDeletingWordChanged)
 
 public:
     explicit KeyboardController(QObject *parent = nullptr);
+
+    bool isPasswordMode() const { return m_isPasswordMode; }
+    void setIsPasswordMode(bool passwordMode);
+    Q_INVOKABLE void setContentHint(uint32_t flags);
 
     QString sizeMode() const { return m_sizeMode; }
     void setSizeMode(const QString &mode);
@@ -50,6 +55,7 @@ signals:
     void layoutModeChanged();
     void isSplitChanged();
     void isTerminalModeChanged();
+    void isPasswordModeChanged();
     void activeThemeChanged();
     void keyboardVisibleChanged();
     void hardwareKeyboardStatusChanged();
@@ -65,6 +71,7 @@ private:
     QString m_activeTheme{"TeenageOP1"}; // "TeenageOP1", "BreezeDark", "NothingDark", "NothingLight"
     bool m_isSplit = false;
     bool m_isTerminalMode = true;
+    bool m_isPasswordMode = false;
     bool m_isHardwareKeyboardConnected = false;
     bool m_backspaceDeletingWord = false;
     bool m_keyboardVisible = true;

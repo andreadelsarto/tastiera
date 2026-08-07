@@ -11,7 +11,7 @@ echo "⚙️ [2/4] Registering KDE Plasma 6 Virtual Keyboard service..."
 ssh "${TABLET_HOST}" "mkdir -p ~/.local/share/applications && cp ${REMOTE_DIR}/org.kde.plasma-keyboard.desktop ~/.local/share/applications/ && kbuildsycoca6 2>/dev/null || true"
 
 echo "🛠️ [3/4] Compiling plasma-keyboard on tablet..."
-ssh "${TABLET_HOST}" "cd ${REMOTE_DIR} && cmake -B build -DCMAKE_BUILD_TYPE=Release && cmake --build build -j\$(nproc)"
+ssh "${TABLET_HOST}" "cd ${REMOTE_DIR} && find . -type f -exec touch {} + && cmake -B build -DCMAKE_BUILD_TYPE=Release && cmake --build build -j\$(nproc)"
 
 echo "🛑 [4/4] Terminating previous instance and launching detached..."
 ssh "${TABLET_HOST}" "pkill -x plasma-keyboard || true"

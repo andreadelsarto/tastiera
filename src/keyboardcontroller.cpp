@@ -70,6 +70,22 @@ void KeyboardController::setIsTerminalMode(bool termMode)
     }
 }
 
+void KeyboardController::setIsPasswordMode(bool passwordMode)
+{
+    if (m_isPasswordMode != passwordMode) {
+        m_isPasswordMode = passwordMode;
+        emit isPasswordModeChanged();
+    }
+}
+
+void KeyboardController::setContentHint(uint32_t flags)
+{
+    // ZWP_TEXT_INPUT_V3_CONTENT_HINT_PASSWORD = 1
+    // ZWP_TEXT_INPUT_V3_CONTENT_HINT_SENSITIVE_DATA = 2
+    bool isPass = (flags & 0x01) || (flags & 0x02);
+    setIsPasswordMode(isPass);
+}
+
 void KeyboardController::setSplit(bool split)
 {
     if (m_isSplit != split) {
