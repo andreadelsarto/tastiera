@@ -1,7 +1,5 @@
 # ⌨️ Plasma Touch Key (Tastiera)
 
-> ⚠️ **EXPERIMENTAL BRANCH**: This branch contains active development, experimental features, and WIP refactorings. It may be highly unstable.
-> **For the stable release, switch to the [`main`](https://github.com/andreadelsarto/tastiera/tree/main) branch.**
 
 ---
 
