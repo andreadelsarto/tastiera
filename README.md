@@ -10,7 +10,7 @@
 ## ✨ Features
 
 - ⚡ **Native Wayland & LayerShell Protocol**: Designed from scratch for KDE Plasma 6 with `zwp_virtual_keyboard_v1`, `zwp_input_method_v2`, and `LayerShellQt`. Guarantees **zero focus stealing** when typing into terminals or native applications.
-- 🎨 **8 Pluggable Modern Themes**: Includes 8 curated visual themes:
+- 🎨 **8 Pluggable Modern Themes**: Includes 8 (need to be fixed) visual themes:
   - **Teenage OP-1** *(Industrial Synth Aesthetic)*
   - **Breeze Dark** *(Classic KDE Native)*
   - **Nothing OS Dark** & **Nothing OS Light** *(Minimal Dot-Matrix Aesthetic)*
@@ -24,7 +24,6 @@
   - **Split Layout (`▯▯ Split`)**: Ergonomic split-bank layout for thumb typing on large tablets.
   - **1-Mano (`📱 1-Mano`)**: Compact single-handed mode anchored to the bottom corner.
   - **Mini-Bubble contraction**: Contracts to a non-intrusive floating handle button when closed (`✖`), with auto-reopen on text field activation.
-- 🇮🇹 **Italian Dictionary & Predictive Engine**: Trie-backed fast word completion engine with Italian vocabulary and interactive suggestion bar.
 - 💻 **Terminal Quick Bar (`>_ Term`)**: Dedicated toggle for shell command operators (`$`, `|`, `~`, `/`, `-`, `_`, `sudo`, `grep`, `ls -la`, `cd`, `clear`).
 - ⌨️ **Dynamic Modifiers & Shortcuts Bar**: Pressing `Ctrl` or `Alt` illuminates shortcut suggestion pills (`Ctrl+C`, `Ctrl+V`, `Ctrl+X`, `Ctrl+Z`, `Ctrl+A`, `Ctrl+F`, `Alt+Tab`, `Alt+F4`...) for one-tap execution.
 - 📋 **KDE Klipper Clipboard Integration**: Direct access to KDE clipboard history with one-tap paste.
