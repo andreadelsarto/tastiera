@@ -168,7 +168,6 @@ Rectangle {
                     Layout.fillHeight: true
                     onPressed: if (controller) controller.startKeyRepeat(keyHome)
                     onReleased: if (controller) controller.stopKeyRepeat()
-                    onCanceled: if (controller) controller.stopKeyRepeat()
                 }
                 KeyButton {
                     label: "▲"
@@ -180,7 +179,6 @@ Rectangle {
                     Layout.fillHeight: true
                     onPressed: if (controller) controller.startKeyRepeat(keyUp)
                     onReleased: if (controller) controller.stopKeyRepeat()
-                    onCanceled: if (controller) controller.stopKeyRepeat()
                 }
                 KeyButton {
                     label: "End"
@@ -192,7 +190,6 @@ Rectangle {
                     Layout.fillHeight: true
                     onPressed: if (controller) controller.startKeyRepeat(keyEnd)
                     onReleased: if (controller) controller.stopKeyRepeat()
-                    onCanceled: if (controller) controller.stopKeyRepeat()
                 }
                 KeyButton {
                     label: "Canc"
@@ -204,7 +201,6 @@ Rectangle {
                     Layout.fillHeight: true
                     onPressed: if (controller) controller.startKeyRepeat(keyDelete)
                     onReleased: if (controller) controller.stopKeyRepeat()
-                    onCanceled: if (controller) controller.stopKeyRepeat()
                 }
 
                 // Row 3: Left, Down, Right, Tutto (Accelerating Repeat Timers)
@@ -218,7 +214,6 @@ Rectangle {
                     Layout.fillHeight: true
                     onPressed: if (controller) controller.startKeyRepeat(keyLeft)
                     onReleased: if (controller) controller.stopKeyRepeat()
-                    onCanceled: if (controller) controller.stopKeyRepeat()
                 }
                 KeyButton {
                     label: "▼"
@@ -230,7 +225,6 @@ Rectangle {
                     Layout.fillHeight: true
                     onPressed: if (controller) controller.startKeyRepeat(keyDown)
                     onReleased: if (controller) controller.stopKeyRepeat()
-                    onCanceled: if (controller) controller.stopKeyRepeat()
                 }
                 KeyButton {
                     label: "►"
@@ -242,7 +236,6 @@ Rectangle {
                     Layout.fillHeight: true
                     onPressed: if (controller) controller.startKeyRepeat(keyRight)
                     onReleased: if (controller) controller.stopKeyRepeat()
-                    onCanceled: if (controller) controller.stopKeyRepeat()
                 }
                 KeyButton {
                     label: "Tutto"

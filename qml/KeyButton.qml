@@ -21,6 +21,7 @@ Rectangle {
     property bool isAccentOverlayOpen: false
 
     signal keyTriggered(string key)
+    signal pressed()
     signal released()
     signal longPressed()
 
@@ -141,6 +142,7 @@ Rectangle {
         anchors.fill: parent
 
         onPressed: {
+            root.pressed()
             longPressTimer.start()
             if (gestureEngine) {
                 gestureEngine.startTouch(Qt.point(mouse.x, mouse.y))
