@@ -194,10 +194,15 @@ void WaylandVirtualKeyboard::sendKey(uint32_t keycode, bool pressed)
         wl_display_flush(m_display);
     }
     if (m_uinputFd >= 0) {
-        sendUinputKey(keycode, true);
-        usleep(12000);
-        sendUinputKey(keycode, false);
+        sendUinputKey(keycode, pressed);
     }
+}
+
+void WaylandVirtualKeyboard::pressAndReleaseKey(uint32_t keycode)
+{
+    sendKey(keycode, true);
+    usleep(12000);
+    sendKey(keycode, false);
 }
 
 void WaylandVirtualKeyboard::sendKeySym(uint32_t keysym)
@@ -339,7 +344,7 @@ void WaylandVirtualKeyboard::sendCombo(uint32_t modifier, uint32_t keycode)
 
 void WaylandVirtualKeyboard::sendBackspace()
 {
-    sendKey(KEY_BACKSPACE, true);
+    pressAndReleaseKey(KEY_BACKSPACE);
 }
 
 void WaylandVirtualKeyboard::sendCtrlBackspace()

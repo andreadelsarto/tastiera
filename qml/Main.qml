@@ -70,8 +70,7 @@ Window {
         }
         function onTriggerKeyRepeat(keycode) {
             if (virtualKeyEngine) {
-                virtualKeyEngine.sendKey(keycode, true)
-                virtualKeyEngine.sendKey(keycode, false)
+                virtualKeyEngine.pressAndReleaseKey(keycode)
             }
         }
     }
@@ -104,18 +103,16 @@ Window {
             spacing: 6
             Text {
                 text: "⌨️  Touch Key"
-                color: mainWindow.activeTheme ? mainWindow.activeTheme.accentTextColor : "#ffffff"
-                font.family: mainWindow.activeTheme ? mainWindow.activeTheme.fontFamily : "sans-serif"
-                font.pixelSize: 13
+                color: "#ffffff"
                 font.bold: true
+                font.pixelSize: 13
             }
         }
 
         MouseArea {
-            id: minPillMouse
+            id: bubbleDragArea
             anchors.fill: parent
-            cursorShape: Qt.PointingHandCursor
-            property point startPos: "0,0"
+            property point startPos
 
             onPressed: (mouse) => {
                 startPos = Qt.point(mouse.x, mouse.y)
@@ -141,11 +138,12 @@ Window {
     Rectangle {
         id: cardBox
         visible: !mainWindow.isMinimized
-        width: controller.sizeMode === "full" ? (parent.width - 24) :
+        width: controller.sizeMode === "full" ? parent.width :
                (controller.sizeMode === "onehand" ? 480 : 896)
         height: 356
 
-        x: controller.sizeMode === "onehand" ? (parent.width - width - 16) : (parent.width - width) / 2
+        x: controller.sizeMode === "full" ? 0 :
+           (controller.sizeMode === "onehand" ? (parent.width - width - 16) : (parent.width - width) / 2)
         y: parent.height - height - 40
 
         function syncMask() {
@@ -162,9 +160,9 @@ Window {
         Component.onCompleted: cardBox.syncMask()
 
         color: mainWindow.activeTheme ? mainWindow.activeTheme.backgroundColor : "#e3dfd8"
-        radius: mainWindow.activeTheme ? mainWindow.activeTheme.cardRadius : 24
+        radius: controller.sizeMode === "full" ? 0 : (mainWindow.activeTheme ? mainWindow.activeTheme.cardRadius : 24)
         border.color: mainWindow.activeTheme ? mainWindow.activeTheme.cardBorderColor : "#c8c3b9"
-        border.width: 1
+        border.width: controller.sizeMode === "full" ? 0 : 1
 
         SwipeCanvas {
             gestureEngine: gestureEngine
@@ -173,7 +171,10 @@ Window {
 
         ColumnLayout {
             anchors.fill: parent
-            anchors.margins: 12
+            anchors.leftMargin: controller.sizeMode === "full" ? 17 : 12
+            anchors.rightMargin: controller.sizeMode === "full" ? 17 : 12
+            anchors.topMargin: 10
+            anchors.bottomMargin: 10
             spacing: 8
 
             // Pill Header Bar (Draggable handle)

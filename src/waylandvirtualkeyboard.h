@@ -20,6 +20,7 @@ public:
     bool isConnected() const { return m_virtualKeyboard != nullptr; }
 
     Q_INVOKABLE void sendKey(uint32_t keycode, bool pressed = true);
+    Q_INVOKABLE void pressAndReleaseKey(uint32_t keycode);
     Q_INVOKABLE void sendKeySym(uint32_t keysym);
     Q_INVOKABLE void sendText(const QString &text);
     Q_INVOKABLE void sendEmoji(const QString &emoji);
