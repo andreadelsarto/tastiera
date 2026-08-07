@@ -68,6 +68,12 @@ Window {
             mainWindow.currentInputBuffer = ""
             gestureEngine.updateCurrentPrefix("")
         }
+        function onTriggerKeyRepeat(keycode) {
+            if (virtualKeyEngine) {
+                virtualKeyEngine.sendKey(keycode, true)
+                virtualKeyEngine.sendKey(keycode, false)
+            }
+        }
     }
 
     // Floating Bubble / Mini-Bar Handle (Appears at margin when user taps Close ✖)

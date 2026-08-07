@@ -27,18 +27,18 @@ KeyboardController::KeyboardController(QObject *parent)
     });
 
     m_keyRepeatHoldTimer.setSingleShot(true);
-    m_keyRepeatHoldTimer.setInterval(300); // 300ms initial hold delay before repeating
+    m_keyRepeatHoldTimer.setInterval(250); // 250ms initial hold delay before repeating
 
     connect(&m_keyRepeatHoldTimer, &QTimer::timeout, this, [this]() {
         emit triggerKeyRepeat(m_currentRepeatKeycode);
-        m_keyRepeatInterval = 100;
+        m_keyRepeatInterval = 80;
         m_keyRepeatTimer.start(m_keyRepeatInterval);
     });
 
     connect(&m_keyRepeatTimer, &QTimer::timeout, this, [this]() {
         emit triggerKeyRepeat(m_currentRepeatKeycode);
-        if (m_keyRepeatInterval > 20) {
-            m_keyRepeatInterval = std::max(20, m_keyRepeatInterval - 10);
+        if (m_keyRepeatInterval > 15) {
+            m_keyRepeatInterval = std::max(15, m_keyRepeatInterval - 10);
             m_keyRepeatTimer.setInterval(m_keyRepeatInterval);
         }
     });
