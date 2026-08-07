@@ -188,26 +188,13 @@ void WaylandVirtualKeyboard::createKeymap()
 
 void WaylandVirtualKeyboard::sendKey(uint32_t keycode, bool pressed)
 {
+    Q_UNUSED(pressed);
     if (m_virtualKeyboard) {
         uint32_t time = QDateTime::currentMSecsSinceEpoch() & 0xFFFFFFFF;
-        uint32_t xkbKeycode = (keycode >= 8) ? (keycode - 8) : keycode;
-        zwp_virtual_keyboard_v1_key(m_virtualKeyboard, time, xkbKeycode, pressed ? 1 : 0);
-        wl_display_flush(m_display);
-    }
-    if (m_uinputFd >= 0) {
-        sendUinputKey(keycode, pressed);
-    }
-}
-
-void WaylandVirtualKeyboard::pressAndReleaseKey(uint32_t keycode)
-{
-    if (m_virtualKeyboard) {
-        uint32_t time = QDateTime::currentMSecsSinceEpoch() & 0xFFFFFFFF;
-        uint32_t xkbKeycode = (keycode >= 8) ? (keycode - 8) : keycode;
-        zwp_virtual_keyboard_v1_key(m_virtualKeyboard, time, xkbKeycode, 1);
+        zwp_virtual_keyboard_v1_key(m_virtualKeyboard, time, keycode, 1);
         wl_display_flush(m_display);
         usleep(12000);
-        zwp_virtual_keyboard_v1_key(m_virtualKeyboard, time + 12, xkbKeycode, 0);
+        zwp_virtual_keyboard_v1_key(m_virtualKeyboard, time + 12, keycode, 0);
         wl_display_flush(m_display);
     }
     if (m_uinputFd >= 0) {
@@ -215,6 +202,11 @@ void WaylandVirtualKeyboard::pressAndReleaseKey(uint32_t keycode)
         usleep(12000);
         sendUinputKey(keycode, false);
     }
+}
+
+void WaylandVirtualKeyboard::pressAndReleaseKey(uint32_t keycode)
+{
+    sendKey(keycode);
 }
 
 void WaylandVirtualKeyboard::sendKeySym(uint32_t keysym)

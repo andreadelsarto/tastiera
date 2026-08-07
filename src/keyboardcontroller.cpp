@@ -139,7 +139,6 @@ void KeyboardController::stopBackspaceTimer()
 void KeyboardController::startKeyRepeat(uint32_t keycode)
 {
     m_currentRepeatKeycode = keycode;
-    emit triggerKeyRepeat(m_currentRepeatKeycode);
     m_keyRepeatHoldTimer.start();
 }
 

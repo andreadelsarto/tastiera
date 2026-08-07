@@ -100,7 +100,7 @@ Rectangle {
                 }
             }
 
-            // Row 2: Home, Up, End, Canc (Accelerating Repeat Timers)
+            // Row 2: Home, Up, End, Canc
             KeyButton {
                 label: "Home"
                 isSpecial: true
@@ -110,7 +110,10 @@ Rectangle {
                 Layout.fillWidth: true
                 Layout.fillHeight: true
                 onPressed: if (controller) controller.startKeyRepeat(keyHome)
-                onReleased: if (controller) controller.stopKeyRepeat()
+                onReleased: {
+                    if (controller) controller.stopKeyRepeat()
+                    if (vk) vk.sendKey(keyHome)
+                }
             }
             KeyButton {
                 label: "▲"
@@ -121,7 +124,10 @@ Rectangle {
                 Layout.fillWidth: true
                 Layout.fillHeight: true
                 onPressed: if (controller) controller.startKeyRepeat(keyUp)
-                onReleased: if (controller) controller.stopKeyRepeat()
+                onReleased: {
+                    if (controller) controller.stopKeyRepeat()
+                    if (vk) vk.sendKey(keyUp)
+                }
             }
             KeyButton {
                 label: "End"
@@ -132,7 +138,10 @@ Rectangle {
                 Layout.fillWidth: true
                 Layout.fillHeight: true
                 onPressed: if (controller) controller.startKeyRepeat(keyEnd)
-                onReleased: if (controller) controller.stopKeyRepeat()
+                onReleased: {
+                    if (controller) controller.stopKeyRepeat()
+                    if (vk) vk.sendKey(keyEnd)
+                }
             }
             KeyButton {
                 label: "Canc"
@@ -143,10 +152,13 @@ Rectangle {
                 Layout.fillWidth: true
                 Layout.fillHeight: true
                 onPressed: if (controller) controller.startKeyRepeat(keyDelete)
-                onReleased: if (controller) controller.stopKeyRepeat()
+                onReleased: {
+                    if (controller) controller.stopKeyRepeat()
+                    if (vk) vk.sendKey(keyDelete)
+                }
             }
 
-            // Row 3: Left, Down, Right, Tutto (Accelerating Repeat Timers)
+            // Row 3: Left, Down, Right, Tutto (Ctrl+A)
             KeyButton {
                 label: "◄"
                 isSpecial: true
@@ -156,7 +168,10 @@ Rectangle {
                 Layout.fillWidth: true
                 Layout.fillHeight: true
                 onPressed: if (controller) controller.startKeyRepeat(keyLeft)
-                onReleased: if (controller) controller.stopKeyRepeat()
+                onReleased: {
+                    if (controller) controller.stopKeyRepeat()
+                    if (vk) vk.sendKey(keyLeft)
+                }
             }
             KeyButton {
                 label: "▼"
@@ -167,7 +182,10 @@ Rectangle {
                 Layout.fillWidth: true
                 Layout.fillHeight: true
                 onPressed: if (controller) controller.startKeyRepeat(keyDown)
-                onReleased: if (controller) controller.stopKeyRepeat()
+                onReleased: {
+                    if (controller) controller.stopKeyRepeat()
+                    if (vk) vk.sendKey(keyDown)
+                }
             }
             KeyButton {
                 label: "►"
@@ -178,7 +196,10 @@ Rectangle {
                 Layout.fillWidth: true
                 Layout.fillHeight: true
                 onPressed: if (controller) controller.startKeyRepeat(keyRight)
-                onReleased: if (controller) controller.stopKeyRepeat()
+                onReleased: {
+                    if (controller) controller.stopKeyRepeat()
+                    if (vk) vk.sendKey(keyRight)
+                }
             }
             KeyButton {
                 label: "Tutto"
