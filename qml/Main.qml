@@ -836,7 +836,7 @@ Window {
                                 Layout.fillHeight: true
                             }
                             KeyButton {
-                                label: "spazio"
+                                label: "space"
                                 textToSend: " "
                                 currentTheme: mainWindow.activeTheme
                                 vk: virtualKeyEngine
@@ -850,7 +850,7 @@ Window {
                             // Split Gap
                             Item {
                                 visible: controller.isSplit
-                                Layout.fillWidth: true
+                                Layout.preferredWidth: controller.isSplit ? 160 : 0
                             }
                             KeyButton {
                                 label: "."
