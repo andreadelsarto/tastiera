@@ -7,7 +7,7 @@
 
 KeyboardController::KeyboardController(QObject *parent)
     : QObject(parent),
-      m_activeTheme("TeenageOP1")
+      m_activeTheme("BreezeDark")
 {
     m_backspaceHoldTimer.setSingleShot(true);
     m_backspaceHoldTimer.setInterval(300); // 300ms initial hold delay

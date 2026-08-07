@@ -13,9 +13,6 @@ Rectangle {
     property var controller
     property var mainWindow
 
-    // Sub-mode: "dpad" vs "touchpad"
-    property string subMode: "dpad"
-
     // Linux evdev input keycodes
     readonly property int keyLeft: 105
     readonly property int keyUp: 103
@@ -33,297 +30,165 @@ Rectangle {
         anchors.margins: 8
         spacing: 6
 
-        // Segmented Header Switcher: [ 🎯 D-Pad ] | [ 🖱️ Touchpad ]
-        Rectangle {
-            Layout.fillWidth: true
-            height: 28
-            radius: 14
-            color: currentTheme && currentTheme.headerPillBg ? currentTheme.headerPillBg : "#1a1d24"
-
-            Row {
-                anchors.fill: parent
-                anchors.margins: 2
-                spacing: 2
-
-                // D-Pad Tab
-                Rectangle {
-                    width: (parent.width - 2) / 2
-                    height: parent.height
-                    radius: 12
-                    color: dpad.subMode === "dpad" ? (currentTheme ? currentTheme.accentColor : "#00a2ed") : "transparent"
-
-                    Text {
-                        anchors.centerIn: parent
-                        text: "🎯 D-Pad"
-                        color: dpad.subMode === "dpad" ? "#ffffff" : "#a0a5b0"
-                        font.pixelSize: 11
-                        font.bold: true
-                    }
-
-                    MouseArea {
-                        anchors.fill: parent
-                        onClicked: dpad.subMode = "dpad"
-                    }
-                }
-
-                // Touchpad Tab
-                Rectangle {
-                    width: (parent.width - 2) / 2
-                    height: parent.height
-                    radius: 12
-                    color: dpad.subMode === "touchpad" ? (currentTheme ? currentTheme.accentColor : "#00a2ed") : "transparent"
-
-                    Text {
-                        anchors.centerIn: parent
-                        text: "🖱️ Touchpad"
-                        color: dpad.subMode === "touchpad" ? "#ffffff" : "#a0a5b0"
-                        font.pixelSize: 11
-                        font.bold: true
-                    }
-
-                    MouseArea {
-                        anchors.fill: parent
-                        onClicked: dpad.subMode = "touchpad"
-                    }
-                }
-            }
+        Text {
+            text: "▷ Extended & Modifiers"
+            color: currentTheme && currentTheme.dpadHeaderColor ? currentTheme.dpadHeaderColor : "#00a2ed"
+            font.family: currentTheme ? currentTheme.fontFamily : "sans-serif"
+            font.pixelSize: 11
+            font.bold: true
+            Layout.alignment: Qt.AlignHCenter
         }
 
-        // VIEW A: D-Pad Grid View
-        ColumnLayout {
+        GridLayout {
+            columns: 4
             Layout.fillWidth: true
             Layout.fillHeight: true
-            visible: dpad.subMode === "dpad"
-            spacing: 5
+            rowSpacing: 5
+            columnSpacing: 5
 
-            GridLayout {
-                columns: 4
+            // Row 1: Esc, Tab, Ctrl, Alt
+            KeyButton {
+                label: "Esc"
+                isSpecial: true
+                isCustomAction: true
+                currentTheme: dpad.currentTheme
+                vk: dpad.vk
                 Layout.fillWidth: true
                 Layout.fillHeight: true
-                rowSpacing: 5
-                columnSpacing: 5
-
-                // Row 1: Esc, Tab, Ctrl, Alt
-                KeyButton {
-                    label: "Esc"
-                    isSpecial: true
-                    isCustomAction: true
-                    currentTheme: dpad.currentTheme
-                    vk: dpad.vk
-                    Layout.fillWidth: true
-                    Layout.fillHeight: true
-                    onReleased: if (vk) vk.sendKey(keyEsc)
-                }
-                KeyButton {
-                    label: "Tab"
-                    isSpecial: true
-                    isCustomAction: true
-                    currentTheme: dpad.currentTheme
-                    vk: dpad.vk
-                    Layout.fillWidth: true
-                    Layout.fillHeight: true
-                    onReleased: if (vk) vk.sendKey(keyTab)
-                }
-                KeyButton {
-                    label: "Ctrl"
-                    isSpecial: true
-                    isCustomAction: true
-                    isPrimaryAction: dpad.mainWindow && dpad.mainWindow.ctrlActive
-                    currentTheme: dpad.currentTheme
-                    vk: dpad.vk
-                    Layout.fillWidth: true
-                    Layout.fillHeight: true
-                    onReleased: {
-                        if (dpad.mainWindow) {
-                            dpad.mainWindow.ctrlActive = !dpad.mainWindow.ctrlActive
-                            if (dpad.mainWindow.ctrlActive) dpad.mainWindow.altActive = false
-                        }
+                onReleased: if (vk) vk.sendKey(keyEsc)
+            }
+            KeyButton {
+                label: "Tab"
+                isSpecial: true
+                isCustomAction: true
+                currentTheme: dpad.currentTheme
+                vk: dpad.vk
+                Layout.fillWidth: true
+                Layout.fillHeight: true
+                onReleased: if (vk) vk.sendKey(keyTab)
+            }
+            KeyButton {
+                label: "Ctrl"
+                isSpecial: true
+                isCustomAction: true
+                isPrimaryAction: dpad.mainWindow && dpad.mainWindow.ctrlActive
+                currentTheme: dpad.currentTheme
+                vk: dpad.vk
+                Layout.fillWidth: true
+                Layout.fillHeight: true
+                onReleased: {
+                    if (dpad.mainWindow) {
+                        dpad.mainWindow.ctrlActive = !dpad.mainWindow.ctrlActive
+                        if (dpad.mainWindow.ctrlActive) dpad.mainWindow.altActive = false
                     }
-                }
-                KeyButton {
-                    label: "Alt"
-                    isSpecial: true
-                    isCustomAction: true
-                    isPrimaryAction: dpad.mainWindow && dpad.mainWindow.altActive
-                    currentTheme: dpad.currentTheme
-                    vk: dpad.vk
-                    Layout.fillWidth: true
-                    Layout.fillHeight: true
-                    onReleased: {
-                        if (dpad.mainWindow) {
-                            dpad.mainWindow.altActive = !dpad.mainWindow.altActive
-                            if (dpad.mainWindow.altActive) dpad.mainWindow.ctrlActive = false
-                        }
-                    }
-                }
-
-                // Row 2: Home, Up, End, Canc (Accelerating Repeat Timers)
-                KeyButton {
-                    label: "Home"
-                    isSpecial: true
-                    isCustomAction: true
-                    currentTheme: dpad.currentTheme
-                    vk: dpad.vk
-                    Layout.fillWidth: true
-                    Layout.fillHeight: true
-                    onPressed: if (controller) controller.startKeyRepeat(keyHome)
-                    onReleased: if (controller) controller.stopKeyRepeat()
-                }
-                KeyButton {
-                    label: "▲"
-                    isSpecial: true
-                    isCustomAction: true
-                    currentTheme: dpad.currentTheme
-                    vk: dpad.vk
-                    Layout.fillWidth: true
-                    Layout.fillHeight: true
-                    onPressed: if (controller) controller.startKeyRepeat(keyUp)
-                    onReleased: if (controller) controller.stopKeyRepeat()
-                }
-                KeyButton {
-                    label: "End"
-                    isSpecial: true
-                    isCustomAction: true
-                    currentTheme: dpad.currentTheme
-                    vk: dpad.vk
-                    Layout.fillWidth: true
-                    Layout.fillHeight: true
-                    onPressed: if (controller) controller.startKeyRepeat(keyEnd)
-                    onReleased: if (controller) controller.stopKeyRepeat()
-                }
-                KeyButton {
-                    label: "Canc"
-                    isSpecial: true
-                    isCustomAction: true
-                    currentTheme: dpad.currentTheme
-                    vk: dpad.vk
-                    Layout.fillWidth: true
-                    Layout.fillHeight: true
-                    onPressed: if (controller) controller.startKeyRepeat(keyDelete)
-                    onReleased: if (controller) controller.stopKeyRepeat()
-                }
-
-                // Row 3: Left, Down, Right, Tutto (Accelerating Repeat Timers)
-                KeyButton {
-                    label: "◄"
-                    isSpecial: true
-                    isCustomAction: true
-                    currentTheme: dpad.currentTheme
-                    vk: dpad.vk
-                    Layout.fillWidth: true
-                    Layout.fillHeight: true
-                    onPressed: if (controller) controller.startKeyRepeat(keyLeft)
-                    onReleased: if (controller) controller.stopKeyRepeat()
-                }
-                KeyButton {
-                    label: "▼"
-                    isSpecial: true
-                    isCustomAction: true
-                    currentTheme: dpad.currentTheme
-                    vk: dpad.vk
-                    Layout.fillWidth: true
-                    Layout.fillHeight: true
-                    onPressed: if (controller) controller.startKeyRepeat(keyDown)
-                    onReleased: if (controller) controller.stopKeyRepeat()
-                }
-                KeyButton {
-                    label: "►"
-                    isSpecial: true
-                    isCustomAction: true
-                    currentTheme: dpad.currentTheme
-                    vk: dpad.vk
-                    Layout.fillWidth: true
-                    Layout.fillHeight: true
-                    onPressed: if (controller) controller.startKeyRepeat(keyRight)
-                    onReleased: if (controller) controller.stopKeyRepeat()
-                }
-                KeyButton {
-                    label: "Tutto"
-                    isSpecial: true
-                    isCustomAction: true
-                    currentTheme: dpad.currentTheme
-                    vk: dpad.vk
-                    Layout.fillWidth: true
-                    Layout.fillHeight: true
-                    onReleased: if (vk) vk.sendCombo(4 /* Ctrl */, keyA)
                 }
             }
-        }
-
-        // VIEW B: Simple Clean Touchpad Rectangle (Finger Move -> Cursor Move)
-        ColumnLayout {
-            Layout.fillWidth: true
-            Layout.fillHeight: true
-            visible: dpad.subMode === "touchpad"
-            spacing: 6
-
-            // Touchpad Surface Rectangle Area
-            Rectangle {
-                id: padSurface
+            KeyButton {
+                label: "Alt"
+                isSpecial: true
+                isCustomAction: true
+                isPrimaryAction: dpad.mainWindow && dpad.mainWindow.altActive
+                currentTheme: dpad.currentTheme
+                vk: dpad.vk
                 Layout.fillWidth: true
                 Layout.fillHeight: true
-                radius: 12
-                color: currentTheme && currentTheme.keyBg ? currentTheme.keyBg : "#181b22"
-                border.color: padMouseArea.pressed ? (currentTheme ? currentTheme.accentColor : "#00a2ed") : (currentTheme ? currentTheme.keyBorderColor : "#333b4d")
-                border.width: 1
-
-                Text {
-                    anchors.centerIn: parent
-                    text: "🖱️ Touchpad Area\n(Muovi il dito per spostare il cursore)"
-                    horizontalAlignment: Text.AlignHCenter
-                    color: currentTheme && currentTheme.subTextColor ? currentTheme.subTextColor : "#5a6478"
-                    font.pixelSize: 11
-                    opacity: padMouseArea.pressed ? 0.3 : 0.8
-                }
-
-                MouseArea {
-                    id: padMouseArea
-                    anchors.fill: parent
-                    cursorShape: Qt.PointingHandCursor
-                    property point lastPos: "0,0"
-
-                    onPressed: (mouse) => {
-                        lastPos = Qt.point(mouse.x, mouse.y)
-                    }
-
-                    onPositionChanged: (mouse) => {
-                        if (pressed && vk) {
-                            var dx = (mouse.x - lastPos.x) * 1.8
-                            var dy = (mouse.y - lastPos.y) * 1.8
-                            vk.sendMouseMove(Math.round(dx), Math.round(dy))
-                            lastPos = Qt.point(mouse.x, mouse.y)
-                        }
+                onReleased: {
+                    if (dpad.mainWindow) {
+                        dpad.mainWindow.altActive = !dpad.mainWindow.altActive
+                        if (dpad.mainWindow.altActive) dpad.mainWindow.ctrlActive = false
                     }
                 }
             }
 
-            // Mouse Buttons Row (Left Click & Right Click)
-            RowLayout {
+            // Row 2: Home, Up, End, Delete (Accelerating Repeat Timers)
+            KeyButton {
+                label: "Home"
+                isSpecial: true
+                isCustomAction: true
+                currentTheme: dpad.currentTheme
+                vk: dpad.vk
                 Layout.fillWidth: true
-                height: 38
-                spacing: 6
+                Layout.fillHeight: true
+                onPressed: if (controller) controller.startKeyRepeat(keyHome)
+                onReleased: if (controller) controller.stopKeyRepeat()
+            }
+            KeyButton {
+                label: "▲"
+                isSpecial: true
+                isCustomAction: true
+                currentTheme: dpad.currentTheme
+                vk: dpad.vk
+                Layout.fillWidth: true
+                Layout.fillHeight: true
+                onPressed: if (controller) controller.startKeyRepeat(keyUp)
+                onReleased: if (controller) controller.stopKeyRepeat()
+            }
+            KeyButton {
+                label: "End"
+                isSpecial: true
+                isCustomAction: true
+                currentTheme: dpad.currentTheme
+                vk: dpad.vk
+                Layout.fillWidth: true
+                Layout.fillHeight: true
+                onPressed: if (controller) controller.startKeyRepeat(keyEnd)
+                onReleased: if (controller) controller.stopKeyRepeat()
+            }
+            KeyButton {
+                label: "Delete"
+                isSpecial: true
+                isCustomAction: true
+                currentTheme: dpad.currentTheme
+                vk: dpad.vk
+                Layout.fillWidth: true
+                Layout.fillHeight: true
+                onPressed: if (controller) controller.startKeyRepeat(keyDelete)
+                onReleased: if (controller) controller.stopKeyRepeat()
+            }
 
-                KeyButton {
-                    label: "🖱️ Left Click"
-                    isSpecial: true
-                    isCustomAction: true
-                    currentTheme: dpad.currentTheme
-                    Layout.fillWidth: true
-                    Layout.fillHeight: true
-                    onPressed: if (vk) vk.sendMouseClick(1, true)
-                    onReleased: if (vk) vk.sendMouseClick(1, false)
-                }
-
-                KeyButton {
-                    label: "🖱️ Right Click"
-                    isSpecial: true
-                    isCustomAction: true
-                    currentTheme: dpad.currentTheme
-                    Layout.fillWidth: true
-                    Layout.fillHeight: true
-                    onPressed: if (vk) vk.sendMouseClick(2, true)
-                    onReleased: if (vk) vk.sendMouseClick(2, false)
-                }
+            // Row 3: Left, Down, Right, Select All (Accelerating Repeat Timers)
+            KeyButton {
+                label: "◄"
+                isSpecial: true
+                isCustomAction: true
+                currentTheme: dpad.currentTheme
+                vk: dpad.vk
+                Layout.fillWidth: true
+                Layout.fillHeight: true
+                onPressed: if (controller) controller.startKeyRepeat(keyLeft)
+                onReleased: if (controller) controller.stopKeyRepeat()
+            }
+            KeyButton {
+                label: "▼"
+                isSpecial: true
+                isCustomAction: true
+                currentTheme: dpad.currentTheme
+                vk: dpad.vk
+                Layout.fillWidth: true
+                Layout.fillHeight: true
+                onPressed: if (controller) controller.startKeyRepeat(keyDown)
+                onReleased: if (controller) controller.stopKeyRepeat()
+            }
+            KeyButton {
+                label: "►"
+                isSpecial: true
+                isCustomAction: true
+                currentTheme: dpad.currentTheme
+                vk: dpad.vk
+                Layout.fillWidth: true
+                Layout.fillHeight: true
+                onPressed: if (controller) controller.startKeyRepeat(keyRight)
+                onReleased: if (controller) controller.stopKeyRepeat()
+            }
+            KeyButton {
+                label: "Select All"
+                isSpecial: true
+                isCustomAction: true
+                currentTheme: dpad.currentTheme
+                vk: dpad.vk
+                Layout.fillWidth: true
+                Layout.fillHeight: true
+                onReleased: if (vk) vk.sendCombo(4 /* Ctrl */, keyA)
             }
         }
     }

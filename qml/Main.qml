@@ -867,7 +867,7 @@ Window {
                                 Layout.fillHeight: true
                             }
                             KeyButton {
-                                label: "spazio"
+                                label: "space"
                                 textToSend: " "
                                 currentTheme: mainWindow.activeTheme
                                 vk: virtualKeyEngine
@@ -1057,7 +1057,7 @@ Window {
                                 Layout.fillHeight: true
                             }
                             KeyButton {
-                                label: "spazio"
+                                label: "space"
                                 textToSend: " "
                                 currentTheme: mainWindow.activeTheme
                                 vk: virtualKeyEngine

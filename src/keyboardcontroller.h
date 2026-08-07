@@ -71,7 +71,7 @@ private:
 
     QString m_sizeMode{"normal"}; // "normal", "full", "onehand"
     QString m_layoutMode{"abc"};  // "abc", "accenti", "symbols", "numpad", "emoji", "klipper"
-    QString m_activeTheme{"TeenageOP1"}; // "TeenageOP1", "BreezeDark", "NothingDark", "NothingLight"
+    QString m_activeTheme{"BreezeDark"}; // "BreezeDark", "TeenageOP1", "NothingDark", "NothingLight"
     bool m_isSplit = false;
     bool m_isTerminalMode = true;
     bool m_isPasswordMode = false;

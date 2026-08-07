@@ -97,27 +97,6 @@ Rectangle {
                         }
                     }
 
-                    // IT Pill
-                    Rectangle {
-                        width: 50
-                        height: 26
-                        radius: 13
-                        color: controller && controller.layoutMode === "accenti" ? (currentTheme ? currentTheme.accentColor : "#00a2ed") : "transparent"
-
-                        Text {
-                            anchors.centerIn: parent
-                            text: "🇮🇹 IT"
-                            color: controller && controller.layoutMode === "accenti" ? "#ffffff" : "#d0d5dd"
-                            font.pixelSize: 12
-                            font.bold: true
-                        }
-
-                        MouseArea {
-                            anchors.fill: parent
-                            onClicked: if (controller) controller.layoutMode = "accenti"
-                        }
-                    }
-
                     // ?123 Pill
                     Rectangle {
                         width: 50
@@ -136,25 +115,6 @@ Rectangle {
                         MouseArea {
                             anchors.fill: parent
                             onClicked: if (controller) controller.layoutMode = "symbols"
-                        }
-                    }
-
-                    // Emoji Pill
-                    Rectangle {
-                        width: 36
-                        height: 26
-                        radius: 13
-                        color: controller && controller.layoutMode === "emoji" ? (currentTheme ? currentTheme.accentColor : "#00a2ed") : "transparent"
-
-                        Text {
-                            anchors.centerIn: parent
-                            text: "😊"
-                            font.pixelSize: 13
-                        }
-
-                        MouseArea {
-                            anchors.fill: parent
-                            onClicked: if (controller) controller.layoutMode = "emoji"
                         }
                     }
 
@@ -251,7 +211,7 @@ Rectangle {
 
         // Right section: Size Mode Segmented Switcher in Dark Container
         Rectangle {
-            width: 210
+            width: 230
             height: 34
             radius: 17
             color: currentTheme && currentTheme.sizeModePillBg ? currentTheme.sizeModePillBg : "#21252d"
@@ -262,7 +222,7 @@ Rectangle {
                 anchors.margins: 3
                 spacing: 2
 
-                // Normale
+                // Normal
                 Rectangle {
                     width: (parent.width - 6) / 3
                     height: parent.height
@@ -271,7 +231,7 @@ Rectangle {
 
                     Text {
                         anchors.centerIn: parent
-                        text: "Normale"
+                        text: "Normal"
                         color: controller && controller.sizeMode === "normal" ? "#ffffff" : "#d0d5dd"
                         font.pixelSize: 11
                         font.bold: controller && controller.sizeMode === "normal"
@@ -283,7 +243,7 @@ Rectangle {
                     }
                 }
 
-                // Estesa (Full)
+                // Extended (Full)
                 Rectangle {
                     width: (parent.width - 6) / 3
                     height: parent.height
@@ -292,7 +252,7 @@ Rectangle {
 
                     Text {
                         anchors.centerIn: parent
-                        text: "Estesa"
+                        text: "Extended"
                         color: controller && controller.sizeMode === "full" ? "#ffffff" : "#d0d5dd"
                         font.pixelSize: 11
                         font.bold: controller && controller.sizeMode === "full"
@@ -304,7 +264,7 @@ Rectangle {
                     }
                 }
 
-                // 1-Mano
+                // 1-Handed
                 Rectangle {
                     width: (parent.width - 6) / 3
                     height: parent.height
@@ -313,9 +273,9 @@ Rectangle {
 
                     Text {
                         anchors.centerIn: parent
-                        text: "📱 1-Mano"
+                        text: "📱 1-Handed"
                         color: controller && controller.sizeMode === "onehand" ? "#ffffff" : "#d0d5dd"
-                        font.pixelSize: 11
+                        font.pixelSize: 10
                         font.bold: controller && controller.sizeMode === "onehand"
                     }
 
