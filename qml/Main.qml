@@ -631,6 +631,7 @@ Window {
                             // Split Gap
                             Item {
                                 visible: controller.isSplit
+                                Layout.preferredWidth: controller.isSplit ? 160 : 0
                                 Layout.fillWidth: true
                             }
                             // Right Bank
@@ -693,6 +694,7 @@ Window {
                             // Split Gap
                             Item {
                                 visible: controller.isSplit
+                                Layout.preferredWidth: controller.isSplit ? 160 : 0
                                 Layout.fillWidth: true
                             }
                             // Right Bank
@@ -767,6 +769,7 @@ Window {
                             // Split Gap
                             Item {
                                 visible: controller.isSplit
+                                Layout.preferredWidth: controller.isSplit ? 160 : 0
                                 Layout.fillWidth: true
                             }
                             Repeater {
@@ -850,6 +853,7 @@ Window {
                             // Split Gap
                             Item {
                                 visible: controller.isSplit
+                                Layout.preferredWidth: controller.isSplit ? 160 : 0
                                 Layout.fillWidth: true
                             }
                             KeyButton {

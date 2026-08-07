@@ -1,5 +1,10 @@
 # ⌨️ Plasma Touch Key (Tastiera)
 
+> ⚠️ **EXPERIMENTAL BRANCH**: This branch contains active development, experimental features, and WIP refactorings. It may be highly unstable.
+> **For the stable release, switch to the [`main`](https://github.com/andreadelsarto/tastiera/tree/main) branch.**
+
+---
+
 > **Next-Generation Virtual Keyboard for KDE Plasma 6 & Wayland**  
 > Designed for Linux tablets, touchscreens, and postmarketOS devices running KDE Plasma 6 Wayland.
 

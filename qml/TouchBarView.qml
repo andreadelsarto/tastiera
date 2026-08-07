@@ -139,27 +139,6 @@ Rectangle {
                         }
                     }
 
-                    // 1234 Numpad Pill
-                    Rectangle {
-                        width: 56
-                        height: 26
-                        radius: 13
-                        color: controller && controller.layoutMode === "numpad" ? (currentTheme ? currentTheme.accentColor : "#00a2ed") : "transparent"
-
-                        Text {
-                            anchors.centerIn: parent
-                            text: "🔢 1234"
-                            color: controller && controller.layoutMode === "numpad" ? "#ffffff" : "#d0d5dd"
-                            font.pixelSize: 12
-                            font.bold: true
-                        }
-
-                        MouseArea {
-                            anchors.fill: parent
-                            onClicked: if (controller) controller.layoutMode = "numpad"
-                        }
-                    }
-
                     // Emoji Pill
                     Rectangle {
                         width: 36
