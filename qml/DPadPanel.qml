@@ -58,14 +58,21 @@ Rectangle {
                 onReleased: if (vk) vk.sendKey(keyEsc)
             }
             KeyButton {
-                label: "Tab"
+                label: dpad.mainWindow && dpad.mainWindow.shiftState > 0 ? "Shift+Tab" : "Tab"
                 isSpecial: true
                 isCustomAction: true
+                isPrimaryAction: dpad.mainWindow && dpad.mainWindow.shiftState > 0
                 currentTheme: dpad.currentTheme
                 vk: dpad.vk
                 Layout.fillWidth: true
                 Layout.fillHeight: true
-                onReleased: if (vk) vk.sendKey(keyTab)
+                onReleased: {
+                    if (dpad.mainWindow && dpad.mainWindow.shiftState > 0) {
+                        if (vk) vk.sendCombo(1 /* Shift */, keyTab)
+                    } else {
+                        if (vk) vk.sendKey(keyTab)
+                    }
+                }
             }
             KeyButton {
                 label: "Ctrl"
