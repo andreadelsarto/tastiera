@@ -100,7 +100,7 @@ Rectangle {
                 }
             }
 
-            // Row 2: Home, Up, End, Canc
+            // Row 2: Home, Up, End, Canc (Instant touch + accelerating hold repeat)
             KeyButton {
                 label: "Home"
                 isSpecial: true
@@ -109,11 +109,11 @@ Rectangle {
                 vk: dpad.vk
                 Layout.fillWidth: true
                 Layout.fillHeight: true
-                onPressed: if (controller) controller.startKeyRepeat(keyHome)
-                onReleased: {
-                    if (controller) controller.stopKeyRepeat()
+                onPressed: {
                     if (vk) vk.sendKey(keyHome)
+                    if (controller) controller.startKeyRepeat(keyHome)
                 }
+                onReleased: if (controller) controller.stopKeyRepeat()
             }
             KeyButton {
                 label: "▲"
@@ -123,11 +123,11 @@ Rectangle {
                 vk: dpad.vk
                 Layout.fillWidth: true
                 Layout.fillHeight: true
-                onPressed: if (controller) controller.startKeyRepeat(keyUp)
-                onReleased: {
-                    if (controller) controller.stopKeyRepeat()
+                onPressed: {
                     if (vk) vk.sendKey(keyUp)
+                    if (controller) controller.startKeyRepeat(keyUp)
                 }
+                onReleased: if (controller) controller.stopKeyRepeat()
             }
             KeyButton {
                 label: "End"
@@ -137,11 +137,11 @@ Rectangle {
                 vk: dpad.vk
                 Layout.fillWidth: true
                 Layout.fillHeight: true
-                onPressed: if (controller) controller.startKeyRepeat(keyEnd)
-                onReleased: {
-                    if (controller) controller.stopKeyRepeat()
+                onPressed: {
                     if (vk) vk.sendKey(keyEnd)
+                    if (controller) controller.startKeyRepeat(keyEnd)
                 }
+                onReleased: if (controller) controller.stopKeyRepeat()
             }
             KeyButton {
                 label: "Canc"
@@ -151,14 +151,14 @@ Rectangle {
                 vk: dpad.vk
                 Layout.fillWidth: true
                 Layout.fillHeight: true
-                onPressed: if (controller) controller.startKeyRepeat(keyDelete)
-                onReleased: {
-                    if (controller) controller.stopKeyRepeat()
+                onPressed: {
                     if (vk) vk.sendKey(keyDelete)
+                    if (controller) controller.startKeyRepeat(keyDelete)
                 }
+                onReleased: if (controller) controller.stopKeyRepeat()
             }
 
-            // Row 3: Left, Down, Right, Tutto (Ctrl+A)
+            // Row 3: Left, Down, Right, Tutto (Instant touch + accelerating hold repeat)
             KeyButton {
                 label: "◄"
                 isSpecial: true
@@ -167,11 +167,11 @@ Rectangle {
                 vk: dpad.vk
                 Layout.fillWidth: true
                 Layout.fillHeight: true
-                onPressed: if (controller) controller.startKeyRepeat(keyLeft)
-                onReleased: {
-                    if (controller) controller.stopKeyRepeat()
+                onPressed: {
                     if (vk) vk.sendKey(keyLeft)
+                    if (controller) controller.startKeyRepeat(keyLeft)
                 }
+                onReleased: if (controller) controller.stopKeyRepeat()
             }
             KeyButton {
                 label: "▼"
@@ -181,11 +181,11 @@ Rectangle {
                 vk: dpad.vk
                 Layout.fillWidth: true
                 Layout.fillHeight: true
-                onPressed: if (controller) controller.startKeyRepeat(keyDown)
-                onReleased: {
-                    if (controller) controller.stopKeyRepeat()
+                onPressed: {
                     if (vk) vk.sendKey(keyDown)
+                    if (controller) controller.startKeyRepeat(keyDown)
                 }
+                onReleased: if (controller) controller.stopKeyRepeat()
             }
             KeyButton {
                 label: "►"
@@ -195,11 +195,11 @@ Rectangle {
                 vk: dpad.vk
                 Layout.fillWidth: true
                 Layout.fillHeight: true
-                onPressed: if (controller) controller.startKeyRepeat(keyRight)
-                onReleased: {
-                    if (controller) controller.stopKeyRepeat()
+                onPressed: {
                     if (vk) vk.sendKey(keyRight)
+                    if (controller) controller.startKeyRepeat(keyRight)
                 }
+                onReleased: if (controller) controller.stopKeyRepeat()
             }
             KeyButton {
                 label: "Tutto"
