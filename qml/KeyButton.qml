@@ -25,8 +25,6 @@ Rectangle {
     signal released()
     signal longPressed()
 
-    Layout.minimumWidth: 52
-    Layout.fillWidth: true
     Layout.fillHeight: true
 
     radius: currentTheme ? currentTheme.keyRadius : 12
