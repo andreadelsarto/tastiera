@@ -151,7 +151,7 @@ Rectangle {
                 onReleased: if (controller) controller.stopKeyRepeat()
             }
             KeyButton {
-                label: "Canc"
+                label: "Del"
                 isSpecial: true
                 isCustomAction: true
                 currentTheme: dpad.currentTheme
@@ -165,7 +165,7 @@ Rectangle {
                 onReleased: if (controller) controller.stopKeyRepeat()
             }
 
-            // Row 3: Left, Down, Right, Tutto (Instant touch + accelerating hold repeat)
+            // Row 3: Left, Down, Right, Sel All (Instant touch + accelerating hold repeat)
             KeyButton {
                 label: "◄"
                 isSpecial: true
@@ -209,7 +209,7 @@ Rectangle {
                 onReleased: if (controller) controller.stopKeyRepeat()
             }
             KeyButton {
-                label: "Tutto"
+                label: "Sel All"
                 isSpecial: true
                 isCustomAction: true
                 currentTheme: dpad.currentTheme
