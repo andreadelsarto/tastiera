@@ -27,6 +27,7 @@ static void setupProcessSecurity() {
 
 int main(int argc, char *argv[])
 {
+    setvbuf(stdout, NULL, _IONBF, 0);
     setupProcessSecurity();
 
     QGuiApplication app(argc, argv);

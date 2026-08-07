@@ -189,19 +189,23 @@ void WaylandVirtualKeyboard::createKeymap()
 void WaylandVirtualKeyboard::sendKey(uint32_t keycode, bool pressed)
 {
     Q_UNUSED(pressed);
+    qInfo() << "[WaylandVirtualKeyboard] sendKey CALLED -> keycode:" << keycode;
+
+    if (m_uinputFd >= 0) {
+        qInfo() << "[WaylandVirtualKeyboard] sending via uinput -> keycode:" << keycode;
+        sendUinputKey(keycode, true);
+        usleep(15000);
+        sendUinputKey(keycode, false);
+    }
     if (m_virtualKeyboard) {
         uint32_t time = QDateTime::currentMSecsSinceEpoch() & 0xFFFFFFFF;
-        uint32_t xkbKeycode = keycode + 8; // XKB keycode offset is evdev + 8
+        uint32_t xkbKeycode = keycode + 8;
+        qInfo() << "[WaylandVirtualKeyboard] sending via zwp_virtual_keyboard_v1 -> xkbKeycode:" << xkbKeycode;
         zwp_virtual_keyboard_v1_key(m_virtualKeyboard, time, xkbKeycode, 1);
         wl_display_flush(m_display);
         usleep(15000);
         zwp_virtual_keyboard_v1_key(m_virtualKeyboard, time + 15, xkbKeycode, 0);
         wl_display_flush(m_display);
-    }
-    if (m_uinputFd >= 0) {
-        sendUinputKey(keycode, true);
-        usleep(15000);
-        sendUinputKey(keycode, false);
     }
 }
 
