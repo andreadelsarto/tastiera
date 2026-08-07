@@ -52,7 +52,9 @@ Rectangle {
                (root.isSpecial ? (currentTheme ? currentTheme.accentTextColor : "#38bdf8") :
                (currentTheme ? currentTheme.textColor : "#f8fafc"))
         font.family: currentTheme ? currentTheme.fontFamily : "sans-serif"
-        font.pixelSize: root.isSpecial ? 16 : 18
+        font.pixelSize: root.label.length > 8 ? 9 :
+                       (root.label.length > 5 ? 11 :
+                       (root.label.length > 3 ? 13 : (root.isSpecial ? 15 : 18)))
         font.bold: root.isSpecial || root.isPrimaryAction
     }
 

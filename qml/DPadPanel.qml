@@ -100,7 +100,7 @@ Rectangle {
                 }
             }
 
-            // Row 2: Home, Up, End, Delete (Accelerating Repeat Timers)
+            // Row 2: Home, Up, End, Del (Accelerating Repeat Timers)
             KeyButton {
                 label: "Home"
                 isSpecial: true
@@ -135,7 +135,7 @@ Rectangle {
                 onReleased: if (controller) controller.stopKeyRepeat()
             }
             KeyButton {
-                label: "Delete"
+                label: "Del"
                 isSpecial: true
                 isCustomAction: true
                 currentTheme: dpad.currentTheme
@@ -146,7 +146,7 @@ Rectangle {
                 onReleased: if (controller) controller.stopKeyRepeat()
             }
 
-            // Row 3: Left, Down, Right, Select All (Accelerating Repeat Timers)
+            // Row 3: Left, Down, Right, Sel All (Accelerating Repeat Timers)
             KeyButton {
                 label: "◄"
                 isSpecial: true
@@ -181,7 +181,7 @@ Rectangle {
                 onReleased: if (controller) controller.stopKeyRepeat()
             }
             KeyButton {
-                label: "Select All"
+                label: "Sel All"
                 isSpecial: true
                 isCustomAction: true
                 currentTheme: dpad.currentTheme
