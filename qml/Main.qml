@@ -1246,6 +1246,7 @@ Window {
                     visible: controller.sizeMode === "full"
                     currentTheme: mainWindow.activeTheme
                     vk: virtualKeyEngine
+                    controller: controller
                     mainWindow: mainWindow
                     Layout.alignment: Qt.AlignRight
                 }

@@ -10,6 +10,7 @@ Rectangle {
 
     property var currentTheme
     property var vk
+    property var controller
     property var mainWindow
 
     // Linux evdev input keycodes
@@ -99,7 +100,7 @@ Rectangle {
                 }
             }
 
-            // Row 2: Home, Up, End, Canc
+            // Row 2: Home, Up, End, Canc (Accelerating Repeat Timers)
             KeyButton {
                 label: "Home"
                 isSpecial: true
@@ -108,7 +109,8 @@ Rectangle {
                 vk: dpad.vk
                 Layout.fillWidth: true
                 Layout.fillHeight: true
-                onReleased: if (vk) vk.sendKey(keyHome)
+                onPressed: if (controller) controller.startKeyRepeat(keyHome)
+                onReleased: if (controller) controller.stopKeyRepeat()
             }
             KeyButton {
                 label: "▲"
@@ -118,7 +120,8 @@ Rectangle {
                 vk: dpad.vk
                 Layout.fillWidth: true
                 Layout.fillHeight: true
-                onReleased: if (vk) vk.sendKey(keyUp)
+                onPressed: if (controller) controller.startKeyRepeat(keyUp)
+                onReleased: if (controller) controller.stopKeyRepeat()
             }
             KeyButton {
                 label: "End"
@@ -128,7 +131,8 @@ Rectangle {
                 vk: dpad.vk
                 Layout.fillWidth: true
                 Layout.fillHeight: true
-                onReleased: if (vk) vk.sendKey(keyEnd)
+                onPressed: if (controller) controller.startKeyRepeat(keyEnd)
+                onReleased: if (controller) controller.stopKeyRepeat()
             }
             KeyButton {
                 label: "Canc"
@@ -138,10 +142,11 @@ Rectangle {
                 vk: dpad.vk
                 Layout.fillWidth: true
                 Layout.fillHeight: true
-                onReleased: if (vk) vk.sendKey(keyDelete)
+                onPressed: if (controller) controller.startKeyRepeat(keyDelete)
+                onReleased: if (controller) controller.stopKeyRepeat()
             }
 
-            // Row 3: Left, Down, Right, Tutto (Ctrl+A)
+            // Row 3: Left, Down, Right, Tutto (Accelerating Repeat Timers)
             KeyButton {
                 label: "◄"
                 isSpecial: true
@@ -150,7 +155,8 @@ Rectangle {
                 vk: dpad.vk
                 Layout.fillWidth: true
                 Layout.fillHeight: true
-                onReleased: if (vk) vk.sendKey(keyLeft)
+                onPressed: if (controller) controller.startKeyRepeat(keyLeft)
+                onReleased: if (controller) controller.stopKeyRepeat()
             }
             KeyButton {
                 label: "▼"
@@ -160,7 +166,8 @@ Rectangle {
                 vk: dpad.vk
                 Layout.fillWidth: true
                 Layout.fillHeight: true
-                onReleased: if (vk) vk.sendKey(keyDown)
+                onPressed: if (controller) controller.startKeyRepeat(keyDown)
+                onReleased: if (controller) controller.stopKeyRepeat()
             }
             KeyButton {
                 label: "►"
@@ -170,7 +177,8 @@ Rectangle {
                 vk: dpad.vk
                 Layout.fillWidth: true
                 Layout.fillHeight: true
-                onReleased: if (vk) vk.sendKey(keyRight)
+                onPressed: if (controller) controller.startKeyRepeat(keyRight)
+                onReleased: if (controller) controller.stopKeyRepeat()
             }
             KeyButton {
                 label: "Tutto"
