@@ -36,6 +36,14 @@
 
 ---
 
+## ⚠️ Known Issues
+
+- ⚠️ **Split Layout**: Split mode (`▯▯ Split`) is currently work-in-progress and requires layout boundary adjustments.
+- 🎨 **Theme Contrast**: Some visual themes are still being tuned for optimal text contrast and legibility across all display types.
+- 🔄 **KWin Input Method Sync**: Auto-activation on text field focus depends on KWin settings; if minimized, tap the floating bubble handle to restore.
+
+---
+
 ## 🛠️ Build & Installation
 
 ### Requirements
