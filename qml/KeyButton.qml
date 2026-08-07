@@ -25,6 +25,10 @@ Rectangle {
     signal released()
     signal longPressed()
 
+    Layout.minimumWidth: 52
+    Layout.fillWidth: true
+    Layout.fillHeight: true
+
     radius: currentTheme ? currentTheme.keyRadius : 12
 
     // Dynamic background color based on key type & state
