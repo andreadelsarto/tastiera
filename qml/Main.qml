@@ -725,6 +725,11 @@ Window {
                         // Row 3: ⇧ z x c v | b n m ⌫
                         RowLayout {
                             spacing: 6
+                            Timer {
+                                id: shiftDoubleTapTimer
+                                interval: 300
+                                repeat: false
+                            }
                             KeyButton {
                                 label: mainWindow.shiftState === 2 ? "⇪" : "⇧"
                                 isSpecial: true
@@ -734,14 +739,17 @@ Window {
                                 currentTheme: mainWindow.activeTheme
                                 Layout.fillHeight: true
                                 onReleased: {
-                                    if (mainWindow.shiftState > 0) {
-                                        mainWindow.shiftState = 0
+                                    if (shiftDoubleTapTimer.running) {
+                                        shiftDoubleTapTimer.stop()
+                                        mainWindow.shiftState = 2 // Caps Lock
                                     } else {
-                                        mainWindow.shiftState = 1
+                                        shiftDoubleTapTimer.start()
+                                        if (mainWindow.shiftState > 0) {
+                                            mainWindow.shiftState = 0
+                                        } else {
+                                            mainWindow.shiftState = 1
+                                        }
                                     }
-                                }
-                                onLongPressed: {
-                                    mainWindow.shiftState = 2
                                 }
                             }
                             Repeater {

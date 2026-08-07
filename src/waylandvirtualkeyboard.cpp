@@ -317,6 +317,8 @@ void WaylandVirtualKeyboard::sendEmoji(const QString &emoji)
     QClipboard *clipboard = QGuiApplication::clipboard();
     if (clipboard) {
         clipboard->setText(emoji);
+        QGuiApplication::processEvents();
+        usleep(30000); // 30ms wait guarantees Wayland/KWin clipboard sync before Ctrl+V
     }
     sendCombo(4, KEY_V);
 }

@@ -120,6 +120,7 @@ Rectangle {
 
                     // Split Pill
                     Rectangle {
+                        visible: controller ? controller.sizeMode !== "onehand" : true
                         width: 62
                         height: 26
                         radius: 13

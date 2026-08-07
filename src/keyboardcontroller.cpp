@@ -52,6 +52,10 @@ void KeyboardController::setSizeMode(const QString &mode)
     if (m_sizeMode != mode) {
         m_sizeMode = mode;
         emit sizeModeChanged();
+        if (m_sizeMode == "onehand" && m_isSplit) {
+            m_isSplit = false;
+            emit isSplitChanged();
+        }
     }
 }
 
