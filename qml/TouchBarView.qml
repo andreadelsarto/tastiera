@@ -97,6 +97,27 @@ Rectangle {
                         }
                     }
 
+                    // IT Pill
+                    Rectangle {
+                        width: 50
+                        height: 26
+                        radius: 13
+                        color: controller && controller.layoutMode === "accenti" ? (currentTheme ? currentTheme.accentColor : "#00a2ed") : "transparent"
+
+                        Text {
+                            anchors.centerIn: parent
+                            text: "🇮🇹 IT"
+                            color: controller && controller.layoutMode === "accenti" ? "#ffffff" : "#d0d5dd"
+                            font.pixelSize: 12
+                            font.bold: true
+                        }
+
+                        MouseArea {
+                            anchors.fill: parent
+                            onClicked: if (controller) controller.layoutMode = "accenti"
+                        }
+                    }
+
                     // ?123 Pill
                     Rectangle {
                         width: 50
@@ -115,6 +136,46 @@ Rectangle {
                         MouseArea {
                             anchors.fill: parent
                             onClicked: if (controller) controller.layoutMode = "symbols"
+                        }
+                    }
+
+                    // 1234 Numpad Pill
+                    Rectangle {
+                        width: 56
+                        height: 26
+                        radius: 13
+                        color: controller && controller.layoutMode === "numpad" ? (currentTheme ? currentTheme.accentColor : "#00a2ed") : "transparent"
+
+                        Text {
+                            anchors.centerIn: parent
+                            text: "🔢 1234"
+                            color: controller && controller.layoutMode === "numpad" ? "#ffffff" : "#d0d5dd"
+                            font.pixelSize: 12
+                            font.bold: true
+                        }
+
+                        MouseArea {
+                            anchors.fill: parent
+                            onClicked: if (controller) controller.layoutMode = "numpad"
+                        }
+                    }
+
+                    // Emoji Pill
+                    Rectangle {
+                        width: 36
+                        height: 26
+                        radius: 13
+                        color: controller && controller.layoutMode === "emoji" ? (currentTheme ? currentTheme.accentColor : "#00a2ed") : "transparent"
+
+                        Text {
+                            anchors.centerIn: parent
+                            text: "😊"
+                            font.pixelSize: 13
+                        }
+
+                        MouseArea {
+                            anchors.fill: parent
+                            onClicked: if (controller) controller.layoutMode = "emoji"
                         }
                     }
 
@@ -211,7 +272,7 @@ Rectangle {
 
         // Right section: Size Mode Segmented Switcher in Dark Container
         Rectangle {
-            width: 230
+            width: 210
             height: 34
             radius: 17
             color: currentTheme && currentTheme.sizeModePillBg ? currentTheme.sizeModePillBg : "#21252d"
@@ -222,7 +283,7 @@ Rectangle {
                 anchors.margins: 3
                 spacing: 2
 
-                // Normal
+                // Normale
                 Rectangle {
                     width: (parent.width - 6) / 3
                     height: parent.height
@@ -231,7 +292,7 @@ Rectangle {
 
                     Text {
                         anchors.centerIn: parent
-                        text: "Normal"
+                        text: "Normale"
                         color: controller && controller.sizeMode === "normal" ? "#ffffff" : "#d0d5dd"
                         font.pixelSize: 11
                         font.bold: controller && controller.sizeMode === "normal"
@@ -243,7 +304,7 @@ Rectangle {
                     }
                 }
 
-                // Extended (Full)
+                // Estesa (Full)
                 Rectangle {
                     width: (parent.width - 6) / 3
                     height: parent.height
@@ -252,7 +313,7 @@ Rectangle {
 
                     Text {
                         anchors.centerIn: parent
-                        text: "Extended"
+                        text: "Estesa"
                         color: controller && controller.sizeMode === "full" ? "#ffffff" : "#d0d5dd"
                         font.pixelSize: 11
                         font.bold: controller && controller.sizeMode === "full"
@@ -264,7 +325,7 @@ Rectangle {
                     }
                 }
 
-                // 1-Handed
+                // 1-Mano
                 Rectangle {
                     width: (parent.width - 6) / 3
                     height: parent.height
@@ -273,9 +334,9 @@ Rectangle {
 
                     Text {
                         anchors.centerIn: parent
-                        text: "📱 1-Handed"
+                        text: "📱 1-Mano"
                         color: controller && controller.sizeMode === "onehand" ? "#ffffff" : "#d0d5dd"
-                        font.pixelSize: 10
+                        font.pixelSize: 11
                         font.bold: controller && controller.sizeMode === "onehand"
                     }
 

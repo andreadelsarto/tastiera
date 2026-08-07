@@ -3,14 +3,13 @@ import QtQuick.Layouts 1.15
 
 Rectangle {
     id: dpad
-    width: 260
+    width: 250
     height: parent.height
     radius: 16
     color: currentTheme && currentTheme.dpadBg ? currentTheme.dpadBg : "#252a34"
 
     property var currentTheme
     property var vk
-    property var controller
     property var mainWindow
 
     // Linux evdev input keycodes
@@ -100,7 +99,7 @@ Rectangle {
                 }
             }
 
-            // Row 2: Home, Up, End, Del (Accelerating Repeat Timers)
+            // Row 2: Home, Up, End, Canc
             KeyButton {
                 label: "Home"
                 isSpecial: true
@@ -109,8 +108,7 @@ Rectangle {
                 vk: dpad.vk
                 Layout.fillWidth: true
                 Layout.fillHeight: true
-                onPressed: if (controller) controller.startKeyRepeat(keyHome)
-                onReleased: if (controller) controller.stopKeyRepeat()
+                onReleased: if (vk) vk.sendKey(keyHome)
             }
             KeyButton {
                 label: "▲"
@@ -120,8 +118,7 @@ Rectangle {
                 vk: dpad.vk
                 Layout.fillWidth: true
                 Layout.fillHeight: true
-                onPressed: if (controller) controller.startKeyRepeat(keyUp)
-                onReleased: if (controller) controller.stopKeyRepeat()
+                onReleased: if (vk) vk.sendKey(keyUp)
             }
             KeyButton {
                 label: "End"
@@ -131,22 +128,20 @@ Rectangle {
                 vk: dpad.vk
                 Layout.fillWidth: true
                 Layout.fillHeight: true
-                onPressed: if (controller) controller.startKeyRepeat(keyEnd)
-                onReleased: if (controller) controller.stopKeyRepeat()
+                onReleased: if (vk) vk.sendKey(keyEnd)
             }
             KeyButton {
-                label: "Del"
+                label: "Canc"
                 isSpecial: true
                 isCustomAction: true
                 currentTheme: dpad.currentTheme
                 vk: dpad.vk
                 Layout.fillWidth: true
                 Layout.fillHeight: true
-                onPressed: if (controller) controller.startKeyRepeat(keyDelete)
-                onReleased: if (controller) controller.stopKeyRepeat()
+                onReleased: if (vk) vk.sendKey(keyDelete)
             }
 
-            // Row 3: Left, Down, Right, Sel All (Accelerating Repeat Timers)
+            // Row 3: Left, Down, Right, Tutto (Ctrl+A)
             KeyButton {
                 label: "◄"
                 isSpecial: true
@@ -155,8 +150,7 @@ Rectangle {
                 vk: dpad.vk
                 Layout.fillWidth: true
                 Layout.fillHeight: true
-                onPressed: if (controller) controller.startKeyRepeat(keyLeft)
-                onReleased: if (controller) controller.stopKeyRepeat()
+                onReleased: if (vk) vk.sendKey(keyLeft)
             }
             KeyButton {
                 label: "▼"
@@ -166,8 +160,7 @@ Rectangle {
                 vk: dpad.vk
                 Layout.fillWidth: true
                 Layout.fillHeight: true
-                onPressed: if (controller) controller.startKeyRepeat(keyDown)
-                onReleased: if (controller) controller.stopKeyRepeat()
+                onReleased: if (vk) vk.sendKey(keyDown)
             }
             KeyButton {
                 label: "►"
@@ -177,11 +170,10 @@ Rectangle {
                 vk: dpad.vk
                 Layout.fillWidth: true
                 Layout.fillHeight: true
-                onPressed: if (controller) controller.startKeyRepeat(keyRight)
-                onReleased: if (controller) controller.stopKeyRepeat()
+                onReleased: if (vk) vk.sendKey(keyRight)
             }
             KeyButton {
-                label: "Sel All"
+                label: "Tutto"
                 isSpecial: true
                 isCustomAction: true
                 currentTheme: dpad.currentTheme
