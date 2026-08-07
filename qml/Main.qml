@@ -25,6 +25,19 @@ Window {
         id: controller
     }
 
+    function toggleVisibility() {
+        mainWindow.visible = !mainWindow.visible
+        if (!mainWindow.visible) {
+            controller.updateInputMask(mainWindow, 0, 0, 0, 0)
+        } else {
+            if (mainWindow.isMinimized) {
+                minimizedPill.syncMinimizedMask()
+            } else {
+                cardBox.syncMask()
+            }
+        }
+    }
+
     WaylandVirtualKeyboard {
         id: virtualKeyEngine
     }
@@ -47,6 +60,9 @@ Window {
 
     Connections {
         target: controller
+        function onToggleVisibilityRequested() {
+            mainWindow.toggleVisibility()
+        }
         function onActiveThemeChanged() {
             themeLoader.source = "themes/" + controller.activeTheme + ".qml"
         }

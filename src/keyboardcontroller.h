@@ -20,6 +20,9 @@ class KeyboardController : public QObject
 
 public:
     explicit KeyboardController(QObject *parent = nullptr);
+    ~KeyboardController() override;
+
+    static KeyboardController *instance();
 
     bool isPasswordMode() const { return m_isPasswordMode; }
     void setIsPasswordMode(bool passwordMode);
@@ -52,7 +55,11 @@ public:
     Q_INVOKABLE void stopKeyRepeat();
     Q_INVOKABLE void updateInputMask(QObject *windowObj, int x, int y, int width, int height);
 
+public slots:
+    Q_SCRIPTABLE Q_INVOKABLE void toggleVisibility();
+
 signals:
+    void toggleVisibilityRequested();
     void sizeModeChanged();
     void layoutModeChanged();
     void isSplitChanged();
@@ -85,6 +92,8 @@ private:
     QTimer m_keyRepeatTimer;
     int m_keyRepeatInterval = 100;
     uint32_t m_currentRepeatKeycode = 0;
+
+    static KeyboardController *s_instance;
 };
 
 #endif // KEYBOARDCONTROLLER_H

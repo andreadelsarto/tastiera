@@ -5,10 +5,18 @@
 #include <QDir>
 #include <QFileInfo>
 
+KeyboardController *KeyboardController::s_instance = nullptr;
+
+KeyboardController* KeyboardController::instance()
+{
+    return s_instance;
+}
+
 KeyboardController::KeyboardController(QObject *parent)
     : QObject(parent),
       m_activeTheme("BreezeDark")
 {
+    s_instance = this;
     m_backspaceHoldTimer.setSingleShot(true);
     m_backspaceHoldTimer.setInterval(300); // 300ms initial hold delay
 
@@ -146,6 +154,23 @@ void KeyboardController::stopKeyRepeat()
 {
     m_keyRepeatHoldTimer.stop();
     m_keyRepeatTimer.stop();
+}
+
+KeyboardController::~KeyboardController()
+{
+    if (s_instance == this) {
+        s_instance = nullptr;
+    }
+}
+
+void KeyboardController::toggleVisibility()
+{
+    qInfo() << "[KeyboardController] toggleVisibility requested via D-Bus / CLI";
+    if (s_instance) {
+        emit s_instance->toggleVisibilityRequested();
+    } else {
+        emit toggleVisibilityRequested();
+    }
 }
 
 void KeyboardController::updateInputMask(QObject *windowObj, int x, int y, int width, int height)

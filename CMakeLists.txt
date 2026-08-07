@@ -11,7 +11,7 @@ set(CMAKE_AUTORCC ON)
 find_package(ECM 6.0.0 REQUIRED NO_MODULE)
 set(CMAKE_MODULE_PATH ${ECM_MODULE_PATH})
 
-find_package(Qt6 REQUIRED COMPONENTS Core Gui Quick Qml DBus GuiPrivate)
+find_package(Qt6 REQUIRED COMPONENTS Core Gui Quick Qml DBus GuiPrivate Network)
 find_package(KF6CoreAddons REQUIRED)
 find_package(KF6I18n REQUIRED)
 find_package(PkgConfig REQUIRED)
@@ -67,6 +67,7 @@ target_link_libraries(plasma-keyboard PRIVATE
     Qt6::Quick
     Qt6::Qml
     Qt6::DBus
+    Qt6::Network
     KF6::CoreAddons
     KF6::I18n
     Wayland::Client
