@@ -31,7 +31,9 @@ int main(int argc, char *argv[])
 
     QGuiApplication app(argc, argv);
     app.setOrganizationName("KDE");
+    app.setOrganizationDomain("kde.org");
     app.setApplicationName("plasma-keyboard");
+    app.setDesktopFileName("org.kde.plasma-keyboard");
 
     qmlRegisterType<KeyboardController>("org.kde.plasma.keyboard", 1, 0, "KeyboardController");
     qmlRegisterType<WaylandVirtualKeyboard>("org.kde.plasma.keyboard", 1, 0, "WaylandVirtualKeyboard");
@@ -49,10 +51,14 @@ int main(int argc, char *argv[])
 
         auto *window = qobject_cast<QQuickWindow *>(obj);
         if (window) {
+            // Explicitly set window flags to bypass tiling window managers (Krohnkite, Bspwm, etc.)
+            window->setFlags(Qt::Window | Qt::FramelessWindowHint | Qt::WindowStaysOnTopHint | Qt::BypassWindowManagerHint | Qt::WindowDoesNotAcceptFocus);
+
 #ifdef HAVE_LAYERSHELLQT
             auto lWindow = LayerShellQt::Window::get(window);
             if (lWindow) {
                 lWindow->setLayer(LayerShellQt::Window::LayerOverlay);
+                lWindow->setScope(QStringLiteral("virtual-keyboard"));
                 lWindow->setKeyboardInteractivity(LayerShellQt::Window::KeyboardInteractivityNone);
                 lWindow->setAnchors(LayerShellQt::Window::AnchorBottom);
                 lWindow->setExclusiveZone(0);
