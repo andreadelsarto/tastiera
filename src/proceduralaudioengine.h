@@ -13,7 +13,8 @@ enum class KeyAudioType {
     Standard = 0,
     Space = 1,
     Backspace = 2,
-    Enter = 3
+    Enter = 3,
+    BackspaceSoft = 4
 };
 
 class ProceduralAudioEngine : public QObject {
@@ -60,8 +61,9 @@ private:
                 wave = std::sin(2.0 * M_PI * currentFreq * t);
             }
 
-            // Scaling a 16-bit signed PCM (max amplitude 28000)
-            samples[i] = static_cast<int16_t>(wave * envelope * 28000.0);
+            // Scaling a 16-bit signed PCM (max amplitude 28000 for standard, 12000 for soft)
+            double maxAmp = (decayRate > 1.5) ? 12000.0 : 28000.0;
+            samples[i] = static_cast<int16_t>(wave * envelope * maxAmp);
         }
         return buffer;
     }
@@ -75,10 +77,11 @@ public:
         m_audioSink = new QAudioSink(m_format, this);
 
         // Pre-calcolo dei buffer in RAM (0.4 ms overhead iniziale, zero I/O durante la digitazione)
-        m_soundBuffers[KeyAudioType::Standard]  = generateClickSample(900.0, 900.0, 18.0, 1.2);
-        m_soundBuffers[KeyAudioType::Space]     = generateClickSample(380.0, 320.0, 32.0, 0.8);
-        m_soundBuffers[KeyAudioType::Backspace] = generateClickSample(680.0, 380.0, 22.0, 1.0);
-        m_soundBuffers[KeyAudioType::Enter]     = generateClickSample(1100.0, 1400.0, 26.0, 0.9, true);
+        m_soundBuffers[KeyAudioType::Standard]      = generateClickSample(900.0, 900.0, 18.0, 1.2);
+        m_soundBuffers[KeyAudioType::Space]         = generateClickSample(380.0, 320.0, 32.0, 0.8);
+        m_soundBuffers[KeyAudioType::Backspace]     = generateClickSample(680.0, 380.0, 22.0, 1.0);
+        m_soundBuffers[KeyAudioType::Enter]         = generateClickSample(1100.0, 1400.0, 26.0, 0.9, true);
+        m_soundBuffers[KeyAudioType::BackspaceSoft] = generateClickSample(520.0, 340.0, 14.0, 1.8);
 
         // Inizializza l'output stream audio
         m_audioDevice = m_audioSink->start();

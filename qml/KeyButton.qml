@@ -27,7 +27,7 @@ Rectangle {
 
     Layout.fillHeight: true
 
-    radius: currentTheme ? currentTheme.keyRadius : 12
+    radius: (currentTheme && currentTheme.keyRadius) ? currentTheme.keyRadius : 12
 
     // Dynamic background color based on key type & state
     color: isPrimaryAction ? (currentTheme ? currentTheme.accentColor : "#0284c7") :
@@ -37,7 +37,7 @@ Rectangle {
 
     border.color: isPrimaryAction ? (currentTheme ? currentTheme.accentColor : "#0284c7") :
                   (currentTheme ? currentTheme.keyBorderColor : "#334155")
-    border.width: currentTheme ? currentTheme.keyBorderWidth : 1
+    border.width: (currentTheme && ("keyBorderWidth" in currentTheme)) ? currentTheme.keyBorderWidth : 1
 
     // Scale animation on press
     scale: mouseArea.pressed ? 0.95 : 1.0
@@ -142,6 +142,8 @@ Rectangle {
         }
     }
 
+    property bool didLongPressRepeat: false
+
     Timer {
         id: longPressTimer
         interval: 300
@@ -152,8 +154,10 @@ Rectangle {
                 root.selectedAccentIndex = 0
                 root.isAccentOverlayOpen = true
             } else if (root.isBackspace && controller) {
+                root.didLongPressRepeat = true
                 controller.startBackspaceTimer()
             } else if ((root.label === "space" || root.textToSend === " ") && controller) {
+                root.didLongPressRepeat = true
                 controller.startSpaceTimer()
             }
         }
@@ -178,6 +182,7 @@ Rectangle {
 
         onPressed: (touchPoints) => {
             mouseArea.pressed = true
+            root.didLongPressRepeat = false
             root.pressed()
             hapticAnimation.start()
             longPressTimer.start()
@@ -186,13 +191,13 @@ Rectangle {
             } else if (typeof proceduralAudioEngine !== "undefined" && proceduralAudioEngine) {
                 proceduralAudioEngine.playKeySoundForLabel(root.label, root.isBackspace, root.isSpecial)
             }
-            if (gestureEngine) {
+            if (typeof gestureEngine !== "undefined" && gestureEngine) {
                 gestureEngine.startTouch(Qt.point(tp1.x, tp1.y))
             }
         }
 
         onUpdated: (touchPoints) => {
-            if (gestureEngine && mouseArea.pressed) {
+            if (typeof gestureEngine !== "undefined" && gestureEngine && mouseArea.pressed) {
                 gestureEngine.updateTouch(Qt.point(tp1.x, tp1.y))
             }
 
@@ -210,7 +215,7 @@ Rectangle {
             mouseArea.pressed = false
             longPressTimer.stop()
 
-            if (gestureEngine) {
+            if (typeof gestureEngine !== "undefined" && gestureEngine) {
                 gestureEngine.endTouch()
             }
 
@@ -228,7 +233,13 @@ Rectangle {
                 root.selectedAccentIndex = -1
             } else if (root.isBackspace) {
                 if (controller) controller.stopBackspaceTimer()
-                if (longPressTimer.running) {
+                if (root.didLongPressRepeat) {
+                    if (audioEngine) {
+                        audioEngine.playKeyPressSound(4)
+                    } else if (typeof proceduralAudioEngine !== "undefined" && proceduralAudioEngine) {
+                        proceduralAudioEngine.playKeyPressSound(4)
+                    }
+                } else {
                     if (root.vk) {
                         root.vk.sendBackspace()
                     } else if (typeof virtualKeyEngine !== "undefined" && virtualKeyEngine) {
@@ -237,7 +248,7 @@ Rectangle {
                 }
             } else if (root.label === "space" || root.textToSend === " ") {
                 if (controller) controller.stopSpaceTimer()
-                if (longPressTimer.running) {
+                if (!root.didLongPressRepeat) {
                     var spaceChar = root.textToSend !== "" ? root.textToSend : " "
                     if (root.vk) {
                         root.vk.sendText(spaceChar)

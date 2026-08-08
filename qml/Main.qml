@@ -80,10 +80,9 @@ Window {
             virtualKeyEngine.sendBackspace()
             if (mainWindow.currentInputBuffer.length > 0) {
                 mainWindow.currentInputBuffer = mainWindow.currentInputBuffer.substring(0, mainWindow.currentInputBuffer.length - 1)
-                gestureEngine.updateCurrentPrefix(mainWindow.currentInputBuffer)
-            }
-            if (typeof proceduralAudioEngine !== "undefined" && proceduralAudioEngine) {
-                proceduralAudioEngine.playKeyPressSound(2) // 2 = Backspace
+                if (typeof gestureEngine !== "undefined" && gestureEngine) {
+                    gestureEngine.updateCurrentPrefix(mainWindow.currentInputBuffer)
+                }
             }
         }
         function onTriggerSpace() {
