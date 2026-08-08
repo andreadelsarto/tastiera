@@ -2,6 +2,27 @@
 
 All notable changes to **Plasma Keyboard** will be documented in this file.
 
+## [v0.92_sound] - 2026-08-08
+
+### 🎵 Procedural Audio Engine (Zero-WAV RAM Synthesis)
+- **RAM-Only Acoustic Synthesis**: Synthesizes 44.1 kHz / 16-bit Mono PCM audio waveforms directly in RAM on startup via `QAudioSink`. Zero disk I/O, zero `.wav` or `.ogg` files on disk, latency < 0.5 ms.
+- **Differentiated Key Acoustic Signatures**:
+  - *Standard Keys (Letters / Numbers)*: 880–900 Hz sine wave click (18ms).
+  - *Spacebar*: 380–320 Hz multi-harmonic sweep thud (32ms).
+  - *Backspace (Press / Release)*: Crisp 680–380 Hz pop on press; silent hold; single soft 520 Hz release click upon finishing hold deletion.
+  - *Enter / Return*: 1100 + 1400 Hz double-harmonic clack (26ms).
+
+### 🛡️ Security Hardening & Seccomp BPF Sandbox
+- **Native Seccomp BPF System Call Filtering**: Integrates kernel `libseccomp` sandbox filter blocking dangerous syscalls (`execve`, `execveat`, `ptrace`, `process_vm_readv`, `process_vm_writev`).
+- **Systemd User Unit Sandboxing**: Added `systemd/plasma-keyboard.service` with strict network isolation (`IPAddressDeny=any`), `ProtectSystem=strict`, `ProtectHome=read-only`, `MemoryDenyWriteExecute=true`.
+- **IPC Socket Owner Isolation (`chmod 0600`)**: Enforces `umask(0077)` and `chmod 0600` permissions on single-instance Unix domain sockets.
+
+### ⚡ Single-Instance IPC & CLI Flags
+- **CLI Commands (`--show`, `--hide`, `--toggle`)**: Instant IPC control over Unix domain sockets without creating duplicate display windows or processes.
+- **Multitouch Input Engine**: Replaced single-point `MouseArea` with `MultiPointTouchArea` in `KeyButton.qml` for independent multi-finger key press tracking.
+- **Signal Cleanup Handlers**: Added `SIGTERM` and `SIGINT` signal handlers to unlink Unix IPC socket files cleanly on exit.
+- **Automated Stress Testing**: Added 6-benchmark stress test suite (`stress_test.sh`) validating process memory footprint (~150 MB RSS) and zero zombie processes.
+
 ## [v0.91] - 2026-08-07
 
 ### 🛡️ Security & Process Protection
