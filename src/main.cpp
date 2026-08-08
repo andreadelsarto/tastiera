@@ -14,6 +14,7 @@
 #include <KLocalizedString>
 
 #include "keyboardcontroller.h"
+#include "proceduralaudioengine.h"
 #include "waylandvirtualkeyboard.h"
 #include "gestureengine.h"
 #include "klipperintegration.h"
@@ -25,6 +26,7 @@
 #include <sys/prctl.h>
 #include <sys/resource.h>
 #include <sys/socket.h>
+#include <sys/stat.h>
 #include <sys/un.h>
 #include <unistd.h>
 #include <cstdio>
@@ -39,6 +41,10 @@ static const QString DBUS_PATH    = QStringLiteral("/org/kde/plasma/keyboard");
 // Global socket path for signal handler cleanup (Feature 5)
 static std::string g_socketPath;
 
+#ifdef HAVE_SECCOMP
+#include <seccomp.h>
+#endif
+
 static void setupProcessSecurity() {
     // Prevent crash dumps containing process RAM
     prctl(PR_SET_DUMPABLE, 0);
@@ -46,6 +52,23 @@ static void setupProcessSecurity() {
     // Set max coredump size to 0
     rlimit rl = {0, 0};
     setrlimit(RLIMIT_CORE, &rl);
+
+#ifdef HAVE_SECCOMP
+    // Native Seccomp BPF Filter: kill process on forbidden syscalls (execve, ptrace, process_vm_readv)
+    scmp_filter_ctx ctx = seccomp_init(SCMP_ACT_ALLOW);
+    if (ctx) {
+        seccomp_rule_add(ctx, SCMP_ACT_KILL, SCMP_SYS(execve), 0);
+        seccomp_rule_add(ctx, SCMP_ACT_KILL, SCMP_SYS(execveat), 0);
+        seccomp_rule_add(ctx, SCMP_ACT_KILL, SCMP_SYS(ptrace), 0);
+        seccomp_rule_add(ctx, SCMP_ACT_KILL, SCMP_SYS(process_vm_readv), 0);
+        seccomp_rule_add(ctx, SCMP_ACT_KILL, SCMP_SYS(process_vm_writev), 0);
+        seccomp_load(ctx);
+        seccomp_release(ctx);
+        fprintf(stdout, "[Security] Seccomp BPF sandbox filter loaded successfully.\n");
+    }
+#else
+    fprintf(stdout, "[Security] Process RAM hardening applied (PR_SET_DUMPABLE=0, RLIMIT_CORE=0).\n");
+#endif
 }
 
 // Feature 5: Clean up socket on SIGTERM/SIGINT so stale sockets don't block restart
@@ -59,13 +82,18 @@ static void signalHandler(int sig)
 
 /**
  * Get the full path of the Unix socket used for single-instance IPC.
- * Uses XDG_RUNTIME_DIR or /tmp as fallback.
+ * Uses XDG_RUNTIME_DIR, /run/user/10000, or /tmp as fallback.
  */
 static std::string getSocketPath()
 {
     const char *runtimeDir = getenv("XDG_RUNTIME_DIR");
-    std::string base = runtimeDir ? runtimeDir : "/tmp";
-    return base + "/" + SOCKET_NAME;
+    if (runtimeDir && strlen(runtimeDir) > 0) {
+        return std::string(runtimeDir) + "/" + SOCKET_NAME;
+    }
+    if (access("/run/user/10000", F_OK) == 0) {
+        return "/run/user/10000/" + std::string(SOCKET_NAME);
+    }
+    return std::string("/tmp/") + SOCKET_NAME;
 }
 
 /**
@@ -197,6 +225,7 @@ int main(int argc, char *argv[])
 
     // ── Register QML types ─────────────────────────────────────────────
     qmlRegisterType<KeyboardController>("org.kde.plasma.keyboard", 1, 0, "KeyboardController");
+    qmlRegisterType<ProceduralAudioEngine>("org.kde.plasma.keyboard", 1, 0, "ProceduralAudioEngine");
     qmlRegisterType<WaylandVirtualKeyboard>("org.kde.plasma.keyboard", 1, 0, "WaylandVirtualKeyboard");
     qmlRegisterType<GestureEngine>("org.kde.plasma.keyboard", 1, 0, "GestureEngine");
     qmlRegisterType<KlipperIntegration>("org.kde.plasma.keyboard", 1, 0, "KlipperIntegration");

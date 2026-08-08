@@ -42,6 +42,10 @@ Window {
         id: virtualKeyEngine
     }
 
+    ProceduralAudioEngine {
+        id: proceduralAudioEngine
+    }
+
     GestureEngine {
         id: gestureEngine
     }

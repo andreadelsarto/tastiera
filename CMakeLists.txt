@@ -11,13 +11,15 @@ set(CMAKE_AUTORCC ON)
 find_package(ECM 6.0.0 REQUIRED NO_MODULE)
 set(CMAKE_MODULE_PATH ${ECM_MODULE_PATH})
 
-find_package(Qt6 REQUIRED COMPONENTS Core Gui Quick Qml DBus GuiPrivate Network)
+find_package(Qt6 REQUIRED COMPONENTS Core Gui Quick Qml DBus GuiPrivate Network Multimedia)
 find_package(KF6CoreAddons REQUIRED)
 find_package(KF6I18n REQUIRED)
 find_package(PkgConfig REQUIRED)
 find_package(Wayland REQUIRED COMPONENTS Client)
 
 pkg_check_modules(WAYLAND_CLIENT REQUIRED wayland-client)
+pkg_check_modules(SECCOMP libseccomp)
+
 find_program(WAYLAND_SCANNER_EXECUTABLE NAMES wayland-scanner REQUIRED)
 
 # Generate Wayland virtual keyboard protocol C/H files
@@ -45,6 +47,8 @@ qt_add_executable(plasma-keyboard
     src/securebuffer.h
     src/keyboardcontroller.cpp
     src/keyboardcontroller.h
+    src/proceduralaudioengine.cpp
+    src/proceduralaudioengine.h
     src/waylandvirtualkeyboard.cpp
     src/waylandvirtualkeyboard.h
     src/gestureengine.cpp
@@ -68,10 +72,17 @@ target_link_libraries(plasma-keyboard PRIVATE
     Qt6::Qml
     Qt6::DBus
     Qt6::Network
+    Qt6::Multimedia
     KF6::CoreAddons
     KF6::I18n
     Wayland::Client
 )
+
+if(SECCOMP_FOUND)
+    target_link_libraries(plasma-keyboard PRIVATE ${SECCOMP_LIBRARIES})
+    target_include_directories(plasma-keyboard PRIVATE ${SECCOMP_INCLUDE_DIRS})
+    target_compile_definitions(plasma-keyboard PRIVATE HAVE_SECCOMP=1)
+endif()
 
 if(LayerShellQt_FOUND)
     target_link_libraries(plasma-keyboard PRIVATE LayerShellQt::Interface)

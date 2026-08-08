@@ -157,6 +157,8 @@ Rectangle {
         }
     }
 
+    property var audioEngine
+
     // Multitouch-enabled input area — each key handles its own independent touch point
     // so pressing multiple keys simultaneously works correctly
     MultiPointTouchArea {
@@ -177,6 +179,11 @@ Rectangle {
             root.pressed()
             hapticAnimation.start()
             longPressTimer.start()
+            if (audioEngine) {
+                audioEngine.playKeySoundForLabel(root.label, root.isBackspace, root.isSpecial)
+            } else if (typeof proceduralAudioEngine !== "undefined" && proceduralAudioEngine) {
+                proceduralAudioEngine.playKeySoundForLabel(root.label, root.isBackspace, root.isSpecial)
+            }
             if (gestureEngine) {
                 gestureEngine.startTouch(Qt.point(tp1.x, tp1.y))
             }

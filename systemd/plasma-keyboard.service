@@ -1,0 +1,31 @@
+[Unit]
+Description=Antigravity Touch Key Virtual Keyboard
+After=graphical-session.target
+BindsTo=graphical-session.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/plasma-keyboard
+Restart=on-failure
+RestartSec=1s
+
+# --- ISOLAMENTO DI RETE E FILESYSTEM ---
+IPAddressDeny=any
+ProtectSystem=strict
+ProtectHome=read-only
+ReadOnlyPaths=/usr /lib /lib64 /etc
+ReadWritePaths=%t
+PrivateTmp=true
+ProtectKernelTunables=true
+ProtectKernelControlGroups=true
+ProtectKernelModules=true
+MemoryDenyWriteExecute=true
+RestrictRealtime=true
+RestrictNamespaces=true
+LockPersonality=true
+SystemCallArchitectures=native
+SystemCallFilter=~@clock @cpu-emulation @debug @keyring @module @mount @obsolete @raw-io @reboot @swap
+CapabilityBoundingSet=
+
+[Install]
+WantedBy=graphical-session.target

@@ -32,7 +32,7 @@ log_fail() { echo -e "  ${RED}✗${NC} $1"; ((fail++)); }
 log_info() { echo -e "  ${CYAN}ℹ${NC} $1"; }
 log_section() { echo -e "\n${YELLOW}━━━ $1 ━━━${NC}"; }
 
-remote() { ssh "$HOST" "$@" 2>/dev/null; }
+remote() { ssh "$HOST" "export XDG_RUNTIME_DIR=/run/user/10000 WAYLAND_DISPLAY=wayland-0 DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/10000/bus QT_QPA_PLATFORM=wayland; $*" 2>/dev/null; }
 
 # ── Pre-flight checks ──
 log_section "Pre-flight Checks"
@@ -56,8 +56,8 @@ PCOUNT=$(echo "$PCOUNT" | tr -d '[:space:]')
     fi
 fi
 
-# Check socket exists
-if remote "test -S /run/user/10000/plasma-keyboard-single-instance"; then
+# Check socket exists (in XDG_RUNTIME_DIR or /tmp)
+if remote "test -S /run/user/10000/plasma-keyboard-single-instance || test -S /tmp/plasma-keyboard-single-instance"; then
     log_pass "IPC socket exists"
 else
     log_fail "IPC socket missing"
@@ -117,7 +117,7 @@ fi
 # ── Test 4: Socket file integrity ──
 log_section "Test 4: Socket & Process Integrity"
 
-if remote "test -S /run/user/10000/plasma-keyboard-single-instance"; then
+if remote "test -S /run/user/10000/plasma-keyboard-single-instance || test -S /tmp/plasma-keyboard-single-instance"; then
     log_pass "IPC socket still exists after stress"
 else
     log_fail "IPC socket disappeared during stress"
@@ -153,9 +153,9 @@ remote "kill \$(ps aux | grep 'plasma-keyboard' | grep -v grep | awk '{print \$1
 sleep 2
 
 # Socket should be cleaned up by signal handler
-if remote "test -S /run/user/10000/plasma-keyboard-single-instance" 2>/dev/null; then
+if remote "test -S /run/user/10000/plasma-keyboard-single-instance || test -S /tmp/plasma-keyboard-single-instance" 2>/dev/null; then
     log_info "Socket still exists after kill (may have received SIGKILL via BusyBox)"
-    remote "rm -f /run/user/10000/plasma-keyboard-single-instance" 2>/dev/null || true
+    remote "rm -f /run/user/10000/plasma-keyboard-single-instance /tmp/plasma-keyboard-single-instance" 2>/dev/null || true
 else
     log_pass "Socket cleaned up by SIGTERM handler"
 fi
@@ -172,7 +172,17 @@ else
     log_fail "Failed to restart after kill (found $PCOUNT instances)"
 fi
 
-if remote "test -S /run/user/10000/plasma-keyboard-single-instance"; then
+# Wait up to 3 seconds for new IPC socket creation
+SOCKET_OK=0
+for retry in {1..6}; do
+    if remote "test -S /run/user/10000/plasma-keyboard-single-instance || test -S /tmp/plasma-keyboard-single-instance" 2>/dev/null; then
+        SOCKET_OK=1
+        break
+    fi
+    sleep 0.5
+done
+
+if [ "$SOCKET_OK" -eq 1 ]; then
     log_pass "New IPC socket created after restart"
 else
     log_fail "IPC socket missing after restart"
