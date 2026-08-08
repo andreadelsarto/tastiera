@@ -34,6 +34,23 @@ KeyboardController::KeyboardController(QObject *parent)
         }
     });
 
+    m_spaceHoldTimer.setSingleShot(true);
+    m_spaceHoldTimer.setInterval(250); // 250ms initial hold delay before repeating space
+
+    connect(&m_spaceHoldTimer, &QTimer::timeout, this, [this]() {
+        emit triggerSpace();
+        m_spaceRepeatInterval = 80;
+        m_spaceRepeatTimer.start(m_spaceRepeatInterval);
+    });
+
+    connect(&m_spaceRepeatTimer, &QTimer::timeout, this, [this]() {
+        emit triggerSpace();
+        if (m_spaceRepeatInterval > 15) {
+            m_spaceRepeatInterval = std::max(15, m_spaceRepeatInterval - 10);
+            m_spaceRepeatTimer.setInterval(m_spaceRepeatInterval);
+        }
+    });
+
     m_keyRepeatHoldTimer.setSingleShot(true);
     m_keyRepeatHoldTimer.setInterval(250); // 250ms initial hold delay before repeating
 
@@ -142,6 +159,18 @@ void KeyboardController::stopBackspaceTimer()
         m_backspaceDeletingWord = false;
         emit backspaceDeletingWordChanged();
     }
+}
+
+void KeyboardController::startSpaceTimer()
+{
+    emit triggerSpace();
+    m_spaceHoldTimer.start();
+}
+
+void KeyboardController::stopSpaceTimer()
+{
+    m_spaceHoldTimer.stop();
+    m_spaceRepeatTimer.stop();
 }
 
 void KeyboardController::startKeyRepeat(uint32_t keycode)

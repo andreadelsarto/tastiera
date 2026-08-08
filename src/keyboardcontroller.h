@@ -51,6 +51,8 @@ public:
 
     Q_INVOKABLE void startBackspaceTimer();
     Q_INVOKABLE void stopBackspaceTimer();
+    Q_INVOKABLE void startSpaceTimer();
+    Q_INVOKABLE void stopSpaceTimer();
     Q_INVOKABLE void startKeyRepeat(uint32_t keycode);
     Q_INVOKABLE void stopKeyRepeat();
     Q_INVOKABLE void updateInputMask(QObject *windowObj, int x, int y, int width, int height);
@@ -75,6 +77,7 @@ signals:
     void backspaceDeletingWordChanged();
     void triggerBackspace();
     void triggerWordBackspace();
+    void triggerSpace();
     void triggerKeyRepeat(uint32_t keycode);
 
 private:
@@ -92,6 +95,9 @@ private:
     QTimer m_backspaceHoldTimer;
     QTimer m_backspaceRepeatTimer;
     int m_backspaceRepeatInterval = 100;
+    QTimer m_spaceHoldTimer;
+    QTimer m_spaceRepeatTimer;
+    int m_spaceRepeatInterval = 80;
     QTimer m_keyRepeatHoldTimer;
     QTimer m_keyRepeatTimer;
     int m_keyRepeatInterval = 100;

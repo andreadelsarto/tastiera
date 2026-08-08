@@ -82,6 +82,17 @@ Window {
                 mainWindow.currentInputBuffer = mainWindow.currentInputBuffer.substring(0, mainWindow.currentInputBuffer.length - 1)
                 gestureEngine.updateCurrentPrefix(mainWindow.currentInputBuffer)
             }
+            if (typeof proceduralAudioEngine !== "undefined" && proceduralAudioEngine) {
+                proceduralAudioEngine.playKeyPressSound(2) // 2 = Backspace
+            }
+        }
+        function onTriggerSpace() {
+            virtualKeyEngine.sendText(" ")
+            mainWindow.currentInputBuffer = ""
+            gestureEngine.updateCurrentPrefix("")
+            if (typeof proceduralAudioEngine !== "undefined" && proceduralAudioEngine) {
+                proceduralAudioEngine.playKeyPressSound(1) // 1 = Space
+            }
         }
         function onTriggerWordBackspace() {
             virtualKeyEngine.sendCtrlBackspace()

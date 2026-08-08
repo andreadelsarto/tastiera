@@ -153,6 +153,8 @@ Rectangle {
                 root.isAccentOverlayOpen = true
             } else if (root.isBackspace && controller) {
                 controller.startBackspaceTimer()
+            } else if ((root.label === "space" || root.textToSend === " ") && controller) {
+                controller.startSpaceTimer()
             }
         }
     }
@@ -226,10 +228,23 @@ Rectangle {
                 root.selectedAccentIndex = -1
             } else if (root.isBackspace) {
                 if (controller) controller.stopBackspaceTimer()
-                if (root.vk) {
-                    root.vk.sendBackspace()
-                } else if (typeof virtualKeyEngine !== "undefined" && virtualKeyEngine) {
-                    virtualKeyEngine.sendBackspace()
+                if (longPressTimer.running) {
+                    if (root.vk) {
+                        root.vk.sendBackspace()
+                    } else if (typeof virtualKeyEngine !== "undefined" && virtualKeyEngine) {
+                        virtualKeyEngine.sendBackspace()
+                    }
+                }
+            } else if (root.label === "space" || root.textToSend === " ") {
+                if (controller) controller.stopSpaceTimer()
+                if (longPressTimer.running) {
+                    var spaceChar = root.textToSend !== "" ? root.textToSend : " "
+                    if (root.vk) {
+                        root.vk.sendText(spaceChar)
+                    } else if (typeof virtualKeyEngine !== "undefined" && virtualKeyEngine) {
+                        virtualKeyEngine.sendText(spaceChar)
+                    }
+                    root.keyTriggered(spaceChar)
                 }
             } else if (!root.isCustomAction) {
                 var send = root.textToSend !== "" ? root.textToSend : root.label
@@ -247,6 +262,10 @@ Rectangle {
         onCanceled: (touchPoints) => {
             mouseArea.pressed = false
             longPressTimer.stop()
+            if (controller) {
+                if (root.isBackspace) controller.stopBackspaceTimer()
+                if (root.label === "space" || root.textToSend === " ") controller.stopSpaceTimer()
+            }
             if (root.isAccentOverlayOpen) {
                 var selIdx = (root.selectedAccentIndex >= 0 && root.selectedAccentIndex < root.accents.length) ? root.selectedAccentIndex : 0
                 var selChar = root.accents[selIdx]
