@@ -57,9 +57,13 @@ public:
 
 public slots:
     Q_SCRIPTABLE Q_INVOKABLE void toggleVisibility();
+    Q_SCRIPTABLE Q_INVOKABLE void showKeyboard();
+    Q_SCRIPTABLE Q_INVOKABLE void hideKeyboard();
 
 signals:
     void toggleVisibilityRequested();
+    void showRequested();
+    void hideRequested();
     void sizeModeChanged();
     void layoutModeChanged();
     void isSplitChanged();

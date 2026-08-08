@@ -89,6 +89,12 @@ Window {
                 virtualKeyEngine.pressAndReleaseKey(keycode)
             }
         }
+        function onShowRequested() {
+            mainWindow.visible = true
+        }
+        function onHideRequested() {
+            mainWindow.visible = false
+        }
     }
 
     // Floating Bubble / Mini-Bar Handle (Appears at margin when user taps Close ✖)
@@ -160,7 +166,8 @@ Window {
 
         x: controller.sizeMode === "full" ? 0 :
            (controller.sizeMode === "onehand" ? (parent.width - width - 16) : (parent.width - width) / 2)
-        y: parent.height - height - 40
+        y: controller.sizeMode === "full" ? (parent.height - height) :
+           (parent.height - height - 40)
 
         function syncMask() {
             if (!mainWindow.isMinimized) {

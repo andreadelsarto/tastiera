@@ -45,6 +45,22 @@ Rectangle {
         NumberAnimation { duration: 60; easing.type: Easing.OutQuad }
     }
 
+    // Feature 1: Visual haptic feedback flash overlay
+    Rectangle {
+        id: hapticFlash
+        anchors.fill: parent
+        radius: parent.radius
+        color: "#ffffff"
+        opacity: 0
+        z: 10
+
+        SequentialAnimation {
+            id: hapticAnimation
+            NumberAnimation { target: hapticFlash; property: "opacity"; to: 0.25; duration: 30 }
+            NumberAnimation { target: hapticFlash; property: "opacity"; to: 0; duration: 120; easing.type: Easing.OutQuad }
+        }
+    }
+
     // Main Key Label
     Text {
         id: labelText
@@ -141,26 +157,39 @@ Rectangle {
         }
     }
 
-    MouseArea {
+    // Multitouch-enabled input area — each key handles its own independent touch point
+    // so pressing multiple keys simultaneously works correctly
+    MultiPointTouchArea {
         id: mouseArea
         anchors.fill: parent
+        minimumTouchPoints: 1
+        maximumTouchPoints: 1
 
-        onPressed: {
+        // Expose a 'pressed' property for visual feedback (scale, color)
+        property bool pressed: false
+
+        touchPoints: [
+            TouchPoint { id: tp1 }
+        ]
+
+        onPressed: (touchPoints) => {
+            mouseArea.pressed = true
             root.pressed()
+            hapticAnimation.start()
             longPressTimer.start()
             if (gestureEngine) {
-                gestureEngine.startTouch(Qt.point(mouse.x, mouse.y))
+                gestureEngine.startTouch(Qt.point(tp1.x, tp1.y))
             }
         }
 
-        onPositionChanged: (mouse) => {
-            if (gestureEngine && pressed) {
-                gestureEngine.updateTouch(Qt.point(mouse.x, mouse.y))
+        onUpdated: (touchPoints) => {
+            if (gestureEngine && mouseArea.pressed) {
+                gestureEngine.updateTouch(Qt.point(tp1.x, tp1.y))
             }
 
             // Slide-to-select accent logic
             if (root.isAccentOverlayOpen && root.accents && root.accents.length > 0) {
-                var popupPoint = mouseArea.mapToItem(accentRow, mouse.x, mouse.y)
+                var popupPoint = mouseArea.mapToItem(accentRow, tp1.x, tp1.y)
                 var idx = Math.floor(popupPoint.x / 40)
                 if (idx >= 0 && idx < root.accents.length) {
                     root.selectedAccentIndex = idx
@@ -168,7 +197,8 @@ Rectangle {
             }
         }
 
-        onReleased: {
+        onReleased: (touchPoints) => {
+            mouseArea.pressed = false
             longPressTimer.stop()
 
             if (gestureEngine) {
@@ -207,7 +237,8 @@ Rectangle {
             }
         }
 
-        onCanceled: {
+        onCanceled: (touchPoints) => {
+            mouseArea.pressed = false
             longPressTimer.stop()
             if (root.isAccentOverlayOpen) {
                 var selIdx = (root.selectedAccentIndex >= 0 && root.selectedAccentIndex < root.accents.length) ? root.selectedAccentIndex : 0
@@ -223,3 +254,4 @@ Rectangle {
         }
     }
 }
+

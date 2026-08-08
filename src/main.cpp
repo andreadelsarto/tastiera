@@ -30,10 +30,14 @@
 #include <cstdio>
 #include <cstring>
 #include <cstdlib>
+#include <csignal>
 
 static const char* SOCKET_NAME = "plasma-keyboard-single-instance";
 static const QString DBUS_SERVICE = QStringLiteral("org.kde.plasma.keyboard");
 static const QString DBUS_PATH    = QStringLiteral("/org/kde/plasma/keyboard");
+
+// Global socket path for signal handler cleanup (Feature 5)
+static std::string g_socketPath;
 
 static void setupProcessSecurity() {
     // Prevent crash dumps containing process RAM
@@ -42,6 +46,15 @@ static void setupProcessSecurity() {
     // Set max coredump size to 0
     rlimit rl = {0, 0};
     setrlimit(RLIMIT_CORE, &rl);
+}
+
+// Feature 5: Clean up socket on SIGTERM/SIGINT so stale sockets don't block restart
+static void signalHandler(int sig)
+{
+    if (!g_socketPath.empty()) {
+        unlink(g_socketPath.c_str());
+    }
+    _exit(sig == SIGTERM ? 0 : 1);
 }
 
 /**
@@ -56,12 +69,13 @@ static std::string getSocketPath()
 }
 
 /**
- * Try to connect to an existing instance via raw Unix Domain Socket.
+ * Try to send a command to an existing instance via raw Unix Domain Socket.
  * This works BEFORE QGuiApplication is created, so it doesn't require
  * a display connection.
- * Returns true if an existing instance was found and toggle was sent.
+ * @param command The IPC command to send ("toggle", "show", or "hide")
+ * Returns true if an existing instance was found and the command was sent.
  */
-static bool trySendToggleRaw()
+static bool trySendCommandRaw(const char* command)
 {
     std::string socketPath = getSocketPath();
 
@@ -74,11 +88,11 @@ static bool trySendToggleRaw()
     strncpy(addr.sun_path, socketPath.c_str(), sizeof(addr.sun_path) - 1);
 
     if (connect(fd, (struct sockaddr*)&addr, sizeof(addr)) == 0) {
-        // Connected! Send toggle command
-        const char *msg = "toggle\n";
-        write(fd, msg, strlen(msg));
+        // Connected! Send command
+        std::string msg = std::string(command) + "\n";
+        write(fd, msg.c_str(), msg.size());
         close(fd);
-        fprintf(stdout, "[Main] Found running instance via Unix socket. Toggle sent. Exiting.\n");
+        fprintf(stdout, "[Main] Found running instance via Unix socket. Command '%s' sent. Exiting.\n", command);
         return true;
     }
 
@@ -92,22 +106,30 @@ int main(int argc, char *argv[])
     setupProcessSecurity();
 
     // ── Early Single Instance Check (BEFORE QGuiApplication) ──────────
-    // Parse --toggle manually from argv to avoid needing QApplication
-    bool hasToggle = false;
+    // Parse --toggle/--show/--hide manually from argv to avoid needing QApplication
+    const char* ipcCommand = nullptr;
     for (int i = 1; i < argc; ++i) {
         if (strcmp(argv[i], "--toggle") == 0 || strcmp(argv[i], "-t") == 0) {
-            hasToggle = true;
-            break;
+            ipcCommand = "toggle";
+        } else if (strcmp(argv[i], "--show") == 0) {
+            ipcCommand = "show";
+        } else if (strcmp(argv[i], "--hide") == 0) {
+            ipcCommand = "hide";
         }
     }
 
     // Try to contact running instance via raw Unix socket (no Qt needed)
-    if (trySendToggleRaw()) {
-        return 0;  // Toggle sent successfully, exit secondary process
+    if (ipcCommand && trySendCommandRaw(ipcCommand)) {
+        return 0;  // Command sent successfully, exit secondary process
     }
 
-    // If --toggle was passed but no instance is running, start normally
-    // (acts as first launch)
+    // If no ipcCommand, or no running instance found: also try toggle for
+    // bare invocations that find an existing instance (backwards compat)
+    if (!ipcCommand && trySendCommandRaw("toggle")) {
+        return 0;
+    }
+
+    // No running instance found — start as primary instance
 
     // ── Create QGuiApplication (requires display) ─────────────────────
     QGuiApplication app(argc, argv);
@@ -122,7 +144,11 @@ int main(int argc, char *argv[])
     parser.addVersionOption();
 
     QCommandLineOption toggleOption(QStringList() << "t" << "toggle", "Toggle keyboard window visibility (show/hide)");
+    QCommandLineOption showOption("show", "Show keyboard window (if running instance exists)");
+    QCommandLineOption hideOption("hide", "Hide keyboard window (if running instance exists)");
     parser.addOption(toggleOption);
+    parser.addOption(showOption);
+    parser.addOption(hideOption);
     parser.process(app);
 
     fprintf(stdout, "[Main] No running instance found. Starting as primary instance.\n");
@@ -142,6 +168,11 @@ int main(int argc, char *argv[])
     if (serverFd >= 0 && bind(serverFd, (struct sockaddr*)&addr, sizeof(addr)) == 0 && listen(serverFd, 5) == 0) {
         socketListening = true;
         fprintf(stdout, "[Main] Unix socket server listening on: %s\n", socketPath.c_str());
+
+        // Feature 5: Register signal handlers to clean up socket on crash/kill
+        g_socketPath = socketPath;
+        std::signal(SIGTERM, signalHandler);
+        std::signal(SIGINT, signalHandler);
     } else {
         fprintf(stderr, "[Main] Failed to create Unix socket server at: %s\n", socketPath.c_str());
         if (serverFd >= 0) close(serverFd);
@@ -150,8 +181,6 @@ int main(int argc, char *argv[])
 
     // ── Also setup QLocalServer for Qt-based IPC (works alongside) ────
     QLocalServer::removeServer(QString::fromUtf8(SOCKET_NAME));
-    // We use the raw socket above, but also set up a QSocketNotifier
-    // to integrate the raw socket fd with Qt's event loop.
 
     // ── Setup D-Bus service (fallback IPC) ─────────────────────────────
     QDBusConnection bus = QDBusConnection::sessionBus();
@@ -209,14 +238,26 @@ int main(int argc, char *argv[])
     engine.loadFromModule("org.kde.plasma.keyboard", "Main");
 
     // ── Wire Unix socket server to Qt event loop via QSocketNotifier ──
+    // Feature 4: Dispatch show/hide/toggle commands from socket IPC
     if (socketListening && serverFd >= 0) {
         auto *notifier = new QSocketNotifier(serverFd, QSocketNotifier::Read, &app);
         QObject::connect(notifier, &QSocketNotifier::activated, [&controller, serverFd]() {
             int clientFd = accept(serverFd, nullptr, nullptr);
             if (clientFd >= 0) {
-                fprintf(stdout, "[Main] Received toggle via Unix socket.\n");
-                controller.toggleVisibility();
+                char buf[64] = {0};
+                ssize_t n = read(clientFd, buf, sizeof(buf) - 1);
                 close(clientFd);
+
+                QString cmd = QString::fromUtf8(buf, n).trimmed();
+                fprintf(stdout, "[Main] Received IPC command: '%s'\n", cmd.toUtf8().constData());
+
+                if (cmd == "show") {
+                    controller.showKeyboard();
+                } else if (cmd == "hide") {
+                    controller.hideKeyboard();
+                } else {
+                    controller.toggleVisibility();
+                }
             }
         });
     }

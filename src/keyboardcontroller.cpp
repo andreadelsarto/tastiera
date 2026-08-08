@@ -173,6 +173,18 @@ void KeyboardController::toggleVisibility()
     }
 }
 
+void KeyboardController::showKeyboard()
+{
+    qInfo() << "[KeyboardController] showKeyboard requested";
+    emit showRequested();
+}
+
+void KeyboardController::hideKeyboard()
+{
+    qInfo() << "[KeyboardController] hideKeyboard requested";
+    emit hideRequested();
+}
+
 void KeyboardController::updateInputMask(QObject *windowObj, int x, int y, int width, int height)
 {
     QQuickWindow *window = qobject_cast<QQuickWindow*>(windowObj);
