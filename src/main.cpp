@@ -165,9 +165,12 @@ int main(int argc, char *argv[])
     strncpy(addr.sun_path, socketPath.c_str(), sizeof(addr.sun_path) - 1);
 
     bool socketListening = false;
+    // Set restrictive umask before binding socket so it is created with owner-only access (0700/0600)
+    mode_t oldUmask = umask(0077);
     if (serverFd >= 0 && bind(serverFd, (struct sockaddr*)&addr, sizeof(addr)) == 0 && listen(serverFd, 5) == 0) {
         socketListening = true;
-        fprintf(stdout, "[Main] Unix socket server listening on: %s\n", socketPath.c_str());
+        chmod(socketPath.c_str(), 0600); // Explicitly ensure permissions are owner read/write only
+        fprintf(stdout, "[Main] Unix socket server listening on: %s (permissions: 0600)\n", socketPath.c_str());
 
         // Feature 5: Register signal handlers to clean up socket on crash/kill
         g_socketPath = socketPath;
@@ -178,6 +181,7 @@ int main(int argc, char *argv[])
         if (serverFd >= 0) close(serverFd);
         serverFd = -1;
     }
+    umask(oldUmask);
 
     // ── Also setup QLocalServer for Qt-based IPC (works alongside) ────
     QLocalServer::removeServer(QString::fromUtf8(SOCKET_NAME));
