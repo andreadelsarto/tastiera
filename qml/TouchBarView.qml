@@ -212,7 +212,7 @@ Rectangle {
 
         // Right section: Size Mode Segmented Switcher in Dark Container
         Rectangle {
-            width: 230
+            width: 315
             height: 34
             radius: 17
             color: currentTheme && currentTheme.sizeModePillBg ? currentTheme.sizeModePillBg : "#21252d"
@@ -225,7 +225,7 @@ Rectangle {
 
                 // Normal
                 Rectangle {
-                    width: (parent.width - 6) / 3
+                    width: (parent.width - 8) / 4
                     height: parent.height
                     radius: 14
                     color: controller && controller.sizeMode === "normal" ? (currentTheme ? currentTheme.accentColor : "#00a2ed") : "transparent"
@@ -234,7 +234,7 @@ Rectangle {
                         anchors.centerIn: parent
                         text: "Normal"
                         color: controller && controller.sizeMode === "normal" ? "#ffffff" : "#d0d5dd"
-                        font.pixelSize: 11
+                        font.pixelSize: 10
                         font.bold: controller && controller.sizeMode === "normal"
                     }
 
@@ -246,7 +246,7 @@ Rectangle {
 
                 // Extended (Full)
                 Rectangle {
-                    width: (parent.width - 6) / 3
+                    width: (parent.width - 8) / 4
                     height: parent.height
                     radius: 14
                     color: controller && controller.sizeMode === "full" ? (currentTheme ? currentTheme.accentColor : "#00a2ed") : "transparent"
@@ -255,7 +255,7 @@ Rectangle {
                         anchors.centerIn: parent
                         text: "Extended"
                         color: controller && controller.sizeMode === "full" ? "#ffffff" : "#d0d5dd"
-                        font.pixelSize: 11
+                        font.pixelSize: 10
                         font.bold: controller && controller.sizeMode === "full"
                     }
 
@@ -267,14 +267,14 @@ Rectangle {
 
                 // 1-Handed
                 Rectangle {
-                    width: (parent.width - 6) / 3
+                    width: (parent.width - 8) / 4
                     height: parent.height
                     radius: 14
                     color: controller && controller.sizeMode === "onehand" ? (currentTheme ? currentTheme.accentColor : "#00a2ed") : "transparent"
 
                     Text {
                         anchors.centerIn: parent
-                        text: "📱 1-Handed"
+                        text: "📱 1-Hand"
                         color: controller && controller.sizeMode === "onehand" ? "#ffffff" : "#d0d5dd"
                         font.pixelSize: 10
                         font.bold: controller && controller.sizeMode === "onehand"
@@ -283,6 +283,27 @@ Rectangle {
                     MouseArea {
                         anchors.fill: parent
                         onClicked: if (controller) controller.sizeMode = "onehand"
+                    }
+                }
+
+                // Touchpad
+                Rectangle {
+                    width: (parent.width - 8) / 4
+                    height: parent.height
+                    radius: 14
+                    color: controller && controller.sizeMode === "touchpad" ? (currentTheme ? currentTheme.accentColor : "#00a2ed") : "transparent"
+
+                    Text {
+                        anchors.centerIn: parent
+                        text: "🖱️ Touchpad"
+                        color: controller && controller.sizeMode === "touchpad" ? "#ffffff" : "#d0d5dd"
+                        font.pixelSize: 10
+                        font.bold: controller && controller.sizeMode === "touchpad"
+                    }
+
+                    MouseArea {
+                        anchors.fill: parent
+                        onClicked: if (controller) controller.sizeMode = "touchpad"
                     }
                 }
             }

@@ -175,8 +175,9 @@ Window {
         id: cardBox
         visible: !mainWindow.isMinimized
         width: controller.sizeMode === "full" ? parent.width :
-               (controller.sizeMode === "onehand" ? 480 : 896)
-        height: 356
+               (controller.sizeMode === "onehand" ? 480 :
+               (controller.sizeMode === "touchpad" ? 540 : 896))
+        height: controller.sizeMode === "touchpad" ? 360 : 356
 
         x: controller.sizeMode === "full" ? 0 :
            (controller.sizeMode === "onehand" ? (parent.width - width - 16) : (parent.width - width) / 2)
@@ -202,11 +203,21 @@ Window {
         border.width: controller.sizeMode === "full" ? 0 : 1
 
         SwipeCanvas {
+            visible: controller.sizeMode !== "touchpad"
             gestureEngine: gestureEngine
             currentTheme: mainWindow.activeTheme
         }
 
+        TouchpadView {
+            visible: controller.sizeMode === "touchpad"
+            anchors.fill: parent
+            currentTheme: mainWindow.activeTheme
+            vk: virtualKeyEngine
+            controller: controller
+        }
+
         ColumnLayout {
+            visible: controller.sizeMode !== "touchpad"
             anchors.fill: parent
             anchors.leftMargin: controller.sizeMode === "full" ? 17 : 12
             anchors.rightMargin: controller.sizeMode === "full" ? 17 : 12

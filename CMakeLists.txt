@@ -98,6 +98,7 @@ qt_add_qml_module(plasma-keyboard
         qml/SwipeCanvas.qml
         qml/DPadPanel.qml
         qml/TouchBarView.qml
+        qml/TouchpadView.qml
         qml/themes/BreezeDark.qml
         qml/themes/TeenageOP1.qml
         qml/themes/NothingDark.qml
