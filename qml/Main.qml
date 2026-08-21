@@ -175,9 +175,9 @@ Window {
         id: cardBox
         visible: !mainWindow.isMinimized
         width: controller.sizeMode === "full" ? parent.width :
-               (controller.sizeMode === "onehand" ? 480 :
-               (controller.sizeMode === "touchpad" ? 680 : 896))
-        height: controller.sizeMode === "touchpad" ? 360 : 356
+               (controller.sizeMode === "onehand" ? 520 :
+               (controller.sizeMode === "touchpad" ? 896 : 896))
+        height: controller.sizeMode === "touchpad" ? 420 : 356
 
         x: controller.sizeMode === "full" ? 0 :
            (controller.sizeMode === "onehand" ? (parent.width - width - 16) : (parent.width - width) / 2)
