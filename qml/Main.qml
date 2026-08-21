@@ -176,7 +176,7 @@ Window {
         visible: !mainWindow.isMinimized
         width: controller.sizeMode === "full" ? parent.width :
                (controller.sizeMode === "onehand" ? 480 :
-               (controller.sizeMode === "touchpad" ? 540 : 896))
+               (controller.sizeMode === "touchpad" ? 680 : 896))
         height: controller.sizeMode === "touchpad" ? 360 : 356
 
         x: controller.sizeMode === "full" ? 0 :
