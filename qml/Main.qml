@@ -50,6 +50,12 @@ Window {
         id: gestureEngine
     }
 
+    function safeUpdatePrefix(text) {
+        if (typeof gestureEngine !== "undefined" && gestureEngine) {
+            gestureEngine.updateCurrentPrefix(text)
+        }
+    }
+
     KlipperIntegration {
         id: klipper
     }
@@ -81,14 +87,14 @@ Window {
             if (mainWindow.currentInputBuffer.length > 0) {
                 mainWindow.currentInputBuffer = mainWindow.currentInputBuffer.substring(0, mainWindow.currentInputBuffer.length - 1)
                 if (typeof gestureEngine !== "undefined" && gestureEngine) {
-                    gestureEngine.updateCurrentPrefix(mainWindow.currentInputBuffer)
+                    mainWindow.safeUpdatePrefix(mainWindow.currentInputBuffer)
                 }
             }
         }
         function onTriggerSpace() {
             virtualKeyEngine.sendText(" ")
             mainWindow.currentInputBuffer = ""
-            gestureEngine.updateCurrentPrefix("")
+            mainWindow.safeUpdatePrefix("")
             if (typeof proceduralAudioEngine !== "undefined" && proceduralAudioEngine) {
                 proceduralAudioEngine.playKeyPressSound(1) // 1 = Space
             }
@@ -96,7 +102,7 @@ Window {
         function onTriggerWordBackspace() {
             virtualKeyEngine.sendCtrlBackspace()
             mainWindow.currentInputBuffer = ""
-            gestureEngine.updateCurrentPrefix("")
+            mainWindow.safeUpdatePrefix("")
         }
         function onTriggerKeyRepeat(keycode) {
             if (virtualKeyEngine) {
@@ -624,7 +630,7 @@ Window {
                                     onClicked: {
                                         virtualKeyEngine.sendText(modelData + " ")
                                         mainWindow.currentInputBuffer = ""
-                                        gestureEngine.updateCurrentPrefix("")
+                                        mainWindow.safeUpdatePrefix("")
                                     }
                                 }
                             }
@@ -676,7 +682,7 @@ Window {
                                     onKeyTriggered: (key) => {
                                         var letter = mainWindow.shiftState > 0 ? key.toUpperCase() : key.toLowerCase()
                                         mainWindow.currentInputBuffer += letter
-                                        gestureEngine.updateCurrentPrefix(mainWindow.currentInputBuffer)
+                                        mainWindow.safeUpdatePrefix(mainWindow.currentInputBuffer)
                                         if (mainWindow.shiftState === 1) {
                                             mainWindow.shiftState = 0
                                         }
@@ -707,7 +713,7 @@ Window {
                                     onKeyTriggered: (key) => {
                                         var letter = mainWindow.shiftState > 0 ? key.toUpperCase() : key.toLowerCase()
                                         mainWindow.currentInputBuffer += letter
-                                        gestureEngine.updateCurrentPrefix(mainWindow.currentInputBuffer)
+                                        mainWindow.safeUpdatePrefix(mainWindow.currentInputBuffer)
                                         if (mainWindow.shiftState === 1) {
                                             mainWindow.shiftState = 0
                                         }
@@ -738,7 +744,7 @@ Window {
                                     onKeyTriggered: (key) => {
                                         var letter = mainWindow.shiftState > 0 ? key.toUpperCase() : key.toLowerCase()
                                         mainWindow.currentInputBuffer += letter
-                                        gestureEngine.updateCurrentPrefix(mainWindow.currentInputBuffer)
+                                        mainWindow.safeUpdatePrefix(mainWindow.currentInputBuffer)
                                         if (mainWindow.shiftState === 1) {
                                             mainWindow.shiftState = 0
                                         }
@@ -768,7 +774,7 @@ Window {
                                     onKeyTriggered: (key) => {
                                         var letter = mainWindow.shiftState > 0 ? key.toUpperCase() : key.toLowerCase()
                                         mainWindow.currentInputBuffer += letter
-                                        gestureEngine.updateCurrentPrefix(mainWindow.currentInputBuffer)
+                                        mainWindow.safeUpdatePrefix(mainWindow.currentInputBuffer)
                                         if (mainWindow.shiftState === 1) {
                                             mainWindow.shiftState = 0
                                         }
@@ -820,7 +826,7 @@ Window {
                                     onKeyTriggered: (key) => {
                                         var letter = mainWindow.shiftState > 0 ? key.toUpperCase() : key.toLowerCase()
                                         mainWindow.currentInputBuffer += letter
-                                        gestureEngine.updateCurrentPrefix(mainWindow.currentInputBuffer)
+                                        mainWindow.safeUpdatePrefix(mainWindow.currentInputBuffer)
                                         if (mainWindow.shiftState === 1) {
                                             mainWindow.shiftState = 0
                                         }
@@ -845,7 +851,7 @@ Window {
                                     onKeyTriggered: (key) => {
                                         var letter = mainWindow.shiftState > 0 ? key.toUpperCase() : key.toLowerCase()
                                         mainWindow.currentInputBuffer += letter
-                                        gestureEngine.updateCurrentPrefix(mainWindow.currentInputBuffer)
+                                        mainWindow.safeUpdatePrefix(mainWindow.currentInputBuffer)
                                         if (mainWindow.shiftState === 1) {
                                             mainWindow.shiftState = 0
                                         }
@@ -907,7 +913,7 @@ Window {
                                 Layout.fillHeight: true
                                 onKeyTriggered: {
                                     mainWindow.currentInputBuffer = ""
-                                    gestureEngine.updateCurrentPrefix("")
+                                    mainWindow.safeUpdatePrefix("")
                                 }
                             }
                             // Split Gap
@@ -923,7 +929,7 @@ Window {
                                 Layout.fillHeight: true
                                 onKeyTriggered: {
                                     mainWindow.currentInputBuffer = ""
-                                    gestureEngine.updateCurrentPrefix("")
+                                    mainWindow.safeUpdatePrefix("")
                                 }
                             }
                             KeyButton {
@@ -937,7 +943,7 @@ Window {
                                 Layout.fillHeight: true
                                 onKeyTriggered: {
                                     mainWindow.currentInputBuffer = ""
-                                    gestureEngine.updateCurrentPrefix("")
+                                    mainWindow.safeUpdatePrefix("")
                                 }
                             }
                             // Close Keyboard Button ✖ (Contracts to Floating Bubble)
